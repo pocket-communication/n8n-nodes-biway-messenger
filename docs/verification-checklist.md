@@ -58,13 +58,13 @@ States: **OK**, **Fixed** (during this audit, with the commit), **To do**, **N/A
 | OAuth credential when available | N/A | Bi-Way has no OAuth |
 | CRUD operations for each resource | Partial, by design | Version 1 covers sending and the objects a workflow needs to send (templates, gallery files, contacts, groups, keyword replies, scenarios). Get / Update / Delete on templates and contacts can come in later versions |
 | Get Many for lists | OK | RCS Scenario › Get Many, with Return All and Limit |
-| Resource Locator for single items | To do (question) | Template, contact group, scenario and gallery image are "Name or ID" option lists. Worth switching before 0.1.0: after publication, changing a parameter type needs a new node version |
+| Resource Locator for single items | Fixed (`a9c0ed9`) | Template, contact group, scenario and gallery image: "From List" (searchable by name or ID) or "By ID". Done before 0.1.0, since changing a parameter type after publication needs a new node version. 'Exclude Contact Group Names or IDs' stays a multi-select list |
 | Sorting options | N/A | No sortable Get Many beyond scenarios (newest first) |
 | Delete returns a confirmation object | OK | RCS Scenario › Delete returns `{ id, deleted: true }` |
 | Simplify when more than 10 fields | Fixed (`7d44410`) | RCS Scenario › Create, Get and Get Many. RCS Agent › Get Status already returns 8 chosen fields; creations return ids |
 | Output parameter for AI tool nodes | N/A | Usable as a tool, but not an AI tool node |
 | Title Case labels, sentence case descriptions | OK | Lint rules |
-| Service terminology | OK | Bi-Way's English terms: RCS agent, keyword reply, scenario, gallery, contact group |
+| Service terminology | OK | Bi-Way's English terms: RCS agent, keyword reply, scenario, gallery, contact group. The node speaks of SMS and RCS only (`b6dc40f`): phone numbers as recipients, no email format or wording |
 | Placeholders start with "e.g." | OK | Lint rule; "Add Option" placeholders are collection buttons |
 | Operation names | OK | Title Case, resource not repeated |
 | Operation actions: sentence case, no article, resource named | Fixed (`e6f104c`) | "Send message", "Create RCS keyword reply", "Get many RCS scenarios"… |

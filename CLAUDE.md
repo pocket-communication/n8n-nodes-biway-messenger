@@ -14,6 +14,9 @@ Programmatic style, built on the `npm create @n8n/node` template.
 - English only in the node, the credential, the README and the docs in this repository, except
   `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly; the brand is
   written "Bi-Way".
+- SMS and RCS only: no email wording, format or option in the node or its documentation.
+- Single items are picked with resource locators ("From List" / "By ID",
+  `descriptions/ResourceLocators.ts`); inside a collection, read them with `locatorValue()`.
 - No runtime dependency, no `process.env`, no file system access (verification rules).
 - Never publish to npm, push a tag or submit to the Creator Portal: the maintainer does it.
 
@@ -30,6 +33,13 @@ Programmatic style, built on the `npm create @n8n/node` template.
 - CI (`.github/workflows/ci.yml`) runs `npm ci` with the npm of Node LTS: regenerate
   `package-lock.json` with that npm version (`npx npm@<version> install --package-lock-only`).
 
+## Branches
+
+One branch per phase, each started from the previous one (`phase-1-verification`,
+`phase-2-readme`, …) and pushed at the end of its phase. CI only runs on `main` and pull requests,
+so run `npm run lint` and `npm run build` locally before pushing. Before the release, `main`
+fast-forwards to the last phase branch.
+
 ## Roadmap publication
 
 Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
@@ -41,15 +51,17 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 - [x] UX fixes: operation actions, quoted field names, error wording, `[Item X]`
 - [x] Simplify option on RCS Scenario Create, Get and Get Many
 - [x] Publish workflow (template, tags `*.*.*`) and secrets documented
-- [ ] Decide on Resource Locators (template, contact group, scenario, gallery image) before 0.1.0
+- [x] Resource Locators for template, contact group, scenario and gallery image
+- [x] SMS and RCS only: no email wording, format or option left in the node
 
 ### Phase 2 — README and French page
 - [ ] README in English: pitch, differentiators (trigger for replies and button taps, self-hosted
       n8n), "Get an API key" (`{{TRIAL_SIGNUP_URL}}` placeholder), installation, credentials,
       operations, examples, compatibility, API documentation, support
-- [ ] No email channel in the texts; HTML template format left out of the README
+- [ ] No email in the README (recipients, HTML templates, contact matching)
 - [ ] Note that an `error` event with `fallback: "sms"` can come before `sent`
-- [ ] CHANGELOG: "Unreleased" merged into 0.1.0
+- [ ] CHANGELOG: "Unreleased" merged into 0.1.0, with the phase 1 changes (resource locators,
+      Simplify, SMS/RCS only, contacts matched by phone number, no template attachments)
 - [ ] `docs/integration-n8n-fr.md` for bi-way.fr
 
 ### Phase 3 — Example workflows (`examples/`)
