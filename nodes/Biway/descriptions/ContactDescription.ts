@@ -14,19 +14,19 @@ export const contactOperations: INodeProperties[] = [
 				name: 'Create',
 				value: 'create',
 				description: 'Create a contact, or reuse the one with the same phone number or email',
-				action: 'Create a contact',
+				action: 'Create contact',
 			},
 			{
 				name: 'Create Group',
 				value: 'createGroup',
-				description: 'Create a contact group',
-				action: 'Create a contact group',
+				description: 'Create a new contact group',
+				action: 'Create contact group',
 			},
 			{
 				name: 'Import File',
 				value: 'importFile',
 				description: 'Import contacts from a CSV or Excel file',
-				action: 'Import a contact file',
+				action: 'Import contact file',
 			},
 		],
 		default: 'createGroup',
@@ -189,7 +189,7 @@ export const contactFields: INodeProperties[] = [
 	// ── Import File ──────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'The import runs in the background: this node returns the ID of the import task. Use the Bi-Way SMS/RCS Trigger node with the "Contact Import State Changed" event to know when it is finished.',
+			"The import runs in the background: this node returns the ID of the import task. Use the Bi-Way SMS/RCS Trigger node with the 'Contact Import State Changed' event to know when it is finished.",
 		name: 'importNotice',
 		type: 'notice',
 		default: '',

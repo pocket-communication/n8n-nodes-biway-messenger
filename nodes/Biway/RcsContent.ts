@@ -60,14 +60,14 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 		const position = index + 1;
 		const text = String(button.text ?? '').trim();
 		if (text === '') {
-			fail(this, i, `RCS button ${position} has no text`, 'Fill in the "Text" of the button.');
+			fail(this, i, `RCS button ${position} has no text`, "Fill in the 'Text' of the button.");
 		}
 		if (byteLength(text) > BUTTON_TEXT_MAX) {
 			fail(
 				this,
 				i,
 				`The text of RCS button ${position} is too long`,
-				`"${text}" is longer than ${BUTTON_TEXT_MAX} characters (accented letters count twice).`,
+				`'${text}' is longer than ${BUTTON_TEXT_MAX} characters (accented letters count twice).`,
 			);
 		}
 
@@ -139,7 +139,10 @@ const DEFAULT_FALLBACK_SENDER = '36XXX';
  * (CRCSMessage::validAlternate): `undefined` keeps the fallback SMS of the account, `false` asks
  * for no SMS at all (the status update then reports "unsupported").
  */
-export function buildRcsFallback(this: IExecuteFunctions, i: number): IDataObject | false | undefined {
+export function buildRcsFallback(
+	this: IExecuteFunctions,
+	i: number,
+): IDataObject | false | undefined {
 	const fallback = this.getNodeParameter('rcsFallback', i, 'account') as string;
 	if (fallback === 'none') {
 		return false;
@@ -150,7 +153,12 @@ export function buildRcsFallback(this: IExecuteFunctions, i: number): IDataObjec
 
 	const text = String(this.getNodeParameter('rcsFallbackText', i, '')).trim();
 	if (text === '') {
-		fail(this, i, 'The fallback SMS has no text', 'Fill in "Fallback SMS Text", or pick another option.');
+		fail(
+			this,
+			i,
+			'The fallback SMS has no text',
+			"Fill in 'Fallback SMS Text', or pick another option.",
+		);
 	}
 	if ([...text].length > FALLBACK_TEXT_MAX) {
 		fail(
@@ -195,7 +203,7 @@ async function galleryMedia(
 			this,
 			i,
 			'No image is selected for the card',
-			'Pick an image of your gallery, or map the "id" of Asset › Upload.',
+			"Pick an image of your gallery, or map the 'id' of Asset › Upload.",
 		);
 	}
 	const asset = (await biwayApiRequest.call(
@@ -212,7 +220,7 @@ async function galleryMedia(
 			this,
 			i,
 			`The gallery file ${assetId} is not an image or a video`,
-			`Its type is "${type || 'unknown'}". Pick an image or a video.`,
+			`Its type is '${type || 'unknown'}'. Pick an image or a video.`,
 		);
 	}
 	return {

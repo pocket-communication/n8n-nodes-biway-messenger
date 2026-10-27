@@ -56,7 +56,7 @@ type Handler = (this: IExecuteFunctions, i: number) => Promise<IDataObject | IDa
 function dateParameter(this: IExecuteFunctions, value: unknown, i: number, field: string): string {
 	const date = toBiwayDate(String(value), this.getTimezone());
 	if (date === null) {
-		throw new NodeOperationError(this.getNode(), `The "${field}" value is not a valid date`, {
+		throw new NodeOperationError(this.getNode(), `The '${field}' value is not a valid date`, {
 			itemIndex: i,
 			description: 'Use a date and time, for example 2026-11-02T09:30.',
 		});
@@ -73,7 +73,7 @@ function jsonParameter(
 	try {
 		return parseJsonParameter(value);
 	} catch (error) {
-		throw new NodeOperationError(this.getNode(), `The "${field}" field is not valid JSON`, {
+		throw new NodeOperationError(this.getNode(), `The '${field}' field is not valid JSON`, {
 			itemIndex: i,
 			description: (error as Error).message,
 		});
@@ -89,7 +89,7 @@ function requireRcsChannel(
 	if (!isRcsChannel(channel)) {
 		throw new NodeOperationError(this.getNode(), `${what} need the RCS channel`, {
 			itemIndex: i,
-			description: `The channel "${channel}" cannot show them. Pick the RCS channel.`,
+			description: `The channel '${channel}' cannot show them. Pick the RCS channel.`,
 		});
 	}
 }
@@ -140,7 +140,7 @@ async function requireCompatibleTemplate(
 	if (!ids.has(templateId)) {
 		throw new NodeOperationError(
 			this.getNode(),
-			`Template ${templateId} cannot be sent on the "${channel}" channel`,
+			`Template ${templateId} cannot be sent on the '${channel}' channel`,
 			{
 				itemIndex: i,
 				description:
@@ -272,7 +272,7 @@ const broadcastMessage: Handler = async function (i) {
 	if (!receivers.length && !groups.length) {
 		throw new NodeOperationError(this.getNode(), 'Add at least one recipient', {
 			itemIndex: i,
-			description: 'Add an address, a contact or a contact group in "Recipients".',
+			description: "Add an address, a contact or a contact group in 'Recipients'.",
 		});
 	}
 
@@ -350,7 +350,7 @@ function existingOutcome(
 			{
 				itemIndex: i,
 				description:
-					'Change the name, or choose "Use Existing" in the "If … Already Exists" field.',
+					"Change the name, or choose 'Use Existing' in the 'If … Already Exists' field.",
 			},
 		);
 	}
@@ -383,7 +383,7 @@ const createTemplate: Handler = async function (i) {
 			this,
 			i,
 			existing,
-			`A template titled "${String(body.title)}"`,
+			`A template titled '${String(body.title)}'`,
 		);
 		if (outcome) {
 			return outcome;
@@ -477,7 +477,7 @@ const createContactGroup: Handler = async function (i) {
 			this,
 			i,
 			existing,
-			`A contact group named "${String(body.group_name)}"`,
+			`A contact group named '${String(body.group_name)}'`,
 		);
 		if (outcome) {
 			return outcome;
@@ -540,7 +540,7 @@ const createContact: Handler = async function (i) {
 			continue;
 		}
 		if (!allowed.has(column)) {
-			throw new NodeOperationError(this.getNode(), `Unknown contact column "${column}"`, {
+			throw new NodeOperationError(this.getNode(), `Unknown contact column '${column}'`, {
 				itemIndex: i,
 				description:
 					'Refresh the column list of the node: this column does not exist on your Bi-Way account.',
@@ -652,7 +652,7 @@ const createKeywordReply: Handler = async function (i) {
 				this,
 				i,
 				lookup.body as IDataObject,
-				`A keyword reply for "${keyword}"`,
+				`A keyword reply for '${keyword}'`,
 			);
 			if (outcome) {
 				return outcome;
@@ -966,7 +966,7 @@ export class Biway implements INodeType {
 				if (!handler) {
 					throw new NodeOperationError(
 						this.getNode(),
-						`The operation "${operation}" is not supported for "${resource}"`,
+						`The operation '${operation}' is not supported for '${resource}'`,
 						{ itemIndex: i },
 					);
 				}
@@ -983,10 +983,15 @@ export class Biway implements INodeType {
 					continue;
 				}
 				// Errors of the Bi-Way API are already explicit: rewrapping hands back the original.
-				if (error instanceof NodeApiError) {
-					throw new NodeApiError(this.getNode(), error as unknown as JsonObject, { itemIndex: i });
+				const nodeError =
+					error instanceof NodeApiError
+						? new NodeApiError(this.getNode(), error as unknown as JsonObject, { itemIndex: i })
+						: new NodeOperationError(this.getNode(), error as Error, { itemIndex: i });
+				// n8n UX guidelines: the message names the input item that stopped the execution.
+				if (items.length > 1 && !nodeError.message.endsWith(']')) {
+					nodeError.message += ` [Item ${i}]`;
 				}
-				throw new NodeOperationError(this.getNode(), error as Error, { itemIndex: i });
+				throw nodeError;
 			}
 		}
 

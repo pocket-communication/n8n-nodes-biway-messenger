@@ -14,7 +14,7 @@ export const assetOperations: INodeProperties[] = [
 				name: 'Upload',
 				value: 'upload',
 				description: 'Upload a file to your Bi-Way gallery',
-				action: 'Upload an asset',
+				action: 'Upload asset',
 			},
 		],
 		default: 'upload',

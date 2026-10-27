@@ -15,8 +15,8 @@ export const templateOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a message template',
-				action: 'Create a template',
+				description: 'Create a new message template',
+				action: 'Create template',
 			},
 		],
 		default: 'create',

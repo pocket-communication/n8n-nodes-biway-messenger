@@ -19,13 +19,13 @@ export const messageOperations: INodeProperties[] = [
 				name: 'Broadcast',
 				value: 'broadcast',
 				description: 'Send a message to several recipients and contact groups',
-				action: 'Broadcast a message',
+				action: 'Broadcast message',
 			},
 			{
 				name: 'Send',
 				value: 'send',
 				description: 'Send a message to one recipient',
-				action: 'Send a message',
+				action: 'Send message',
 			},
 		],
 		default: 'send',
@@ -98,7 +98,11 @@ const contentFields: INodeProperties[] = [
 			show: { ...showFor(['send', 'broadcast']).show, contentSource: ['template'] },
 		},
 	},
-	...rcsCardFields({ ...showFor(['send', 'broadcast']).show, ...rcsChannel, contentSource: ['card'] }),
+	...rcsCardFields({
+		...showFor(['send', 'broadcast']).show,
+		...rcsChannel,
+		contentSource: ['card'],
+	}),
 	rcsButtonsField({
 		...showFor(['send', 'broadcast']).show,
 		...rcsChannel,
@@ -119,7 +123,7 @@ const contentFields: INodeProperties[] = [
 				name: 'Send Nothing',
 				value: 'none',
 				description:
-					'No SMS: the Message Status Updated event reports "unsupported", so a workflow can decide what to do',
+					"No SMS: the 'Message Status Updated' event reports 'unsupported', so a workflow can decide what to do",
 			},
 			{
 				name: 'Send This SMS',
@@ -415,7 +419,7 @@ export const messageFields: INodeProperties[] = [
 				],
 				default: 'all',
 				description:
-					'Status reports to collect. They are sent to the Bi-Way SMS/RCS Trigger node ("Message Status Updated" event).',
+					"Status reports to collect. They are sent to the Bi-Way SMS/RCS Trigger node ('Message Status Updated' event).",
 			},
 			sharedOptions[4],
 		],

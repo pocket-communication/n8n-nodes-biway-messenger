@@ -98,7 +98,7 @@ export class BiwayTrigger implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Bi-Way sends the events of your whole account, including messages not sent from n8n. The webhook URL must be reachable from the internet over HTTPS. If you change the secret of the credential, deactivate and reactivate the workflow.',
+					'Bi-Way sends the events of your whole account, including messages not sent from n8n. The webhook URL must be reachable from the internet over HTTPS. If you change the secret of the credential, unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it).',
 				name: 'triggerNotice',
 				type: 'notice',
 				default: '',

@@ -54,7 +54,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			default: '',
 			description:
 				'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-			hint: 'To use a file uploaded earlier in the workflow, map the "id" returned by Asset › Upload. The file must be public in the gallery.',
+			hint: "To use a file uploaded earlier in the workflow, map the 'id' returned by Asset › Upload. The file must be public in the gallery.",
 			displayOptions: { show: { ...show, cardImage: ['gallery'] } },
 		},
 		{

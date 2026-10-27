@@ -53,7 +53,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	no_valid_sender: (channel) => ({
 		message: `The channel ${channel || 'you selected'} needs a sender`,
 		description:
-			'Pick a sender in the "Sender Name or ID" option, or set a default sender for this channel in your Bi-Way account.',
+			"Pick a sender in the 'Sender Name or ID' option, or set a default sender for this channel in your Bi-Way account.",
 	}),
 	no_channel: fixed('No channel selected', 'Select the channel used to send the message.'),
 	no_valid_channel: (channel) => ({
@@ -64,7 +64,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		message: `The channel ${channel || 'you selected'} is not available on your account`,
 		description: `Pick another channel or contact Bi-Way support (${SUPPORT_EMAIL}).`,
 	}),
-	receiver_missing: fixed('The recipient is missing', 'Fill in the "Recipient" field.'),
+	receiver_missing: fixed('The recipient is missing', "Fill in the 'Recipient' field."),
 	receivers_missing: fixed('The recipients are missing', 'Add at least one recipient.'),
 	receiver_error: fixed(
 		'The recipient address is not valid for this channel',
@@ -125,23 +125,23 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	trigger_rule_invalid: fixed('A rule of the keyword reply is not valid', NODE_BUG),
 
 	// Templates
-	missing_template_title: fixed('The template title is missing', 'Fill in the "Title" field.'),
+	missing_template_title: fixed('The template title is missing', "Fill in the 'Title' field."),
 	missing_template_format: fixed('The template format is missing', 'Pick a format.'),
-	missing_template_body: fixed('The template body is missing', 'Fill in the "Body" field.'),
+	missing_template_body: fixed('The template body is missing', "Fill in the 'Body' field."),
 	missing_template_subject: fixed(
 		'The template subject is missing',
 		'HTML templates need a subject and a body.',
 	),
 	wrong_template_extra: fixed(
-		'The "Extra (JSON)" field of the template is not valid',
-		'Card templates need a "cards" array in Extra (JSON). See the Bi-Way API documentation: https://services.bi-way.fr/openapi/.',
+		"The 'Extra (JSON)' field of the template is not valid",
+		"Card templates need a 'cards' array in 'Extra (JSON)'. See the Bi-Way API documentation: https://services.bi-way.fr/openapi/.",
 	),
 
 	// Gallery
-	no_file: fixed('No file was sent', 'Check the "Input Binary Field" name.'),
+	no_file: fixed('No file was sent', "Check the 'Input Binary Field' name."),
 	file_transfert_error: fixed(
 		'The file could not be transferred to Bi-Way',
-		'Try again. If it keeps failing, check the size and the type of the file.',
+		'Try again. If the file is still refused, check its size and its type.',
 	),
 	mime_type_missing: fixed(
 		'The type of the file is unknown',
@@ -158,14 +158,14 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	),
 	not_gallery_account: fixed(
 		'This gallery belongs to another Bi-Way account',
-		'Remove the "Gallery ID" option to upload to your default gallery.',
+		"Remove the 'Gallery ID' option to upload to your default gallery.",
 	),
 
 	// Contacts
 	no_software_file: fixed('The file format is missing', NODE_BUG),
 	unknow_software_file: fixed(
 		'Bi-Way could not read this file',
-		'Pick the file format (CSV, XLS or XLSX) instead of "Automatic", and check the columns of the file.',
+		"Pick the file format (CSV, XLS or XLSX) instead of 'Automatic', and check the columns of the file.",
 	),
 	unknow_double_mode: fixed('Unknown duplicate handling mode', 'Pick a mode from the list.'),
 	double_mode_not_supported: fixed(
@@ -187,7 +187,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 
 	entry_already_exists: fixed(
 		'This contact already exists in your Bi-Way account',
-		'Choose "Use Existing" or "Update It" in the "If Contact Already Exists" field.',
+		"Choose 'Use Existing' or 'Update It' in the 'If Contact Already Exists' field.",
 	),
 	entry_control_wrong_value: (detail) => ({
 		message: `The value of the contact column ${detail || ''} is not valid`.replace('  ', ' '),
@@ -213,7 +213,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'The scenario was not found',
 		'Pick a scenario of your account from the list.',
 	),
-	missing_script_attribute: fixed('The scenario title is missing', 'Fill in the "Title" field.'),
+	missing_script_attribute: fixed('The scenario title is missing', "Fill in the 'Title' field."),
 	trigger_not_found: fixed(
 		'The keyword reply was not found',
 		'Create it with RCS Agent › Create Keyword Reply.',
@@ -224,7 +224,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	// Gallery files used in cards
 	no_asset: fixed(
 		'The gallery file was not found',
-		'Pick an image of your Bi-Way gallery, or map the "id" returned by Asset › Upload.',
+		"Pick an image of your Bi-Way gallery, or map the 'id' returned by Asset › Upload.",
 	),
 	not_asset_owner: fixed(
 		'This gallery file belongs to another Bi-Way account',
@@ -243,11 +243,11 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	event_not_found: fixed('Unknown Bi-Way event', NODE_BUG),
 	callback_not_found: fixed(
 		'The webhook registration was not found on Bi-Way',
-		'Deactivate and reactivate the workflow to register it again.',
+		'Unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it) to register the webhook again.',
 	),
 	not_callback_owner: fixed(
 		'This webhook registration belongs to another Bi-Way account',
-		'Deactivate and reactivate the workflow with the right credential.',
+		'Pick the right credential, then unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it).',
 	),
 
 	// Generic
@@ -257,7 +257,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	no_request: fixed('Bi-Way received an empty request', NODE_BUG),
 	server_error: fixed(
 		'The Bi-Way server is unavailable',
-		`Try again in a few minutes. If it keeps failing, contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		`Try again in a few minutes. If Bi-Way is still unavailable, contact Bi-Way support (${SUPPORT_EMAIL}).`,
 	),
 };
 
@@ -271,7 +271,7 @@ function quotedDetail(serverMessage: string): string {
 	}
 	// 'La valeur de la colonne Téléphone est incorrecte…'
 	const column = serverMessage.match(/colonne (.+?) est /);
-	return column ? `"${column[1]}"` : '';
+	return column ? `'${column[1]}'` : '';
 }
 
 export function describeBiwayError(code: string, serverMessage: string): BiwayErrorDescription {
@@ -280,7 +280,7 @@ export function describeBiwayError(code: string, serverMessage: string): BiwayEr
 		return builder(quotedDetail(serverMessage));
 	}
 	return {
-		message: code ? `Bi-Way API error (${code})` : 'Bi-Way API error',
-		description: serverMessage ? `Server message (in French): ${serverMessage}` : '',
+		message: code ? `Bi-Way refused the request (${code})` : 'Bi-Way refused the request',
+		description: serverMessage ? `Bi-Way answered (in French): ${serverMessage}` : '',
 	};
 }
