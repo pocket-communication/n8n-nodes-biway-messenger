@@ -4,7 +4,6 @@ import { biwayApiCall, biwayApiRequest } from '../GenericFunctions';
 
 /** Used when Bi-Way cannot list the channels of the account. */
 const DEFAULT_CHANNELS: INodePropertyOptions[] = [
-	{ name: 'Email', value: 'email' },
 	{ name: 'RCS', value: 'rcs' },
 	{ name: 'SMS (Long Number)', value: 'sms_long_number' },
 	{ name: 'SMS (Short Number)', value: 'sms_short_id' },

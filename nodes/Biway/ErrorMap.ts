@@ -67,17 +67,17 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	receiver_missing: fixed('The recipient is missing', "Fill in the 'Recipient' field."),
 	receivers_missing: fixed('The recipients are missing', 'Add at least one recipient.'),
 	receiver_error: fixed(
-		'The recipient address is not valid for this channel',
-		'Use an international phone number (for example +33612345678) for SMS and RCS, or an email address for email channels.',
+		'The phone number of the recipient is not valid',
+		'Use the international format, e.g. +33612345678.',
 	),
 	no_valid_receivers: fixed(
 		'None of the recipients can receive this message',
-		'Phone channels need phone numbers and email channels need email addresses. Unsubscribed recipients are skipped.',
+		'Phone numbers must be in international format (e.g. +33612345678). Unsubscribed recipients are skipped.',
 	),
 	no_valid_receivers_for_channel: (channel) => ({
 		message: `None of the recipients can receive messages on ${channel || 'this channel'}`,
 		description:
-			'Phone channels need phone numbers and email channels need email addresses. Unsubscribed recipients are skipped.',
+			'Phone numbers must be in international format (e.g. +33612345678). Unsubscribed recipients are skipped.',
 	}),
 	no_valid_date: fixed(
 		'The send date is not valid',
@@ -130,7 +130,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	missing_template_body: fixed('The template body is missing', "Fill in the 'Body' field."),
 	missing_template_subject: fixed(
 		'The template subject is missing',
-		'HTML templates need a subject and a body.',
+		"Fill in the 'Subject' field.",
 	),
 	wrong_template_extra: fixed(
 		"The 'Extra (JSON)' field of the template is not valid",
@@ -192,7 +192,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	entry_control_wrong_value: (detail) => ({
 		message: `The value of the contact column ${detail || ''} is not valid`.replace('  ', ' '),
 		description:
-			'Check its format: phone numbers in international format (e.g. +33612345678), valid email addresses, dates as YYYY-MM-DD.',
+			'Check its format: phone numbers in international format (e.g. +33612345678), dates as YYYY-MM-DD.',
 	}),
 	entry_control_missing_value: (detail) => ({
 		message: `The contact column ${detail || ''} is required`.replace('  ', ' '),

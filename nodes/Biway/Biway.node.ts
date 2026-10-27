@@ -250,14 +250,14 @@ const broadcastMessage: Handler = async function (i) {
 		groups?: Array<{ groupId?: unknown }>;
 	};
 
-	// Typed addresses become temporary contacts: Bi-Way reads the column named by the key.
+	// Typed phone numbers become temporary contacts: Bi-Way reads the 'phone' column.
 	const receivers: Array<IDataObject | string> = [];
 	const addresses = [
 		...(recipients.addresses ?? []).map((entry) => String(entry.address ?? '').trim()),
 		...splitAddresses(options.bulkAddresses),
 	].filter(Boolean);
 	for (const address of addresses) {
-		receivers.push(address.includes('@') ? { email: address } : { phone: address });
+		receivers.push({ phone: address });
 	}
 	for (const contact of recipients.contacts ?? []) {
 		if (Number(contact.contactId) > 0) {
@@ -272,7 +272,7 @@ const broadcastMessage: Handler = async function (i) {
 	if (!receivers.length && !groups.length) {
 		throw new NodeOperationError(this.getNode(), 'Add at least one recipient', {
 			itemIndex: i,
-			description: "Add an address, a contact or a contact group in 'Recipients'.",
+			description: "Add a phone number, a contact or a contact group in 'Recipients'.",
 		});
 	}
 
@@ -400,10 +400,6 @@ const createTemplate: Handler = async function (i) {
 	}
 	if (options.comment) {
 		body.comment = options.comment;
-	}
-	const parts = parseIdList(options.assetIds);
-	if (parts.length) {
-		body.parts = parts;
 	}
 	const extra = (jsonParameter.call(this, options.extra, i, 'Extra (JSON)') ?? {}) as IDataObject;
 	// Templates keep their RCS content at the root: Bi-Way files it under the channel when sending.
@@ -551,7 +547,7 @@ const createContact: Handler = async function (i) {
 	if (!Object.keys(values).length) {
 		throw new NodeOperationError(this.getNode(), 'No contact column is filled in', {
 			itemIndex: i,
-			description: 'Map at least the phone number or the email address of the contact.',
+			description: 'Map at least the phone number of the contact.',
 		});
 	}
 
@@ -563,14 +559,14 @@ const createContact: Handler = async function (i) {
 	}
 
 	const ifExists = this.getNodeParameter('ifExists', i, 'useExisting') as string;
-	const matchOn = this.getNodeParameter('matchOn', i, 'phone') as string;
-	const matchValue = values[matchOn];
-	if (ifExists !== 'create' && matchValue !== undefined && allowed.has(matchOn)) {
-		const existing = await findContact.call(this, i, matchOn, String(matchValue));
+	// A contact is recognized by its phone number.
+	const phone = values.phone;
+	if (ifExists !== 'create' && phone !== undefined && allowed.has('phone')) {
+		const existing = await findContact.call(this, i, 'phone', String(phone));
 		if (existing && ifExists === 'update') {
-			// Bi-Way updates the contact of the account that has the same value in this column.
+			// Bi-Way updates the contact of the account that has the same phone number.
 			body.check_double = 'account';
-			body.key_column = matchOn;
+			body.key_column = 'phone';
 			body.update_if_double = true;
 			return {
 				...normalizeResponse(
@@ -579,7 +575,7 @@ const createContact: Handler = async function (i) {
 				updated: true,
 			};
 		}
-		const outcome = existingOutcome.call(this, i, existing, `A contact with this ${matchOn}`);
+		const outcome = existingOutcome.call(this, i, existing, 'A contact with this phone number');
 		if (outcome) {
 			return outcome;
 		}

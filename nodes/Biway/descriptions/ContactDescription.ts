@@ -15,7 +15,7 @@ export const contactOperations: INodeProperties[] = [
 			{
 				name: 'Create',
 				value: 'create',
-				description: 'Create a contact, or reuse the one with the same phone number or email',
+				description: 'Create a contact, or reuse the one with the same phone number',
 				action: 'Create contact',
 			},
 			{
@@ -68,18 +68,6 @@ export const contactFields: INodeProperties[] = [
 		displayOptions: showFor(['create']),
 	},
 	{
-		displayName: 'Match On',
-		name: 'matchOn',
-		type: 'options',
-		options: [
-			{ name: 'Email', value: 'email' },
-			{ name: 'Phone', value: 'phone' },
-		],
-		default: 'phone',
-		description: 'Column used to recognize a contact that already exists in your account',
-		displayOptions: showFor(['create']),
-	},
-	{
 		displayName: 'If Contact Already Exists',
 		name: 'ifExists',
 		type: 'options',
@@ -108,7 +96,7 @@ export const contactFields: INodeProperties[] = [
 		],
 		default: 'useExisting',
 		description:
-			'What to do when a contact of your account has the same value in the Match On column. Bi-Way compares the values exactly.',
+			'What to do when a contact of your account has the same phone number. Bi-Way compares the numbers exactly.',
 		displayOptions: showFor(['create']),
 	},
 	{

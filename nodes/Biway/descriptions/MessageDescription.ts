@@ -71,7 +71,7 @@ const contentFields: INodeProperties[] = [
 		name: 'subject',
 		type: 'string',
 		default: '',
-		description: 'Subject of the message, for the channels that support one, such as email',
+		description: 'Subject of an MMS. SMS and RCS messages have none: leave it empty.',
 		displayOptions: { show: { ...showFor(['send', 'broadcast']).show, contentSource: ['text'] } },
 	},
 	{
@@ -261,7 +261,7 @@ export const messageFields: INodeProperties[] = [
 	},
 	{
 		displayName:
-			'Broadcast sends one message to many recipients. Addresses typed here are not saved as contacts, so personalization tags only work for contacts and contact groups.',
+			'Broadcast sends one message to many recipients. Phone numbers typed here are not saved as contacts, so personalization tags only work for contacts and contact groups.',
 		name: 'broadcastNotice',
 		type: 'notice',
 		default: '',
@@ -275,8 +275,7 @@ export const messageFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		placeholder: 'e.g. +33612345678',
-		description:
-			'Phone number in international format for SMS and RCS channels, or email address for email channels',
+		description: 'Phone number of the recipient, in international format',
 		displayOptions: showFor(['send']),
 	},
 	{
@@ -289,16 +288,16 @@ export const messageFields: INodeProperties[] = [
 		displayOptions: showFor(['broadcast']),
 		options: [
 			{
-				displayName: 'Address',
+				displayName: 'Phone Number',
 				name: 'addresses',
 				values: [
 					{
-						displayName: 'Address',
+						displayName: 'Phone Number',
 						name: 'address',
 						type: 'string',
 						default: '',
 						placeholder: 'e.g. +33612345678',
-						description: 'Phone number in international format, or email address',
+						description: 'Phone number in international format',
 					},
 				],
 			},
@@ -340,13 +339,13 @@ export const messageFields: INodeProperties[] = [
 		displayOptions: showFor(['broadcast']),
 		options: [
 			{
-				displayName: 'Additional Addresses',
+				displayName: 'Additional Phone Numbers',
 				name: 'bulkAddresses',
 				type: 'string',
 				default: '',
 				placeholder: 'e.g. +33612345678, +33698765432',
 				description:
-					'Phone numbers or email addresses separated by commas or new lines. You can also map an array with an expression.',
+					'Phone numbers separated by commas or new lines. You can also map an array with an expression.',
 			},
 			{
 				displayName: 'Exclude Contact Group Names or IDs',

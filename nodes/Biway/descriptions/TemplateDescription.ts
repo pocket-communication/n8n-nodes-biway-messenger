@@ -26,7 +26,7 @@ export const templateOperations: INodeProperties[] = [
 export const templateFields: INodeProperties[] = [
 	{
 		displayName:
-			'Text templates need a body and may carry RCS buttons. HTML templates need a subject and a body, and are the only ones that keep attachments. Card templates are RCS rich cards (RCS is currently available on French mobile operators only). To build an RCS scenario, give the template Suggested Reply buttons and create a keyword reply for each keyword.',
+			'Text templates need a body and may carry RCS buttons. Card templates are RCS rich cards (RCS is currently available on French mobile operators only). To build an RCS scenario, give the template Suggested Reply buttons and create a keyword reply for each keyword.',
 		name: 'templateNotice',
 		type: 'notice',
 		default: '',
@@ -47,7 +47,6 @@ export const templateFields: INodeProperties[] = [
 		type: 'options',
 		options: [
 			{ name: 'Card (RCS)', value: 'card', description: 'RCS rich card' },
-			{ name: 'HTML', value: 'html', description: 'Email with a subject and attachments' },
 			{ name: 'Media', value: 'media', description: 'Message built around a media file' },
 			{
 				name: 'Text',
@@ -63,8 +62,8 @@ export const templateFields: INodeProperties[] = [
 		name: 'subject',
 		type: 'string',
 		default: '',
-		description: 'Subject of the message. Required for HTML templates.',
-		displayOptions: { show: { ...showForCreate.show, format: ['html', 'media', 'text'] } },
+		description: 'Subject of an MMS. SMS and RCS messages have none: leave it empty.',
+		displayOptions: { show: { ...showForCreate.show, format: ['media', 'text'] } },
 	},
 	{
 		displayName: 'Body',
@@ -72,8 +71,8 @@ export const templateFields: INodeProperties[] = [
 		type: 'string',
 		typeOptions: { rows: 4 },
 		default: '',
-		description: 'Content of the message. Required for text and HTML templates.',
-		displayOptions: { show: { ...showForCreate.show, format: ['html', 'media', 'text'] } },
+		description: 'Content of the message. Required for text templates.',
+		displayOptions: { show: { ...showForCreate.show, format: ['media', 'text'] } },
 	},
 	...rcsCardFields({ ...showForCreate.show, format: ['card'] }),
 	rcsButtonsField({ ...showForCreate.show, format: ['text', 'card'] }),
@@ -112,15 +111,6 @@ export const templateFields: INodeProperties[] = [
 		default: {},
 		displayOptions: showForCreate,
 		options: [
-			{
-				displayName: 'Attachment Asset IDs',
-				name: 'assetIds',
-				type: 'string',
-				default: '',
-				placeholder: 'e.g. 1234, 1235',
-				description:
-					'Comma-separated IDs of files of your Bi-Way gallery. Only HTML templates keep them.',
-			},
 			{
 				displayName: 'Comment',
 				name: 'comment',
