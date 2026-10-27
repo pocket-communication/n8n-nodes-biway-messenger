@@ -253,6 +253,17 @@ export function postbackKeyword(postbackData: unknown): string | null {
 	return keyword === '' ? null : keyword;
 }
 
+/**
+ * Value of a resource locator read inside a collection, where n8n hands over the raw locator
+ * ({ __rl, mode, value }). A plain value is returned as is.
+ */
+export function locatorValue(value: unknown): string {
+	if (typeof value === 'object' && value !== null && 'value' in value) {
+		return String((value as IDataObject).value ?? '');
+	}
+	return String(value ?? '');
+}
+
 export function parseIdList(value: unknown): number[] {
 	const raw = Array.isArray(value) ? value : String(value ?? '').split(/[\s,;]+/);
 	return raw.map((id) => Number(String(id).trim())).filter((id) => Number.isInteger(id) && id > 0);

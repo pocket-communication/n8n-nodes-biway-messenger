@@ -277,7 +277,7 @@ export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<
 		card.media = await galleryMedia.call(
 			this,
 			i,
-			Number(this.getNodeParameter('cardImageId', i)),
+			Number(this.getNodeParameter('cardImageId', i, '', { extractValue: true })),
 			height,
 		);
 	} else if (image === 'url') {

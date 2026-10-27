@@ -1,5 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { contactGroupLocator } from './ResourceLocators';
+
 const showFor = (operation: string[]) => ({ show: { resource: ['contact'], operation } });
 
 export const contactOperations: INodeProperties[] = [
@@ -33,15 +35,7 @@ export const contactOperations: INodeProperties[] = [
 	},
 ];
 
-const contactGroupOption: INodeProperties = {
-	displayName: 'Contact Group Name or ID',
-	name: 'groupId',
-	type: 'options',
-	typeOptions: { loadOptionsMethod: 'getContactGroups' },
-	default: '',
-	description:
-		'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-};
+const contactGroupOption = contactGroupLocator();
 
 export const contactFields: INodeProperties[] = [
 	// ── Create ───────────────────────────────────────────────────────────────────────────────────

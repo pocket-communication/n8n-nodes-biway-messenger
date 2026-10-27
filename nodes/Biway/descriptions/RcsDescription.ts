@@ -1,5 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { templateLocator } from './ResourceLocators';
+
 const showFor = (operation: string[]) => ({ show: { resource: ['rcs'], operation } });
 
 export const rcsOperations: INodeProperties[] = [
@@ -58,18 +60,11 @@ export const rcsFields: INodeProperties[] = [
 			'Word a customer sends to get the reply. Bi-Way converts it to upper case and replaces spaces and special characters with underscores. It must be unique on your account.',
 		displayOptions: showFor(['createKeywordReply']),
 	},
-	{
-		displayName: 'Reply Template Name or ID',
-		name: 'templateId',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'getTemplates' },
+	templateLocator('Reply Template', {
 		required: true,
-		default: '',
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		hint: 'Message template sent as the reply',
 		displayOptions: showFor(['createKeywordReply']),
-	},
+	}),
 	{
 		displayName: 'If Keyword Already Exists',
 		name: 'ifExists',

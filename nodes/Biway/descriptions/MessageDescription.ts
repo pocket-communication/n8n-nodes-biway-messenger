@@ -1,6 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
 import { rcsButtonsField, rcsCardFields } from './RcsContentDescription';
+import { contactGroupLocator, templateLocator } from './ResourceLocators';
 
 const showFor = (operation: string[]) => ({ show: { resource: ['message'], operation } });
 
@@ -84,20 +85,14 @@ const contentFields: INodeProperties[] = [
 			'Text of the message. Personalization tags of Bi-Way work for contacts and contact groups.',
 		displayOptions: { show: { ...showFor(['send', 'broadcast']).show, contentSource: ['text'] } },
 	},
-	{
-		displayName: 'Template Name or ID',
-		name: 'templateId',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'getTemplates', loadOptionsDependsOn: ['channel'] },
+	templateLocator('Template', {
 		required: true,
-		default: '',
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		typeOptions: { loadOptionsDependsOn: ['channel'] },
 		hint: 'Only the templates the chosen channel can carry are listed: no RCS card or button outside RCS, no subject or attachment on an SMS',
 		displayOptions: {
 			show: { ...showFor(['send', 'broadcast']).show, contentSource: ['template'] },
 		},
-	},
+	}),
 	...rcsCardFields({
 		...showFor(['send', 'broadcast']).show,
 		...rcsChannel,
@@ -323,17 +318,7 @@ export const messageFields: INodeProperties[] = [
 			{
 				displayName: 'Contact Group',
 				name: 'groups',
-				values: [
-					{
-						displayName: 'Contact Group Name or ID',
-						name: 'groupId',
-						type: 'options',
-						typeOptions: { loadOptionsMethod: 'getContactGroups' },
-						default: '',
-						description:
-							'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-					},
-				],
+				values: [contactGroupLocator()],
 			},
 		],
 	},

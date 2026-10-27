@@ -18,6 +18,7 @@ import {
 	biwayApiCall,
 	biwayApiRequest,
 	biwayListAll,
+	locatorValue,
 	normalizeKeyword,
 	normalizeResponse,
 	parseIdList,
@@ -28,13 +29,12 @@ import {
 } from './GenericFunctions';
 import { getContactColumnList, getContactColumns } from './methods/contactColumns';
 import {
-	getChannels,
-	getContactGroups,
-	getGalleryImages,
-	getScenarios,
-	getSenders,
-	getTemplates,
-} from './methods/loadOptions';
+	searchContactGroups,
+	searchGalleryImages,
+	searchScenarios,
+	searchTemplates,
+} from './methods/listSearch';
+import { getChannels, getContactGroups, getSenders } from './methods/loadOptions';
 import {
 	buildRcsButtons,
 	buildRcsCard,
@@ -159,7 +159,7 @@ async function messageContent(
 	const contentSource = this.getNodeParameter('contentSource', i) as string;
 	let rcs: IDataObject | null = null;
 	if (contentSource === 'template') {
-		const templateId = Number(this.getNodeParameter('templateId', i));
+		const templateId = Number(this.getNodeParameter('templateId', i, '', { extractValue: true }));
 		await requireCompatibleTemplate.call(this, i, templateId, channel);
 		body.template_id = templateId;
 	} else if (contentSource === 'card') {
@@ -247,7 +247,7 @@ const broadcastMessage: Handler = async function (i) {
 	const recipients = this.getNodeParameter('recipients', i, {}) as {
 		addresses?: Array<{ address?: string }>;
 		contacts?: Array<{ contactId?: number }>;
-		groups?: Array<{ groupId?: number | string }>;
+		groups?: Array<{ groupId?: unknown }>;
 	};
 
 	// Typed addresses become temporary contacts: Bi-Way reads the column named by the key.
@@ -265,7 +265,7 @@ const broadcastMessage: Handler = async function (i) {
 		}
 	}
 	const groups = (recipients.groups ?? [])
-		.map((group) => Number(group.groupId))
+		.map((group) => Number(locatorValue(group.groupId)))
 		.filter((id) => id > 0)
 		.map((id) => ({ mode: 'group', id, column: 'all' }));
 
@@ -557,8 +557,9 @@ const createContact: Handler = async function (i) {
 
 	const options = this.getNodeParameter('options', i, {}) as IDataObject;
 	const body: IDataObject = { entry_type: 'contact', ...values, check_double: 'none' };
-	if (Number(options.groupId) > 0) {
-		body.group_id = Number(options.groupId);
+	const groupId = Number(locatorValue(options.groupId));
+	if (groupId > 0) {
+		body.group_id = groupId;
 	}
 
 	const ifExists = this.getNodeParameter('ifExists', i, 'useExisting') as string;
@@ -603,8 +604,9 @@ const importContactFile: Handler = async function (i) {
 	);
 	// Empty: Bi-Way picks the import format of the account matching the file.
 	form.append('software-file', this.getNodeParameter('fileFormat', i, '') as string);
-	if (Number(options.groupId) > 0) {
-		form.append('group_id', String(Number(options.groupId)));
+	const groupId = Number(locatorValue(options.groupId));
+	if (groupId > 0) {
+		form.append('group_id', String(groupId));
 	}
 	if (options.checkDouble) {
 		form.append('check-double', String(options.checkDouble));
@@ -630,7 +632,7 @@ const createKeywordReply: Handler = async function (i) {
 		label: this.getNodeParameter('label', i) as string,
 		keyword: this.getNodeParameter('keyword', i) as string,
 		// Bi-Way reads this field in camelCase.
-		templateId: Number(this.getNodeParameter('templateId', i)),
+		templateId: Number(this.getNodeParameter('templateId', i, '', { extractValue: true })),
 	};
 
 	// Bi-Way refuses a second reply for the same keyword: look it up as Bi-Way stores it.
@@ -751,7 +753,7 @@ const getRcsStatus: Handler = async function (i) {
 // ── Scenario ─────────────────────────────────────────────────────────────────────────────────────
 
 function scenarioId(this: IExecuteFunctions, i: number): number {
-	return Number(this.getNodeParameter('scenarioId', i));
+	return Number(this.getNodeParameter('scenarioId', i, '', { extractValue: true }));
 }
 
 async function getScenario(this: IExecuteFunctions, i: number, id: number): Promise<IDataObject> {
@@ -813,7 +815,7 @@ const createScenario: Handler = async function (i) {
 	const body: IDataObject = {
 		title: this.getNodeParameter('title', i) as string,
 		// Bi-Way reads this field in camelCase.
-		templateId: Number(this.getNodeParameter('templateId', i)),
+		templateId: Number(this.getNodeParameter('templateId', i, '', { extractValue: true })),
 	};
 	if (options.comment) {
 		body.comment = options.comment;
@@ -974,13 +976,17 @@ export class Biway implements INodeType {
 	};
 
 	methods = {
+		listSearch: {
+			searchContactGroups,
+			searchGalleryImages,
+			searchScenarios,
+			searchTemplates,
+		},
 		loadOptions: {
 			getChannels,
+			// Still a list for 'Exclude Contact Group Names or IDs', which takes several groups.
 			getContactGroups,
-			getGalleryImages,
-			getScenarios,
 			getSenders,
-			getTemplates,
 		},
 		resourceMapping: { getContactColumns },
 	};

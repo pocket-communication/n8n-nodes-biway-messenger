@@ -1,5 +1,7 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { scenarioLocator, templateLocator } from './ResourceLocators';
+
 const showFor = (operation: string[]) => ({ show: { resource: ['scenario'], operation } });
 
 export const scenarioOperations: INodeProperties[] = [
@@ -57,17 +59,10 @@ export const scenarioOperations: INodeProperties[] = [
 	},
 ];
 
-const scenarioIdField: INodeProperties = {
-	displayName: 'Scenario Name or ID',
-	name: 'scenarioId',
-	type: 'options',
-	typeOptions: { loadOptionsMethod: 'getScenarios' },
+const scenarioIdField = scenarioLocator({
 	required: true,
-	default: '',
-	description:
-		'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 	displayOptions: showFor(['activate', 'deactivate', 'delete', 'get', 'start']),
-};
+});
 
 export const scenarioFields: INodeProperties[] = [
 	{
@@ -90,18 +85,11 @@ export const scenarioFields: INodeProperties[] = [
 		description: 'Name of the scenario in your Bi-Way account',
 		displayOptions: showFor(['create']),
 	},
-	{
-		displayName: 'First Template Name or ID',
-		name: 'templateId',
-		type: 'options',
-		typeOptions: { loadOptionsMethod: 'getTemplates' },
+	templateLocator('First Template', {
 		required: true,
-		default: '',
-		description:
-			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		hint: 'First message of the scenario. Its Suggested Reply buttons lead to the next steps.',
 		displayOptions: showFor(['create']),
-	},
+	}),
 	{
 		displayName: 'Options',
 		name: 'options',
