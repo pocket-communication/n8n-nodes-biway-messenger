@@ -185,6 +185,52 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
 	),
 
+	entry_already_exists: fixed(
+		'This contact already exists in your Bi-Way account',
+		'Choose "Use Existing" or "Update It" in the "If Contact Already Exists" field.',
+	),
+	entry_control_wrong_value: (detail) => ({
+		message: `The value of the contact column ${detail || ''} is not valid`.replace('  ', ' '),
+		description:
+			'Check its format: phone numbers in international format (e.g. +33612345678), valid email addresses, dates as YYYY-MM-DD.',
+	}),
+	entry_control_missing_value: (detail) => ({
+		message: `The contact column ${detail || ''} is required`.replace('  ', ' '),
+		description: 'Map a value for this column.',
+	}),
+	entry_type_not_found: fixed(
+		'Contacts are not available on your Bi-Way account',
+		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+	),
+	filter_invalid: fixed('Bi-Way refused the contact search', NODE_BUG),
+	group_not_found: fixed(
+		'The contact group was not found',
+		'Pick a contact group of your account from the list.',
+	),
+
+	// Scenarios
+	script_not_found: fixed(
+		'The scenario was not found',
+		'Pick a scenario of your account from the list.',
+	),
+	missing_script_attribute: fixed('The scenario title is missing', 'Fill in the "Title" field.'),
+	trigger_not_found: fixed(
+		'The keyword reply was not found',
+		'Create it with RCS Agent › Create Keyword Reply.',
+	),
+	property_name_missing: fixed('Bi-Way received an incomplete request', NODE_BUG),
+	property_value_missing: fixed('Bi-Way received an incomplete request', NODE_BUG),
+
+	// Gallery files used in cards
+	no_asset: fixed(
+		'The gallery file was not found',
+		'Pick an image of your Bi-Way gallery, or map the "id" returned by Asset › Upload.',
+	),
+	not_asset_owner: fixed(
+		'This gallery file belongs to another Bi-Way account',
+		'Pick an image of your own gallery.',
+	),
+
 	// Callbacks (trigger)
 	no_url: fixed(
 		'Bi-Way refused the webhook URL',
@@ -219,8 +265,13 @@ const ERRORS: Record<string, ErrorBuilder> = {
  * The French server message often quotes the faulty value: 'Le canal 'rcs' est inconnu.'
  */
 function quotedDetail(serverMessage: string): string {
-	const match = serverMessage.match(/'([^']+)'/);
-	return match ? match[1] : '';
+	const quoted = serverMessage.match(/'([^']+)'/);
+	if (quoted) {
+		return quoted[1];
+	}
+	// 'La valeur de la colonne Téléphone est incorrecte…'
+	const column = serverMessage.match(/colonne (.+?) est /);
+	return column ? `"${column[1]}"` : '';
 }
 
 export function describeBiwayError(code: string, serverMessage: string): BiwayErrorDescription {

@@ -65,12 +65,37 @@ export async function getSenders(this: ILoadOptionsFunctions): Promise<INodeProp
 	return options;
 }
 
+/** Channel chosen in the node, when it is a plain value and not an expression. */
+function chosenChannel(this: ILoadOptionsFunctions): string {
+	let channel: unknown;
+	try {
+		channel = this.getCurrentNodeParameter('channel');
+	} catch (error) {
+		// Fields that list templates without a channel (scenarios, keyword replies).
+		this.logger.debug('Bi-Way: no channel to filter the templates', { error });
+		return '';
+	}
+	return typeof channel === 'string' && channel !== '' && !channel.startsWith('=') ? channel : '';
+}
+
 export async function getTemplates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-	const body = await biwayApiRequest.call(this, 'COLLECTION', '/messenger/template', undefined, {
-		limit: 200,
-		sort_by: 'title',
-		sort_dir: 'asc',
+	const query: IDataObject = { limit: 200, sort_by: 'title', sort_dir: 'asc' };
+	// With a channel, Bi-Way only lists the templates that channel can carry.
+	const channel = chosenChannel.call(this);
+	let response = await biwayApiCall.call(this, 'COLLECTION', '/messenger/template', undefined, {
+		...query,
+		...(channel ? { channel } : {}),
 	});
+	if (response.errorCode && channel) {
+		this.logger.warn('Bi-Way: the templates could not be filtered by channel', {
+			channel,
+			code: response.errorCode,
+		});
+		response = await biwayApiCall.call(this, 'COLLECTION', '/messenger/template', undefined, query);
+	}
+	const body = response.errorCode
+		? await biwayApiRequest.call(this, 'COLLECTION', '/messenger/template', undefined, query)
+		: response.body;
 	return asList(body, 'templates').map((template) => ({
 		name: `${String(template.title || `Template ${template.id}`)} (${String(template.format ?? '')})`,
 		value: Number(template.id),
@@ -89,4 +114,36 @@ export async function getContactGroups(
 			value: Number(group.id),
 		}))
 		.sort(byName);
+}
+
+export async function getGalleryImages(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	const body = await biwayApiRequest.call(this, 'COLLECTION', '/gallery/asset', undefined, {
+		filter_by_type: 'image,video',
+		limit: 200,
+		// The listing embeds a thumbnail: keep it tiny.
+		thumbnail_width: 1,
+		thumbnail_height: 1,
+	});
+	return asList(body, 'assets')
+		.map((asset) => {
+			const id = Number(asset.id ?? 0);
+			const label = String(asset.description || asset.name || `File ${id}`);
+			return { name: `${label} (${id})`, value: id };
+		})
+		.filter((option) => option.value > 0)
+		.sort(byName);
+}
+
+export async function getScenarios(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+	const body = await biwayApiRequest.call(this, 'COLLECTION', '/chatbot/script', undefined, {
+		limit: 200,
+		sort_by: 'title',
+		sort_dir: 'asc',
+	});
+	return asList(body, 'scripts').map((script) => ({
+		name: `${String(script.title || `Scenario ${script.id}`)}${Number(script.state) === 1 ? '' : ' (inactive)'}`,
+		value: Number(script.id),
+	}));
 }

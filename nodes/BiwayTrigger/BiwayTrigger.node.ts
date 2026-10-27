@@ -11,6 +11,8 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 import {
 	biwayApiCall,
 	biwayApiRequest,
+	normalizeKeyword,
+	postbackKeyword,
 	sameToken,
 	toBiwayError,
 	webhookToken,
@@ -73,14 +75,15 @@ async function removeCallback(
 
 export class BiwayTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Bi-Way Trigger',
+		displayName: 'Bi-Way SMS/RCS Trigger',
 		name: 'biwayTrigger',
 		icon: { light: 'file:../../icons/biway.png', dark: 'file:../../icons/biway.png' },
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["events"].join(", ")}}',
-		description: 'Starts the workflow when Bi-Way sends an event',
-		defaults: { name: 'Bi-Way Trigger' },
+		description:
+			'Starts the workflow on Bi-Way SMS and RCS events: message status updates, received messages and replies, contact imports, RCS agent state',
+		defaults: { name: 'Bi-Way SMS/RCS Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'biwayApi', required: true }],
@@ -125,7 +128,8 @@ export class BiwayTrigger implements INodeType {
 					{
 						name: 'Message Status Updated',
 						value: 'MESSENGER_REPORT',
-						description: 'A message you sent was delivered, read, refused or clicked',
+						description:
+							'A message you sent was delivered, read, refused, clicked or expired, or could not go through RCS',
 					},
 					{
 						name: 'RCS Agent State Changed',
@@ -139,6 +143,16 @@ export class BiwayTrigger implements INodeType {
 					},
 				],
 				description: 'Bi-Way events that start the workflow',
+			},
+			{
+				displayName: 'Button Keywords',
+				name: 'buttonKeywords',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. YES, CALL_ME',
+				description:
+					'Only start the workflow for received messages sent by tapping an RCS button with one of these keywords (comma-separated). Leave empty to get every received message. Use it to take over the conversation at the end of a Bi-Way scenario.',
+				displayOptions: { show: { events: ['MESSENGER_DELIVERY'] } },
 			},
 		],
 	};
@@ -260,12 +274,32 @@ export class BiwayTrigger implements INodeType {
 
 		const body = this.getBodyData();
 		const selected = this.getNodeParameter('events') as string[];
-		const events = (Array.isArray(body.events) ? (body.events as unknown[]) : []).filter(
-			(event): event is IDataObject =>
-				typeof event === 'object' &&
-				event !== null &&
-				selected.includes(String((event as IDataObject).event)),
-		);
+		const wanted = String(this.getNodeParameter('buttonKeywords', '') ?? '')
+			.split(',')
+			.map((keyword) => normalizeKeyword(keyword))
+			.filter(Boolean);
+
+		const events: IDataObject[] = [];
+		for (const raw of Array.isArray(body.events) ? (body.events as unknown[]) : []) {
+			if (typeof raw !== 'object' || raw === null) {
+				continue;
+			}
+			const event = raw as IDataObject;
+			if (!selected.includes(String(event.event))) {
+				continue;
+			}
+			if (event.event === 'MESSENGER_DELIVERY') {
+				// Keyword of the RCS button the customer tapped, if any.
+				const extra = (event.extra ?? {}) as IDataObject;
+				const keyword = postbackKeyword(extra.postbackData);
+				if (wanted.length && (keyword === null || !wanted.includes(keyword.toUpperCase()))) {
+					continue;
+				}
+				events.push({ ...event, keyword });
+				continue;
+			}
+			events.push(event);
+		}
 
 		if (!events.length) {
 			return { webhookResponse: { received: 0 } };

@@ -3,6 +3,7 @@
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],
+	"alias": ["SMS", "RCS", "Delivery report", "Incoming message", "Webhook", "Messaging"],
 	"resources": {
 		"credentialDocumentation": [
 			{
@@ -11,7 +12,7 @@
 		],
 		"primaryDocumentation": [
 			{
-				"url": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#bi-way-trigger"
+				"url": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#bi-way-smsrcs-trigger"
 			}
 		]
 	}

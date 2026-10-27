@@ -11,6 +11,12 @@ export const contactOperations: INodeProperties[] = [
 		displayOptions: { show: { resource: ['contact'] } },
 		options: [
 			{
+				name: 'Create',
+				value: 'create',
+				description: 'Create a contact, or reuse the one with the same phone number or email',
+				action: 'Create a contact',
+			},
+			{
 				name: 'Create Group',
 				value: 'createGroup',
 				description: 'Create a contact group',
@@ -27,7 +33,105 @@ export const contactOperations: INodeProperties[] = [
 	},
 ];
 
+const contactGroupOption: INodeProperties = {
+	displayName: 'Contact Group Name or ID',
+	name: 'groupId',
+	type: 'options',
+	typeOptions: { loadOptionsMethod: 'getContactGroups' },
+	default: '',
+	description:
+		'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+};
+
 export const contactFields: INodeProperties[] = [
+	// ── Create ───────────────────────────────────────────────────────────────────────────────────
+	{
+		displayName:
+			'The columns come from your Bi-Way account. Write phone numbers in international format (e.g. +33612345678). A contact belongs to one contact group.',
+		name: 'createNotice',
+		type: 'notice',
+		default: '',
+		displayOptions: showFor(['create']),
+	},
+	{
+		displayName: 'Columns',
+		name: 'contactColumns',
+		type: 'resourceMapper',
+		noDataExpression: true,
+		default: { mappingMode: 'defineBelow', value: null },
+		required: true,
+		typeOptions: {
+			loadOptionsDependsOn: ['operation'],
+			resourceMapper: {
+				resourceMapperMethod: 'getContactColumns',
+				mode: 'add',
+				fieldWords: { singular: 'column', plural: 'columns' },
+				addAllFields: false,
+				multiKeyMatch: false,
+				supportAutoMap: true,
+			},
+		},
+		displayOptions: showFor(['create']),
+	},
+	{
+		displayName: 'Match On',
+		name: 'matchOn',
+		type: 'options',
+		options: [
+			{ name: 'Email', value: 'email' },
+			{ name: 'Phone', value: 'phone' },
+		],
+		default: 'phone',
+		description: 'Column used to recognize a contact that already exists in your account',
+		displayOptions: showFor(['create']),
+	},
+	{
+		displayName: 'If Contact Already Exists',
+		name: 'ifExists',
+		type: 'options',
+		options: [
+			{
+				name: 'Create Another',
+				value: 'create',
+				description: 'Create a new contact without looking for an existing one',
+			},
+			{
+				name: 'Fail',
+				value: 'fail',
+				description: 'Stop with an error naming the existing contact',
+			},
+			{
+				name: 'Update It',
+				value: 'update',
+				description: 'Write the mapped columns on the existing contact',
+			},
+			{
+				name: 'Use Existing',
+				value: 'useExisting',
+				description:
+					'Return the existing contact unchanged, so that running the workflow again creates no duplicate',
+			},
+		],
+		default: 'useExisting',
+		description:
+			'What to do when a contact of your account has the same value in the Match On column. Bi-Way compares the values exactly.',
+		displayOptions: showFor(['create']),
+	},
+	{
+		displayName: 'Options',
+		name: 'options',
+		type: 'collection',
+		placeholder: 'Add Option',
+		default: {},
+		displayOptions: showFor(['create']),
+		options: [
+			{
+				...contactGroupOption,
+				hint: 'Group of the new contact. Leave empty to use your default group.',
+			},
+		],
+	},
+
 	// ── Create Group ─────────────────────────────────────────────────────────────────────────────
 	{
 		displayName: 'Group Name',
@@ -35,6 +139,33 @@ export const contactFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
+		displayOptions: showFor(['createGroup']),
+	},
+	{
+		displayName: 'If Name Already Exists',
+		name: 'ifExists',
+		type: 'options',
+		options: [
+			{
+				name: 'Create Another',
+				value: 'create',
+				description: 'Create a new group with the same name',
+			},
+			{
+				name: 'Fail',
+				value: 'fail',
+				description: 'Stop with an error naming the existing group',
+			},
+			{
+				name: 'Use Existing',
+				value: 'useExisting',
+				description:
+					'Return the existing group instead of creating one, so that running the workflow again creates no duplicate',
+			},
+		],
+		default: 'useExisting',
+		description:
+			'What to do when a contact group with the same name already exists (names are compared ignoring case and surrounding spaces)',
 		displayOptions: showFor(['createGroup']),
 	},
 	{
@@ -58,7 +189,7 @@ export const contactFields: INodeProperties[] = [
 	// ── Import File ──────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'The import runs in the background: this node returns the ID of the import task. Use the Bi-Way Trigger node with the "Contact Import State Changed" event to know when it is finished.',
+			'The import runs in the background: this node returns the ID of the import task. Use the Bi-Way SMS/RCS Trigger node with the "Contact Import State Changed" event to know when it is finished.',
 		name: 'importNotice',
 		type: 'notice',
 		default: '',
@@ -99,13 +230,7 @@ export const contactFields: INodeProperties[] = [
 		displayOptions: showFor(['importFile']),
 		options: [
 			{
-				displayName: 'Contact Group Name or ID',
-				name: 'groupId',
-				type: 'options',
-				typeOptions: { loadOptionsMethod: 'getContactGroups' },
-				default: '',
-				description:
-					'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+				...contactGroupOption,
 				hint: 'Group to import the contacts into. Leave empty to use your default group.',
 			},
 			{

@@ -1,6 +1,11 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { rcsButtonsField, rcsCardFields } from './RcsContentDescription';
+
 const showFor = (operation: string[]) => ({ show: { resource: ['message'], operation } });
+
+/** RCS channels of Bi-Way: rcs, and any channel whose name contains it. */
+const rcsChannel = { channel: [{ _cnd: { includes: 'rcs' } }] };
 
 export const messageOperations: INodeProperties[] = [
 	{
@@ -45,12 +50,17 @@ const contentFields: INodeProperties[] = [
 		name: 'contentSource',
 		type: 'options',
 		options: [
-			{ name: 'Text', value: 'text', description: 'Write the message in this node' },
+			{
+				name: 'RCS Card',
+				value: 'card',
+				description: 'A rich card with a title, a text, an image and buttons (RCS channel only)',
+			},
 			{
 				name: 'Template',
 				value: 'template',
 				description: 'Use a message template of your Bi-Way account',
 			},
+			{ name: 'Text', value: 'text', description: 'Write the message in this node' },
 		],
 		default: 'text',
 		displayOptions: showFor(['send', 'broadcast']),
@@ -78,34 +88,133 @@ const contentFields: INodeProperties[] = [
 		displayName: 'Template Name or ID',
 		name: 'templateId',
 		type: 'options',
-		typeOptions: { loadOptionsMethod: 'getTemplates' },
+		typeOptions: { loadOptionsMethod: 'getTemplates', loadOptionsDependsOn: ['channel'] },
 		required: true,
 		default: '',
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		hint: 'Only the templates the chosen channel can carry are listed: no RCS card or button outside RCS, no subject or attachment on an SMS',
 		displayOptions: {
 			show: { ...showFor(['send', 'broadcast']).show, contentSource: ['template'] },
 		},
 	},
+	...rcsCardFields({ ...showFor(['send', 'broadcast']).show, ...rcsChannel, contentSource: ['card'] }),
+	rcsButtonsField({
+		...showFor(['send', 'broadcast']).show,
+		...rcsChannel,
+		contentSource: ['text', 'card'],
+	}),
+	// Also offered with templates: Bi-Way keeps the request's "alternate" on top of the template's RCS content.
+	{
+		displayName: 'If the Phone Is Not RCS-Capable',
+		name: 'rcsFallback',
+		type: 'options',
+		options: [
+			{
+				name: "Send the Account's Fallback SMS",
+				value: 'account',
+				description: 'The fallback SMS set in your Bi-Way account',
+			},
+			{
+				name: 'Send Nothing',
+				value: 'none',
+				description:
+					'No SMS: the Message Status Updated event reports "unsupported", so a workflow can decide what to do',
+			},
+			{
+				name: 'Send This SMS',
+				value: 'custom',
+				description: 'Write the fallback SMS in this node',
+			},
+		],
+		default: 'account',
+		description:
+			'What Bi-Way does when the phone cannot receive RCS (not RCS-capable, or not on a French mobile operator)',
+		displayOptions: {
+			show: {
+				...showFor(['send', 'broadcast']).show,
+				...rcsChannel,
+				contentSource: ['text', 'card', 'template'],
+			},
+		},
+	},
+	{
+		displayName: 'Fallback SMS Text',
+		name: 'rcsFallbackText',
+		type: 'string',
+		typeOptions: { rows: 3 },
+		required: true,
+		default: '',
+		description:
+			'SMS sent instead of the RCS message, 160 characters at most including the STOP mention and the chat link when they are added',
+		displayOptions: {
+			show: {
+				...showFor(['send', 'broadcast']).show,
+				...rcsChannel,
+				contentSource: ['text', 'card', 'template'],
+				rcsFallback: ['custom'],
+			},
+		},
+	},
+	{
+		displayName: 'Fallback SMS Options',
+		name: 'rcsFallbackOptions',
+		type: 'collection',
+		placeholder: 'Add option',
+		default: {},
+		displayOptions: {
+			show: {
+				...showFor(['send', 'broadcast']).show,
+				...rcsChannel,
+				contentSource: ['text', 'card', 'template'],
+				rcsFallback: ['custom'],
+			},
+		},
+		options: [
+			{
+				displayName: 'Add Chat Link',
+				name: 'chatUrl',
+				type: 'boolean',
+				default: false,
+				description: 'Whether to add a link to continue the conversation in the Bi-Way web chat',
+			},
+			{
+				displayName: 'Add STOP Mention',
+				name: 'stop',
+				type: 'boolean',
+				default: true,
+				description:
+					'Whether to add the STOP opt-out mention, required in France for marketing messages',
+			},
+			{
+				displayName: 'RCS Expiry (Hours)',
+				name: 'expireHours',
+				type: 'number',
+				typeOptions: { minValue: 1 },
+				default: 6,
+				description: 'Hours after which an RCS message not yet delivered expires',
+			},
+			{
+				displayName: 'Sender',
+				name: 'sender',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. MYBRAND',
+				description:
+					'Sender shown on the SMS, 11 characters at most. Leave empty to use the default SMS sender of your account.',
+			},
+		],
+	},
 ];
 
 const sharedOptions: INodeProperties[] = [
-	{
-		displayName: 'Attachment Asset IDs',
-		name: 'assetIds',
-		type: 'string',
-		default: '',
-		placeholder: 'e.g. 1234, 1235',
-		description:
-			'Comma-separated IDs of files of your Bi-Way gallery, as returned by Asset › Upload',
-	},
 	{
 		displayName: 'Extra (JSON)',
 		name: 'extra',
 		type: 'json',
 		default: '{}',
 		description:
-			'Channel-specific content, such as RCS suggestions and rich cards, or the alternative SMS. See https://services.bi-way.fr/openapi/.',
+			'Advanced: channel-specific content keyed by the channel name, for example {"rcs": {"alternate": {...}}}. The RCS Card content and the RCS Buttons field fill the "rcs" entry for you. See https://services.bi-way.fr/openapi/.',
 	},
 	{
 		displayName: 'Send At',
@@ -145,7 +254,7 @@ export const messageFields: INodeProperties[] = [
 	// ── Send ─────────────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'Sending needs a Bi-Way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent: check it with RCS › Get Status.',
+			'Sending needs a Bi-Way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only.',
 		name: 'sendNotice',
 		type: 'notice',
 		default: '',
@@ -250,7 +359,6 @@ export const messageFields: INodeProperties[] = [
 				description:
 					'Phone numbers or email addresses separated by commas or new lines. You can also map an array with an expression.',
 			},
-			sharedOptions[0],
 			{
 				displayName: 'Exclude Contact Group Names or IDs',
 				name: 'excludeGroupIds',
@@ -261,7 +369,7 @@ export const messageFields: INodeProperties[] = [
 					'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 				hint: 'Contacts of these groups do not receive the message',
 			},
-			sharedOptions[1],
+			sharedOptions[0],
 			{
 				displayName: 'Filters (JSON)',
 				name: 'filters',
@@ -284,8 +392,8 @@ export const messageFields: INodeProperties[] = [
 				],
 				default: 'normal',
 			},
+			sharedOptions[1],
 			sharedOptions[2],
-			sharedOptions[3],
 			{
 				displayName: 'Simulate',
 				name: 'simulation',
@@ -294,7 +402,7 @@ export const messageFields: INodeProperties[] = [
 				description:
 					'Whether to only simulate the sending: Bi-Way counts the recipients without sending anything',
 			},
-			sharedOptions[4],
+			sharedOptions[3],
 			{
 				displayName: 'Status Reports',
 				name: 'report',
@@ -307,9 +415,9 @@ export const messageFields: INodeProperties[] = [
 				],
 				default: 'all',
 				description:
-					'Status reports to collect. They are sent to the Bi-Way Trigger node ("Message Status Updated" event).',
+					'Status reports to collect. They are sent to the Bi-Way SMS/RCS Trigger node ("Message Status Updated" event).',
 			},
-			sharedOptions[5],
+			sharedOptions[4],
 		],
 	},
 	{

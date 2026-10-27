@@ -180,6 +180,79 @@ export function normalizeResponse(body: unknown, idField = 'id'): IDataObject {
 	return { success: true };
 }
 
+/**
+ * Reads every page of a Bi-Way list endpoint (offset / limit).
+ */
+export async function biwayListAll(
+	this: BiwayContext,
+	path: string,
+	query: IDataObject = {},
+	pageSize = 100,
+	itemIndex?: number,
+): Promise<IDataObject[]> {
+	const all: IDataObject[] = [];
+	for (let offset = 0; ; offset += pageSize) {
+		const body = await biwayApiRequest.call(
+			this,
+			'COLLECTION',
+			path,
+			undefined,
+			{ ...query, offset, limit: pageSize },
+			itemIndex,
+		);
+		const page = Array.isArray(body) ? (body as IDataObject[]) : [];
+		all.push(...page);
+		if (page.length < pageSize) {
+			return all;
+		}
+	}
+}
+
+/** Compares two names the way a user reads them: trimmed, case-insensitive. */
+export function sameName(a: unknown, b: unknown): boolean {
+	return (
+		String(a ?? '')
+			.trim()
+			.toLowerCase() ===
+		String(b ?? '')
+			.trim()
+			.toLowerCase()
+	);
+}
+
+/**
+ * Normalizes a keyword exactly like Bi-Way does when it saves a keyword reply: upper case,
+ * spaces turned into underscores, and every byte that is not A-Z, 0-9, "-" or "_" turned into an
+ * underscore. A reply button only reaches its keyword reply when both match exactly.
+ */
+export function normalizeKeyword(value: unknown): string {
+	const upper = String(value ?? '')
+		.trim()
+		.replace(/[a-z]/g, (letter) => letter.toUpperCase())
+		.replace(/\s+/g, '_');
+	let keyword = '';
+	for (const char of upper) {
+		if (/[0-9A-Z_-]/.test(char)) {
+			keyword += char;
+		} else {
+			// PHP replaces each byte of a multi-byte character.
+			keyword += '_'.repeat(new TextEncoder().encode(char).length);
+		}
+	}
+	return keyword;
+}
+
+/**
+ * Keyword of a tapped button. Bi-Way postback data is KEYWORD or KEYWORD(type:id,...).
+ */
+export function postbackKeyword(postbackData: unknown): string | null {
+	if (typeof postbackData !== 'string') {
+		return null;
+	}
+	const keyword = postbackData.split('(')[0].trim();
+	return keyword === '' ? null : keyword;
+}
+
 export function parseIdList(value: unknown): number[] {
 	const raw = Array.isArray(value) ? value : String(value ?? '').split(/[\s,;]+/);
 	return raw.map((id) => Number(String(id).trim())).filter((id) => Number.isInteger(id) && id > 0);

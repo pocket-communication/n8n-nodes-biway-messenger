@@ -30,7 +30,7 @@ export const rcsOperations: INodeProperties[] = [
 export const rcsFields: INodeProperties[] = [
 	{
 		displayName:
-			'RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-Way RCS settings</a> (a declaration fee applies).',
+			'RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-Way RCS settings</a> (a declaration fee applies). RCS is currently available on French mobile operators only.',
 		name: 'rcsNotice',
 		type: 'notice',
 		default: '',
@@ -68,6 +68,28 @@ export const rcsFields: INodeProperties[] = [
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
 		hint: 'Message template sent as the reply',
+		displayOptions: showFor(['createKeywordReply']),
+	},
+	{
+		displayName: 'If Keyword Already Exists',
+		name: 'ifExists',
+		type: 'options',
+		options: [
+			{
+				name: 'Fail',
+				value: 'fail',
+				description: 'Stop with an error naming the existing keyword reply',
+			},
+			{
+				name: 'Use Existing',
+				value: 'useExisting',
+				description:
+					'Return the existing keyword reply unchanged, so that running the workflow again creates no duplicate',
+			},
+		],
+		default: 'useExisting',
+		description:
+			'What to do when your account already has a keyword reply with this keyword. Bi-Way allows one reply per keyword.',
 		displayOptions: showFor(['createKeywordReply']),
 	},
 	{
