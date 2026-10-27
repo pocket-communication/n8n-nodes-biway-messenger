@@ -1,42 +1,57 @@
 {
-  "name": "n8n-nodes-biway-messenger",
-  "version": "0.1.0",
-  "description": "n8n community node for Bi-Way Messaging API (SMS / RCS / email)",
-  "keywords": [
-    "n8n-community-node-package"
-  ],
-  "license": "MIT",
-  "author": {
-    "name": "Bi-Way"
-  },
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "lint": "eslint nodes credentials --ext .ts",
-    "lintfix": "eslint nodes credentials --ext .ts --fix",
-    "prepublishOnly": "npm run build && npm run lint"
-  },
-  "files": [
-    "dist"
-  ],
-  "n8n": {
-    "n8nNodesApiVersion": 1,
-    "credentials": [
-      "dist/credentials/BiwayMessengerApi.credentials.js"
-    ],
-    "nodes": [
-      "dist/nodes/BiwayMessenger/BiwayMessenger.node.js",
-      "dist/nodes/BiwayMessenger/BiwayMessengerTrigger.node.js"
-    ]
-  },
-  "devDependencies": {
-    "@n8n_io/eslint-config": "*",
-    "@types/node": "^20.0.0",
-    "@typescript-eslint/eslint-plugin": "^8.62.0",
-    "@typescript-eslint/parser": "^8.62.0",
-    "eslint": "^8.56.0",
-    "n8n-workflow": "*",
-    "typescript": "^5.3.0"
-  }
+	"name": "n8n-nodes-biway-messenger",
+	"version": "0.1.0",
+	"description": "n8n community nodes for Bi-Way: send SMS, RCS and email messages, manage templates, assets and contacts, and receive Bi-Way events.",
+	"license": "MIT",
+	"homepage": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#readme",
+	"keywords": [
+		"n8n-community-node-package",
+		"n8n",
+		"bi-way",
+		"rcs",
+		"sms",
+		"messaging"
+	],
+	"author": {
+		"name": "Pocket Communication",
+		"email": "tech@pocketcommunication.com"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/pocket-communication/n8n-nodes-biway-messenger.git"
+	},
+	"scripts": {
+		"build": "n8n-node build",
+		"build:watch": "tsc --watch",
+		"dev": "n8n-node dev",
+		"lint": "n8n-node lint",
+		"lint:fix": "n8n-node lint --fix",
+		"release": "n8n-node release",
+		"prepublishOnly": "n8n-node prerelease"
+	},
+	"files": [
+		"dist"
+	],
+	"n8n": {
+		"n8nNodesApiVersion": 1,
+		"strict": true,
+		"credentials": [
+			"dist/credentials/BiwayApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/Biway/Biway.node.js",
+			"dist/nodes/BiwayTrigger/BiwayTrigger.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "*",
+		"@types/node": "^22.0.0",
+		"eslint": "9.39.4",
+		"prettier": "3.8.3",
+		"release-it": "20.2.0",
+		"typescript": "5.9.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
 }

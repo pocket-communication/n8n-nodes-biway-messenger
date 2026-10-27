@@ -1,0 +1,18 @@
+{
+	"node": "n8n-nodes-biway-messenger.biwayTrigger",
+	"nodeVersion": "1.0",
+	"codexVersion": "1.0",
+	"categories": ["Communication"],
+	"resources": {
+		"credentialDocumentation": [
+			{
+				"url": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#credentials"
+			}
+		],
+		"primaryDocumentation": [
+			{
+				"url": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#bi-way-trigger"
+			}
+		]
+	}
+}
