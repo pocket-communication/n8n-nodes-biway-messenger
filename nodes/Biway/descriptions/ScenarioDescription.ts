@@ -145,6 +145,14 @@ export const scenarioFields: INodeProperties[] = [
 		description: 'Max number of results to return',
 		displayOptions: { show: { ...showFor(['getAll']).show, returnAll: [false] } },
 	},
+	{
+		displayName: 'Simplify',
+		name: 'simplify',
+		type: 'boolean',
+		default: true,
+		description: 'Whether to return a simplified version of the response instead of the raw data',
+		displayOptions: showFor(['create', 'get', 'getAll']),
+	},
 
 	// ── Start ────────────────────────────────────────────────────────────────────────────────────
 	{

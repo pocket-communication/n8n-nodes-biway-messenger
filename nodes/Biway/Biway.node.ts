@@ -765,6 +765,33 @@ async function getScenario(this: IExecuteFunctions, i: number, id: number): Prom
 	)) as IDataObject;
 }
 
+/** Main fields of a scenario, for the 'Simplify' option (the raw object holds its landing page too). */
+function simplifyScenario(scenario: IDataObject): IDataObject {
+	const simple: IDataObject = {
+		id: scenario.id,
+		title: scenario.title,
+		active: Number(scenario.state) === 1,
+		templateId: scenario.templateId,
+		comment: scenario.comment ?? null,
+		createdAt: scenario.datetime,
+	};
+	if (Array.isArray(scenario.flow)) {
+		simple.steps = scenario.flow.length;
+	}
+	return simple;
+}
+
+function scenarioOutput(
+	this: IExecuteFunctions,
+	i: number,
+	scenarios: IDataObject | IDataObject[],
+): IDataObject | IDataObject[] {
+	if (!(this.getNodeParameter('simplify', i, true) as boolean)) {
+		return scenarios;
+	}
+	return Array.isArray(scenarios) ? scenarios.map(simplifyScenario) : simplifyScenario(scenarios);
+}
+
 async function setScenarioState(
 	this: IExecuteFunctions,
 	i: number,
@@ -798,21 +825,25 @@ const createScenario: Handler = async function (i) {
 	if (options.activate !== false) {
 		await setScenarioState.call(this, i, Number(id), true);
 	}
-	return await getScenario.call(this, i, Number(id));
+	return scenarioOutput.call(this, i, await getScenario.call(this, i, Number(id)));
 };
 
 const getScenarioHandler: Handler = async function (i) {
-	return await getScenario.call(this, i, scenarioId.call(this, i));
+	return scenarioOutput.call(this, i, await getScenario.call(this, i, scenarioId.call(this, i)));
 };
 
 const getManyScenarios: Handler = async function (i) {
 	if (this.getNodeParameter('returnAll', i, false) as boolean) {
-		return await biwayListAll.call(
+		return scenarioOutput.call(
 			this,
-			'/chatbot/script',
-			{ sort_by: 'datetime', sort_dir: 'desc' },
-			100,
 			i,
+			await biwayListAll.call(
+				this,
+				'/chatbot/script',
+				{ sort_by: 'datetime', sort_dir: 'desc' },
+				100,
+				i,
+			),
 		);
 	}
 	const body = await biwayApiRequest.call(
@@ -828,7 +859,7 @@ const getManyScenarios: Handler = async function (i) {
 		},
 		i,
 	);
-	return Array.isArray(body) ? (body as IDataObject[]) : [];
+	return scenarioOutput.call(this, i, Array.isArray(body) ? (body as IDataObject[]) : []);
 };
 
 const activateScenario: Handler = async function (i) {
