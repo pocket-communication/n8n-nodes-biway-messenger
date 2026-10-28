@@ -153,6 +153,41 @@ async function galleryFiles(
 		.sort(byName);
 }
 
+/** Import formats offered when Bi-Way cannot list the account's (the default formats of an account). */
+const DEFAULT_IMPORT_FORMATS: INodePropertyOptions[] = [
+	{ name: 'Excel 97-2003 (.xls)', value: 'XlsFile' },
+	{ name: 'Excel 2007+ (.xlsx)', value: 'XlsxFile' },
+	{ name: 'Tab-Separated Text (.csv)', value: 'CSVFile' },
+];
+
+/** Import formats of contacts that the account accepts, after 'Automatic'. */
+export async function getImportFormats(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	const automatic: INodePropertyOptions = {
+		name: 'Automatic',
+		value: '',
+		description: 'Bi-Way picks the import format of your account matching the file',
+	};
+	const response = await biwayApiCall.call(this, 'COLLECTION', '/file/software-file', undefined, {
+		'entry-type': 'contact',
+	});
+	if (response.errorCode) {
+		this.logger.warn('Bi-Way: the import formats of the account could not be listed', {
+			code: response.errorCode,
+		});
+		return [automatic, ...DEFAULT_IMPORT_FORMATS];
+	}
+	const formats = asList(response.body, 'software-files')
+		.map((format) => ({
+			name: `${String(format.label || format.name)}${format.extension ? ` (.${String(format.extension)})` : ''}`,
+			value: String(format.name ?? ''),
+		}))
+		.filter((option) => option.value !== '')
+		.sort(byName);
+	return [automatic, ...(formats.length ? formats : DEFAULT_IMPORT_FORMATS)];
+}
+
 export async function getScenarios(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 	const body = await biwayApiRequest.call(this, 'COLLECTION', '/chatbot/script', undefined, {
 		limit: 200,

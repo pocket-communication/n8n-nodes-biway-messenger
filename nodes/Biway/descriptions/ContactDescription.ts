@@ -27,7 +27,7 @@ export const contactOperations: INodeProperties[] = [
 			{
 				name: 'Import File',
 				value: 'importFile',
-				description: 'Import contacts from a CSV or Excel file',
+				description: 'Import contacts from a file, in an import format of your account',
 				action: 'Import contact file',
 			},
 		],
@@ -200,20 +200,14 @@ export const contactFields: INodeProperties[] = [
 		displayOptions: showFor(['importFile']),
 	},
 	{
-		displayName: 'File Format',
+		displayName: 'File Format Name or ID',
 		name: 'fileFormat',
 		type: 'options',
-		options: [
-			{
-				name: 'Automatic',
-				value: '',
-				description: 'Bi-Way picks the import format of your account matching the file',
-			},
-			{ name: 'CSV', value: 'CSVFile' },
-			{ name: 'Excel 2007+ (XLSX)', value: 'XlsxFile' },
-			{ name: 'Excel 97-2003 (XLS)', value: 'XlsFile' },
-		],
+		typeOptions: { loadOptionsMethod: 'getImportFormats' },
 		default: '',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		hint: 'The import formats of your Bi-Way account (XLS by default). The CSV format of Bi-Way is tab-separated.',
 		displayOptions: showFor(['importFile']),
 	},
 	{

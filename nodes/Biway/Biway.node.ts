@@ -41,7 +41,7 @@ import {
 	searchScenarios,
 	searchTemplates,
 } from './methods/listSearch';
-import { getChannels, getContactGroups, getSenders } from './methods/loadOptions';
+import { getChannels, getContactGroups, getImportFormats, getSenders } from './methods/loadOptions';
 import {
 	buildRcsButtons,
 	buildRcsCard,
@@ -1077,6 +1077,7 @@ export class Biway implements INodeType {
 			// Still a list for 'Exclude Contact Group Names or IDs', which takes several groups.
 			getContactGroups,
 			getContactMatchColumns,
+			getImportFormats,
 			getSenders,
 		},
 		resourceMapping: { getContactColumns },

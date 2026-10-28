@@ -170,7 +170,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	no_software_file: fixed('The file format is missing', NODE_BUG),
 	unknow_software_file: fixed(
 		'Bi-Way could not read this file',
-		"Pick the file format (CSV, XLS or XLSX) instead of 'Automatic', and check the columns of the file.",
+		"Pick one of the import formats of your account instead of 'Automatic' (XLS by default), and check the columns of the file. The CSV format of Bi-Way is tab-separated.",
 	),
 	unknow_double_mode: fixed('Unknown duplicate handling mode', 'Pick a mode from the list.'),
 	double_mode_not_supported: fixed(
