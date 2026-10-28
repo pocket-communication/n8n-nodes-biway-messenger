@@ -22,7 +22,7 @@ const CONTENT_OPTIONS: INodePropertyOptions[] = [
 	{
 		name: 'Text',
 		value: 'text',
-		description: 'A text, with buttons on RCS, or a title and attachments by email',
+		description: 'A text, with buttons on RCS, or attachments by email',
 	},
 ];
 
@@ -138,7 +138,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			name: 'cardTitle',
 			type: 'string',
 			default: '',
-			description: 'Title of the card, 200 characters at most. By email, it is also the subject.',
+			description: 'Title of the card, 200 characters at most',
 			displayOptions,
 		},
 		{
@@ -278,7 +278,7 @@ export function rcsCarouselField(show: Show): INodeProperties {
 		},
 		placeholder: 'Add Card',
 		default: {},
-		description: `Cards of the carousel, from ${CAROUSEL_CARDS_MIN} to ${CAROUSEL_CARDS_MAX}, shown in this order. By email, the title of the first card is the subject.`,
+		description: `Cards of the carousel, from ${CAROUSEL_CARDS_MIN} to ${CAROUSEL_CARDS_MAX}, shown in this order`,
 		displayOptions: { show },
 		options: [
 			{

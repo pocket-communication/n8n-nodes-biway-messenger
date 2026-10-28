@@ -3,6 +3,7 @@ import type {
 	IDataObject,
 	IExecuteFunctions,
 	ILoadOptionsFunctions,
+	INodePropertyOptions,
 	ResourceMapperField,
 	ResourceMapperFields,
 } from 'n8n-workflow';
@@ -82,6 +83,16 @@ function displayName(column: ContactColumn): string {
 		return `${column.label} (email address)`;
 	}
 	return column.label;
+}
+
+/** Columns that can recognize an existing contact: the writable columns of the account. */
+export async function getContactMatchColumns(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	const columns = await getContactColumnList.call(this);
+	return columns
+		.map((column) => ({ name: column.label, value: column.name, description: column.name }))
+		.sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function getContactColumns(

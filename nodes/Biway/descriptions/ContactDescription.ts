@@ -96,8 +96,21 @@ export const contactFields: INodeProperties[] = [
 		],
 		default: 'useExisting',
 		description:
-			'What to do when a contact of your account has the same phone number. Bi-Way compares the numbers exactly.',
+			"What to do when a contact of your account has the same value in the 'Match On Column'. Bi-Way compares the values exactly.",
 		displayOptions: showFor(['create']),
+	},
+	{
+		displayName: 'Match On Column Name or ID',
+		name: 'matchOn',
+		type: 'options',
+		typeOptions: { loadOptionsMethod: 'getContactMatchColumns' },
+		default: 'phone',
+		description:
+			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+		hint: 'Column of your account that recognizes an existing contact: the phone number by default, or the email address, a customer number…',
+		displayOptions: {
+			show: { ...showFor(['create']).show, ifExists: ['fail', 'update', 'useExisting'] },
+		},
 	},
 	{
 		displayName: 'Options',

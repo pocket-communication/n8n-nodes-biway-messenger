@@ -83,23 +83,23 @@ const contentFields: INodeProperties[] = [
 			show: { ...showFor(['send', 'broadcast']).show, source: ['template'] },
 		},
 	}),
-	// Text by email: title, body, attachments.
+	// Every email written in the node has a subject; a template brings its own.
 	{
-		displayName: 'Title',
+		displayName: 'Subject',
 		name: 'subject',
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Title of the email, shown as its subject',
+		description: 'Subject of the email',
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
 				channel: EMAIL_CHANNELS,
 				source: ['raw'],
-				content: ['text'],
 			},
 		},
 	},
+	// Text by email: body and attachments.
 	{
 		displayName: 'Body',
 		name: 'body',

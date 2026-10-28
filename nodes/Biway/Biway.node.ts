@@ -29,9 +29,14 @@ import {
 	toBiwayDate,
 	toBiwayError,
 } from './GenericFunctions';
-import { getContactColumnList, getContactColumns } from './methods/contactColumns';
+import {
+	getContactColumnList,
+	getContactColumns,
+	getContactMatchColumns,
+} from './methods/contactColumns';
 import {
 	searchContactGroups,
+	searchGalleryFiles,
 	searchGalleryImages,
 	searchScenarios,
 	searchTemplates,
@@ -198,22 +203,16 @@ async function messageContent(
 	} else if (content === 'card') {
 		requireRichChannel.call(this, i, channel, 'Cards');
 		const card = await buildRcsCard.call(this, i);
-		// Kept as the message text in the history and for the fallback SMS. By email, Bi-Way takes
-		// the subject from the title of the card.
+		// Kept as the message text in the history and for the fallback SMS.
 		body.body = String(card.text ?? card.title ?? '');
 		channelExtra = { format: 'card', cards: [card] };
 	} else if (content === 'carousel') {
 		requireRichChannel.call(this, i, channel, 'Carousels');
 		const cards = await buildRcsCarousel.call(this, i);
 		body.body = String(cards[0].text ?? cards[0].title ?? '');
-		if (email) {
-			// An email carousel has no subject of its own: the title of its first card.
-			body.subject = String(cards[0].title ?? '');
-		}
 		// "cards": Bi-Way checks every card, and sends several cards as a carousel.
 		channelExtra = { format: 'cards', cards };
 	} else if (email) {
-		body.subject = this.getNodeParameter('subject', i) as string;
 		body.body = this.getNodeParameter('body', i) as string;
 		const attachments = this.getNodeParameter('attachments', i, {}) as {
 			attachment?: Array<{ assetId?: unknown }>;
@@ -232,6 +231,10 @@ async function messageContent(
 		if (buttons.length) {
 			channelExtra = { format: 'text', suggestions: buttons };
 		}
+	}
+	// Every email written in the node has a subject. With a template, Bi-Way takes the template's.
+	if (email && source !== 'template') {
+		body.subject = this.getNodeParameter('subject', i) as string;
 	}
 
 	// Fallback SMS of an RCS message. With a template, only `alternate` is sent: Bi-Way takes the
@@ -303,14 +306,16 @@ const broadcastMessage: Handler = async function (i) {
 		groups?: Array<{ groupId?: unknown }>;
 	};
 
-	// Typed addresses become temporary contacts: Bi-Way reads the column named by the key.
+	// Typed addresses become temporary contacts: Bi-Way reads the column named by the key, the
+	// email address on an email channel, the phone number on the others.
+	const addressKey = isEmailChannel(channel) ? 'email' : 'phone';
 	const receivers: Array<IDataObject | string> = [];
 	const addresses = [
 		...(recipients.addresses ?? []).map((entry) => String(entry.address ?? '').trim()),
 		...splitAddresses(options.bulkAddresses),
 	].filter(Boolean);
 	for (const address of addresses) {
-		receivers.push(address.includes('@') ? { email: address } : { phone: address });
+		receivers.push({ [addressKey]: address });
 	}
 	for (const contact of recipients.contacts ?? []) {
 		if (Number(contact.contactId) > 0) {
@@ -596,7 +601,7 @@ const createContact: Handler = async function (i) {
 	if (!Object.keys(values).length) {
 		throw new NodeOperationError(this.getNode(), 'No contact column is filled in', {
 			itemIndex: i,
-			description: 'Map at least the phone number of the contact.',
+			description: 'Map at least one column, such as the phone number or the email address.',
 		});
 	}
 
@@ -608,25 +613,41 @@ const createContact: Handler = async function (i) {
 	}
 
 	const ifExists = this.getNodeParameter('ifExists', i, 'useExisting') as string;
-	// A contact is recognized by its phone number.
-	const phone = values.phone;
-	if (ifExists !== 'create' && phone !== undefined && allowed.has('phone')) {
-		const existing = await findContact.call(this, i, 'phone', String(phone));
-		if (existing && ifExists === 'update') {
-			// Bi-Way updates the contact of the account that has the same phone number.
-			body.check_double = 'account';
-			body.key_column = 'phone';
-			body.update_if_double = true;
-			return {
-				...normalizeResponse(
-					await biwayApiRequest.call(this, 'POST', '/file/entry', body, undefined, i),
-				),
-				updated: true,
-			};
+	if (ifExists !== 'create') {
+		// A contact is recognized by the chosen column, a name of the account's own list only:
+		// Bi-Way puts it as is in its search condition.
+		const matchOn = (this.getNodeParameter('matchOn', i, 'phone') as string) || 'phone';
+		if (!allowed.has(matchOn)) {
+			throw new NodeOperationError(this.getNode(), `Unknown contact column '${matchOn}'`, {
+				itemIndex: i,
+				description:
+					"Pick the 'Match On Column' from the list: this column does not exist on your Bi-Way account.",
+			});
 		}
-		const outcome = existingOutcome.call(this, i, existing, 'A contact with this phone number');
-		if (outcome) {
-			return outcome;
+		const matchValue = values[matchOn];
+		if (matchValue !== undefined) {
+			const existing = await findContact.call(this, i, matchOn, String(matchValue));
+			if (existing && ifExists === 'update') {
+				// Bi-Way updates the contact of the account that has the same value in this column.
+				body.check_double = 'account';
+				body.key_column = matchOn;
+				body.update_if_double = true;
+				return {
+					...normalizeResponse(
+						await biwayApiRequest.call(this, 'POST', '/file/entry', body, undefined, i),
+					),
+					updated: true,
+				};
+			}
+			const outcome = existingOutcome.call(
+				this,
+				i,
+				existing,
+				`A contact with this value in the '${matchOn}' column`,
+			);
+			if (outcome) {
+				return outcome;
+			}
 		}
 	}
 
@@ -1023,6 +1044,7 @@ export class Biway implements INodeType {
 	methods = {
 		listSearch: {
 			searchContactGroups,
+			searchGalleryFiles,
 			searchGalleryImages,
 			searchScenarios,
 			searchTemplates,
@@ -1031,6 +1053,7 @@ export class Biway implements INodeType {
 			getChannels,
 			// Still a list for 'Exclude Contact Group Names or IDs', which takes several groups.
 			getContactGroups,
+			getContactMatchColumns,
 			getSenders,
 		},
 		resourceMapping: { getContactColumns },
