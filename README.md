@@ -6,8 +6,9 @@
 
 # Bi-Way SMS/RCS for n8n
 
-Send SMS and RCS rich messages from [n8n](https://n8n.io/): cards with images, suggestion buttons, your
-verified brand as the sender, and a fallback SMS when a phone cannot receive RCS.
+Send SMS and RCS rich messages from [n8n](https://n8n.io/): cards and carousels with images,
+suggestion buttons, your verified brand as the sender, and a fallback SMS when a phone cannot receive
+RCS.
 
 `n8n-nodes-biway-messenger` is the n8n community package of [Bi-Way](https://www.bi-way.fr/), the
 messaging platform of Pocket Communication.
@@ -86,9 +87,9 @@ change it. n8n tests the key when you save the credential.
 
 | Resource | Operation | What it does |
 |---|---|---|
-| Message | Send | Sends a text, a template or an RCS card to one phone number, with RCS buttons if needed. Returns the ID of the sending, which status reports carry as `order_id`. |
-| Message | Broadcast | Sends one message to phone numbers, contacts and contact groups, now or later, optionally in segments. |
-| Template | Create | Creates a message template: text (with RCS buttons if needed), media or RCS card. Reuses the template with the same title by default. |
+| Message | Send | Sends a text, an RCS card or an RCS carousel to one phone number, written in the node or taken from a template, with RCS buttons if needed. Returns the ID of the sending, which status reports carry as `order_id`. |
+| Message | Broadcast | Sends the same content to phone numbers, contacts and contact groups, now or later, optionally in segments. |
+| Template | Create | Creates a message template: text (with RCS buttons if needed), RCS card or RCS carousel. Reuses the template with the same title by default. |
 | Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in an RCS card. |
 | Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by its phone number and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
@@ -100,6 +101,11 @@ change it. n8n tests the key when you save the credential.
 
 Good to know:
 
+- **Content, then source**: Send and Broadcast first ask for the **Content** (*Text*, *Card* or
+  *Carousel*), then whether you write it in the node (*Raw Message*) or use a *Template*. A raw text
+  has a body and RCS buttons; a card a title, a body, an image and buttons; a carousel 2 to 10 cards.
+  The template list only shows the templates of the chosen content that the channel can carry, and a
+  template of another content or for another channel is refused before sending.
 - **Picking items**: templates, contact groups, scenarios and gallery images are chosen **From List**
   (search by name or ID) or **By ID**, for example to map an ID returned by an earlier node.
 - **Phone numbers** are written in international format, for example `+33612345678`. Numbers typed
@@ -109,16 +115,14 @@ Good to know:
   is read in the time zone of the workflow. Bi-Way refuses dates in the past.
 - **Status reports**: Broadcast asks for delivery and read reports by default (option **Status
   Reports**). They reach the Bi-Way SMS/RCS Trigger as *Message Status Updated* events.
-- **RCS cards and buttons** need the RCS channel. A card has a title, a text, an image or a video
-  (from your Bi-Way gallery, where it must be public, or from an HTTPS address) and 4 buttons at
-  most; a text message 11 buttons at most. Button labels are 25 characters at most. Button kinds:
-  Suggested Reply, Open URL, Dial and View Location.
+- **RCS cards, carousels and buttons** need the RCS channel. A card has a title, a body, an image or
+  a video (from your Bi-Way gallery, where it must be public, or from an HTTPS address) and 4 buttons
+  at most. A carousel shows 2 to 10 such cards side by side, each with its own buttons. A text
+  message takes 11 buttons at most. Button labels are 25 characters at most. Button kinds: Suggested
+  Reply, Open URL, Dial and View Location.
 - **Fallback SMS of an RCS message** (field **If the Phone Is Not RCS-Capable**): the fallback SMS of
   your account (default), an SMS written in the node, or nothing (see
   [RCS with your own fallback](#rcs-with-your-own-fallback)).
-- **Templates and channels**: Send and Broadcast only list the templates the chosen channel can carry,
-  and refuse a template that does not fit it before sending (RCS cards and buttons only go through
-  RCS).
 - **No duplicates when a workflow runs again**: Template › Create, Contact › Create Group, Contact ›
   Create and RCS Agent › Create Keyword Reply reuse the existing item by default (field **If …
   Already Exists**). Names are compared ignoring case and surrounding spaces; contacts are matched on
@@ -188,7 +192,7 @@ in n8n instead:
 A Bi-Way scenario is a conversation driven by RCS buttons: each Suggested Reply button sends a
 keyword, and a keyword reply answers it with the next message. Build one from n8n in four steps:
 
-1. **Template › Create** for each step: format *Text* or *Card (RCS)*, with **RCS Buttons** of type
+1. **Template › Create** for each step: content *Text*, *Card* or *Carousel*, with buttons of type
    *Suggested Reply*. Each button carries a keyword (for example `CONFIRM`, `CALL_ME`).
 2. **RCS Agent › Create Keyword Reply** for each keyword: it sends the template of the next step.
 3. **RCS Scenario › Create** with the first template. The scenario appears in Bi-Way, where you can
@@ -213,6 +217,7 @@ the Bi-Way nodes; replace the placeholders (phone numbers, sheet IDs, templates)
 | [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order ships, with a fallback SMS. |
 | [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
 | [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |
+| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, adds them to a contact group and sends them the practical information. Needs access to the Weezevent API, which Weezevent grants to its partners. |
 
 ## Compatibility
 

@@ -1,9 +1,9 @@
 # Bi-Way dans n8n : vos SMS et messages RCS au cœur de vos automatisations
 
-[n8n](https://n8n.io/) relie vos outils entre eux : boutique en ligne, formulaires, tableurs, CRM,
-agenda… Avec les nœuds Bi-Way, chacune de ces automatisations peut envoyer un SMS ou un message RCS
-enrichi (carte avec image, boutons de réponse, votre marque comme expéditeur), puis réagir aux
-réponses de vos clients.
+[n8n](https://n8n.io/) relie vos outils entre eux : boutique en ligne, billetterie, formulaires,
+tableurs, CRM, agenda… Avec les nœuds Bi-Way, chacune de ces automatisations peut envoyer un SMS ou un
+message RCS enrichi (carte ou carrousel avec images, boutons de réponse, votre marque comme
+expéditeur), puis réagir aux réponses de vos clients.
 
 Les nœuds sont gratuits et publiés en open source : paquet `n8n-nodes-biway-messenger`.
 
@@ -28,6 +28,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 | Suivi de commande | À l'expédition d'une commande WooCommerce, envoie une carte RCS avec un bouton de suivi, ou un SMS si le téléphone ne lit pas le RCS. |
 | Réponses vers l'équipe | Oriente les réponses de vos clients vers le bon service selon leurs mots-clés. |
 | Bienvenue après formulaire | Crée ou met à jour le contact à partir d'un formulaire, puis lui envoie un message de bienvenue. |
+| Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et leur envoie leurs informations pratiques. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
 
 ## Pourquoi Bi-Way plutôt qu'un simple envoi de SMS ?
 
@@ -75,9 +76,10 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n.
 
 - **Message** : *Send* (un destinataire) et *Broadcast* (numéros, contacts et groupes de contacts,
-  envoi programmé, envoi par vagues, accusés de réception et de lecture). Texte, modèle ou carte RCS,
-  avec boutons RCS : réponse suggérée, ouverture d'un lien, appel, lieu affiché sur une carte.
-- **Template** : créer un modèle de message (texte, média, carte RCS).
+  envoi programmé, envoi par vagues, accusés de réception et de lecture). Un texte, une carte RCS ou
+  un carrousel de 2 à 10 cartes, rédigé dans le nœud ou tiré d'un modèle, avec boutons RCS : réponse
+  suggérée, ouverture d'un lien, appel, lieu affiché sur une carte.
+- **Template** : créer un modèle de message (texte, carte RCS, carrousel RCS).
 - **Asset** : déposer une image ou une vidéo dans votre galerie Bi-Way, pour l'afficher dans une
   carte RCS.
 - **Contact** : créer un contact (reconnu par son numéro de téléphone pour éviter les doublons),

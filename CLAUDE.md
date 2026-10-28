@@ -14,7 +14,11 @@ Programmatic style, built on the `npm create @n8n/node` template.
 - English only in the node, the credential, the README and the docs in this repository, except
   `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly; the brand is
   written "Bi-Way".
-- SMS and RCS only: no email wording, format or option in the node or its documentation.
+- SMS and RCS only: no email wording, format or option in the node or its documentation. No MMS
+  either (channel no longer supported), hence no 'Subject' field.
+- Messages and templates take a 'Content' (Text, Card, Carousel); messages then a 'Source' (Raw
+  Message or Template). The content also filters the templates offered (`templateContent()`: a card
+  template with several `extra.cards` is a carousel).
 - Single items are picked with resource locators ("From List" / "By ID",
   `descriptions/ResourceLocators.ts`); inside a collection, read them with `locatorValue()`.
 - No runtime dependency, no `process.env`, no file system access (verification rules).
@@ -63,16 +67,23 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 - [x] CHANGELOG: "Unreleased" merged into 0.1.0, with the phase 1 changes (resource locators,
       Simplify, SMS/RCS only, contacts matched by phone number, no template attachments)
 - [x] `docs/integration-n8n-fr.md` for bi-way.fr
+- [x] Content Text / Card / Carousel, then Source Raw Message / Template, on Send, Broadcast and
+      Template › Create; templates filtered by content; no 'Subject' and no 'Media' format (MMS
+      no longer supported)
 
 ### Phase 3 — Example workflows (`examples/`)
 File names already linked from the README: `appointment-reminder.json`, `appointment-reply.json`,
 `review-request.json`, `order-notifications.json`, `inbound-to-team-inbox.json`,
-`form-welcome-message.json`.
+`form-welcome-message.json`, `weezevent-ticket-holders.json`.
 - [ ] Appointment reminder with quick replies, and the reply workflow (no online rebooking)
 - [ ] Review request with routing
 - [ ] E-commerce order notifications (card, tracking button, SMS fallback)
 - [ ] Inbound reply to team inbox
 - [ ] Form to welcome message (contact create or update)
+- [ ] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
+      access, `POST /auth/access_token`, `GET /participant/list` with `last_update`; no documented
+      webhook), contact group, practical information. Read the API PDF (api.weezevent.com) for
+      where the phone number of a participant lives before writing it
 - [ ] `examples/README.md` with audience and canvas screenshots
 
 ### Phase 4 — Validation

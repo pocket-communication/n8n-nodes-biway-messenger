@@ -8,12 +8,13 @@ First public release.
 
 - **Message**: Send (one phone number) and Broadcast (phone numbers, contacts and contact groups;
   send date, segmentation, status reports, priority, simulation, excluded groups, filters). Content:
-  text, template or RCS card, with RCS buttons (Suggested Reply, Open URL, Dial, View Location).
+  text, RCS card or RCS carousel (2 to 10 cards), written in the node or taken from a template, with
+  RCS buttons (Suggested Reply, Open URL, Dial, View Location).
 - **Fallback SMS of RCS messages** ("If the Phone Is Not RCS-Capable"): the account's fallback SMS,
   an SMS written in the node, or none, so that a workflow decides on the `unsupported` status.
-- **Templates and channels**: Send and Broadcast only list the templates the chosen channel can
-  carry, and refuse a template that does not fit it before sending.
-- **Template**: Create (text, media, RCS card).
+- **Templates, content and channels**: Send and Broadcast only list the templates of the chosen
+  content that the chosen channel can carry, and refuse any other template before sending.
+- **Template**: Create (text, RCS card, RCS carousel).
 - **Asset**: Upload to the Bi-Way gallery.
 - **Contact**: Create (columns of the account, existing contact recognized by its phone number:
   reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
