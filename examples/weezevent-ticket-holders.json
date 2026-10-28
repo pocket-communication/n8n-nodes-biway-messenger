@@ -1,0 +1,499 @@
+{
+	"name": "Bi-Way: Weezevent ticket holders",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Weezevent ticket holders\nEvery 15 minutes, fetches the new participants of a Weezevent event, saves them as Bi-Way contacts and sends them their practical information: an RCS card when the registration form asks for a phone number, an email otherwise.\n\n### Setup\n1. Weezevent API access (granted to Weezevent partners): replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n2. **Bi-Way API** credential; RCS agent for the card, the email option of your account for the email.\n3. Adapt the card (event name, address, coordinates, practical information URL) and the email. Publish the workflow.",
+				"height": 340,
+				"width": 560,
+				"color": 4
+			},
+			"id": "12b42fcc-d931-42d9-a705-cfe7801539d4",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-460
+			]
+		},
+		{
+			"parameters": {
+				"content": "### Only new participants\nThe workflow remembers the `server_time` of the last Weezevent answer and asks for the participants changed since then. This memory only works in published runs, not in manual tests.",
+				"height": 170,
+				"width": 360
+			},
+			"id": "bf5129d2-099e-4378-aba6-d0a8ebef9989",
+			"name": "Sticky Note since",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				440,
+				-260
+			]
+		},
+		{
+			"parameters": {
+				"content": "### Phone number\nWeezevent gives a participant's name and email; a phone number only exists if your registration form asks for it. This node looks for an answer whose label speaks of a phone.",
+				"height": 170,
+				"width": 360
+			},
+			"id": "f498350f-4a9e-4497-a931-0d43d26ae038",
+			"name": "Sticky Note phone",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				1360,
+				-260
+			]
+		},
+		{
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "minutes",
+							"minutesInterval": 15
+						}
+					]
+				}
+			},
+			"id": "1890ec12-7478-4cc8-a030-682e1636abe7",
+			"name": "Every 15 minutes",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [
+				0,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"jsCode": "// Participants changed since the last run (the day before on the first run).\nconst memory = $getWorkflowStaticData('global');\nconst since = memory.since || $now.minus({ days: 1 }).setZone('Europe/Paris').toFormat('yyyy-MM-dd HH:mm:ss');\nreturn [{ json: { since } }];"
+			},
+			"id": "ac8780e9-7c8b-4153-a3f4-8267f1a1d00f",
+			"name": "Since last check",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"method": "POST",
+				"url": "https://api.weezevent.com/auth/access_token",
+				"sendBody": true,
+				"contentType": "form-urlencoded",
+				"bodyParameters": {
+					"parameters": [
+						{
+							"name": "username",
+							"value": "YOUR_WEEZEVENT_USERNAME"
+						},
+						{
+							"name": "password",
+							"value": "YOUR_WEEZEVENT_PASSWORD"
+						},
+						{
+							"name": "api_key",
+							"value": "YOUR_WEEZEVENT_API_KEY"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "9f3095e6-a78a-4ee8-a94f-5fa0a7ee6fb0",
+			"name": "Get a Weezevent token",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [
+				440,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"url": "https://api.weezevent.com/participant/list",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "api_key",
+							"value": "YOUR_WEEZEVENT_API_KEY"
+						},
+						{
+							"name": "access_token",
+							"value": "={{ $json.accessToken }}"
+						},
+						{
+							"name": "id_event[]",
+							"value": "YOUR_EVENT_ID"
+						},
+						{
+							"name": "last_update",
+							"value": "={{ $('Since last check').item.json.since }}"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "2414cae5-b317-4ce4-a812-66870a07e667",
+			"name": "Get new participants",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [
+				660,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"jsCode": "// Remember the time of this answer for the next run, then output the participants.\nconst answer = $input.first().json;\nconst memory = $getWorkflowStaticData('global');\nif (answer.server_time) memory.since = answer.server_time;\nconst token = $('Get a Weezevent token').first().json.accessToken;\nreturn (answer.participants || []).map((participant) => ({ json: { ...participant, accessToken: token } }));"
+			},
+			"id": "c5d4e7bc-8405-4ec7-a8b5-da47b76a6b3c",
+			"name": "One item per participant",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [
+				880,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"url": "=https://api.weezevent.com/participant/{{ $json.id_participant }}/answers",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "api_key",
+							"value": "YOUR_WEEZEVENT_API_KEY"
+						},
+						{
+							"name": "access_token",
+							"value": "={{ $json.accessToken }}"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "250a08a6-7b53-4b66-a8d7-c8eecca00629",
+			"name": "Get the form answers",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [
+				1100,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"mode": "runOnceForEachItem",
+				"jsCode": "// The phone number, if the registration form asks for it, in international format.\nconst participant = $('One item per participant').item.json;\nconst owner = participant.owner || {};\nconst answer = ($json.answers || []).find((a) => /t[ée]l[ée]phone|portable|mobile|phone/i.test(a.label || ''));\nlet phone = String((answer && answer.value) || '').replace(/[\\s.-]/g, '');\nif (/^0[1-9]\\d{8}$/.test(phone)) phone = '+33' + phone.slice(1);\nreturn {\n\tjson: {\n\t\tfirstName: owner.first_name || '',\n\t\tlastName: owner.last_name || '',\n\t\temail: owner.email || '',\n\t\tphone,\n\t},\n};"
+			},
+			"id": "408390b1-fa8b-4b91-a8e9-dd46582f2d5f",
+			"name": "Find the phone number",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [
+				1320,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "contact",
+				"operation": "create",
+				"contactColumns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"surname": "={{ $json.firstName }}",
+						"name": "={{ $json.lastName }}",
+						"email": "={{ $json.email }}",
+						"phone": "={{ $json.phone }}"
+					},
+					"matchingColumns": [],
+					"schema": [
+						{
+							"id": "surname",
+							"displayName": "First Name",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "name",
+							"displayName": "Name",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "email",
+							"displayName": "Email (email address)",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "phone",
+							"displayName": "Phone (international format, e.g. +33612345678)",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						}
+					]
+				},
+				"ifExists": "update",
+				"matchOn": "email",
+				"options": {}
+			},
+			"id": "db3c3713-260b-4a0d-a75f-eceac1019aaa",
+			"name": "Save the participant",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				1540,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": {
+						"caseSensitive": true,
+						"leftValue": "",
+						"typeValidation": "loose",
+						"version": 2
+					},
+					"conditions": [
+						{
+							"id": "24a3daf6-8e74-452d-ac14-ae3511cd8690",
+							"leftValue": "={{ $('Find the phone number').item.json.phone }}",
+							"rightValue": "",
+							"operator": {
+								"type": "string",
+								"operation": "notEmpty",
+								"singleValue": true
+							}
+						}
+					],
+					"combinator": "and"
+				},
+				"options": {}
+			},
+			"id": "6a5f1fb6-5016-4807-ad6b-e2b0ed772cc8",
+			"name": "Has a phone number?",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [
+				1760,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "card",
+				"source": "raw",
+				"cardImage": "none",
+				"cardTitle": "={{ $('Find the phone number').item.json.firstName }}, see you at YOUR EVENT",
+				"cardText": "Doors open at 7 pm. Bring your ticket on your phone. Everything you need to know is one tap away.",
+				"rcsButtons": {
+					"openUrl": [
+						{
+							"text": "Practical information",
+							"url": "https://www.example.com/practical-information"
+						}
+					],
+					"viewLocation": [
+						{
+							"text": "How to get there",
+							"latitude": 48.8566,
+							"longitude": 2.3522,
+							"locationLabel": "YOUR VENUE"
+						}
+					]
+				},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "See you at YOUR EVENT! Doors open at 7 pm. Practical information: https://www.example.com/practical-information",
+				"receiver": "={{ $('Find the phone number').item.json.phone }}",
+				"options": {}
+			},
+			"id": "a4aba11d-a42f-4291-a2ad-de8efe09be11",
+			"name": "Send the RCS card",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				2000,
+				-120
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "email",
+				"content": "card",
+				"source": "raw",
+				"subject": "Your ticket for YOUR EVENT: practical information",
+				"cardImage": "none",
+				"cardTitle": "={{ $('Find the phone number').item.json.firstName }}, see you at YOUR EVENT",
+				"cardText": "Doors open at 7 pm. Bring your ticket on your phone. Everything you need to know is one tap away.",
+				"rcsButtons": {
+					"openUrl": [
+						{
+							"text": "Practical information",
+							"url": "https://www.example.com/practical-information"
+						}
+					],
+					"viewLocation": [
+						{
+							"text": "How to get there",
+							"latitude": 48.8566,
+							"longitude": 2.3522,
+							"locationLabel": "YOUR VENUE"
+						}
+					]
+				},
+				"receiver": "={{ $('Find the phone number').item.json.email }}",
+				"options": {}
+			},
+			"id": "164c8f10-0b17-471e-a881-07ae36d62284",
+			"name": "Send the email",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				2000,
+				120
+			]
+		}
+	],
+	"connections": {
+		"Every 15 minutes": {
+			"main": [
+				[
+					{
+						"node": "Since last check",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Since last check": {
+			"main": [
+				[
+					{
+						"node": "Get a Weezevent token",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get a Weezevent token": {
+			"main": [
+				[
+					{
+						"node": "Get new participants",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get new participants": {
+			"main": [
+				[
+					{
+						"node": "One item per participant",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"One item per participant": {
+			"main": [
+				[
+					{
+						"node": "Get the form answers",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get the form answers": {
+			"main": [
+				[
+					{
+						"node": "Find the phone number",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Find the phone number": {
+			"main": [
+				[
+					{
+						"node": "Save the participant",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Save the participant": {
+			"main": [
+				[
+					{
+						"node": "Has a phone number?",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Has a phone number?": {
+			"main": [
+				[
+					{
+						"node": "Send the RCS card",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Send the email",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
