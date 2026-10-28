@@ -1,0 +1,264 @@
+{
+	"name": "Bi-Way: route customer replies to the team inbox",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Route customer replies to the team inbox\nEvery message a customer sends to your Bi-Way numbers or RCS agent is emailed to the right team, chosen by keywords: billing, delivery, or customer service for the rest.\n\n### Setup\n1. **Bi-Way API** credential; your n8n reachable over HTTPS.\n2. SMTP credential; replace the `@example.com` addresses by your team inboxes.\n3. Adapt the keywords in **Route by keywords**. Publish the workflow.",
+				"height": 280,
+				"width": 500,
+				"color": 4
+			},
+			"id": "dac48ecf-114b-4aee-a9e9-337ad57f3918",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-400
+			]
+		},
+		{
+			"parameters": {
+				"content": "### With other workflows\nBi-Way sends each received message to every workflow listening. Button taps (`keyword` set) are skipped here: the workflow that sent the buttons handles them.",
+				"height": 160,
+				"width": 380
+			},
+			"id": "61277787-e311-4c62-a6ed-c9e7e985bfa5",
+			"name": "Sticky Note together",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				200,
+				240
+			]
+		},
+		{
+			"parameters": {
+				"events": [
+					"MESSENGER_DELIVERY"
+				]
+			},
+			"id": "827eb697-b4d2-4049-a4be-ff3c348c6750",
+			"name": "Message received",
+			"type": "n8n-nodes-biway-messenger.biwayTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"webhookId": "2639ab82-a5bc-4b22-a4c2-fd507d985adf"
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": {
+						"caseSensitive": true,
+						"leftValue": "",
+						"typeValidation": "loose",
+						"version": 2
+					},
+					"conditions": [
+						{
+							"id": "eb209327-7971-4147-a822-c36c9d998756",
+							"leftValue": "={{ $json.keyword }}",
+							"rightValue": "",
+							"operator": {
+								"type": "string",
+								"operation": "empty",
+								"singleValue": true
+							}
+						}
+					],
+					"combinator": "and"
+				},
+				"options": {}
+			},
+			"id": "98449a8f-edb1-47de-a4df-17d13b1cd2ad",
+			"name": "Only typed messages",
+			"type": "n8n-nodes-base.filter",
+			"typeVersion": 2.2,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"rules": {
+					"values": [
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "9380a988-de83-4e18-a254-57a102317075",
+										"leftValue": "={{ String($json.message || '').toLowerCase() }}",
+										"rightValue": "invoice|bill|payment|refund|factur|paiement|rembours",
+										"operator": {
+											"type": "string",
+											"operation": "regex"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Billing"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "38456286-7de5-4d43-a3d0-8d42fa93f2d2",
+										"leftValue": "={{ String($json.message || '').toLowerCase() }}",
+										"rightValue": "delivery|order|parcel|tracking|livraison|commande|colis",
+										"operator": {
+											"type": "string",
+											"operation": "regex"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Delivery"
+						}
+					]
+				},
+				"options": {
+					"fallbackOutput": "extra",
+					"renameFallbackOutput": "Customer service"
+				}
+			},
+			"id": "3eae58c8-5b8e-42af-a766-925f55d51b3b",
+			"name": "Route by keywords",
+			"type": "n8n-nodes-base.switch",
+			"typeVersion": 3.2,
+			"position": [
+				440,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "billing@example.com",
+				"subject": "=New message from {{ $json.sender }}",
+				"emailFormat": "text",
+				"text": "=From: {{ $json.sender }} ({{ $json.address }})\nChannel: {{ $json.channel }}\nDate: {{ $json.date }}\n\n{{ $json.message }}",
+				"options": {}
+			},
+			"id": "fdeaf1c9-d60d-442d-a4a9-96de733b3925",
+			"name": "Email billing",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				-180
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "delivery@example.com",
+				"subject": "=New message from {{ $json.sender }}",
+				"emailFormat": "text",
+				"text": "=From: {{ $json.sender }} ({{ $json.address }})\nChannel: {{ $json.channel }}\nDate: {{ $json.date }}\n\n{{ $json.message }}",
+				"options": {}
+			},
+			"id": "b7539d07-9205-44bc-a3d1-e2bd2b2f1e38",
+			"name": "Email delivery",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "support@example.com",
+				"subject": "=New message from {{ $json.sender }}",
+				"emailFormat": "text",
+				"text": "=From: {{ $json.sender }} ({{ $json.address }})\nChannel: {{ $json.channel }}\nDate: {{ $json.date }}\n\n{{ $json.message }}",
+				"options": {}
+			},
+			"id": "c612a80d-1b23-4c5e-ad87-76f578a2f5e9",
+			"name": "Email customer service",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				180
+			]
+		}
+	],
+	"connections": {
+		"Message received": {
+			"main": [
+				[
+					{
+						"node": "Only typed messages",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Only typed messages": {
+			"main": [
+				[
+					{
+						"node": "Route by keywords",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Route by keywords": {
+			"main": [
+				[
+					{
+						"node": "Email billing",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Email delivery",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Email customer service",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
