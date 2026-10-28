@@ -95,7 +95,7 @@ change it. n8n tests the key when you save the credential.
 | Message | Broadcast | Sends the same content to phone numbers or email addresses, contacts and contact groups, now or later, optionally in segments. |
 | Template | Create | Creates a message template: text (with RCS buttons if needed), card or carousel. Reuses the template with the same title by default. |
 | Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in a card or attach it to an email. |
-| Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by its phone number and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
+| Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by the column you pick in **Match On Column** (the phone number by default, or the email address, a customer number…) and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
 | Contact | Import File | Imports contacts from a CSV, XLS or XLSX file into a group. The import runs in the background: the node returns the ID of the import task. |
 | RCS Agent | Create Keyword Reply | Replies with a template when a customer sends a keyword to your RCS agent, or taps a suggestion button that carries it. Reuses the reply to the same keyword by default. |
@@ -108,13 +108,14 @@ Good to know:
 - **Content, then source**: Send and Broadcast first ask for the **Content**, then whether you write
   it in the node (*Raw Message*) or use a *Template*. SMS channels only take *Text*; RCS and email
   channels also take *Card* and *Carousel*. A card has an image, a title, a body and buttons; a
-  carousel 2 to 10 cards. A raw text has a body, plus buttons on RCS, or a title (the subject) and
-  attachments by email. The template list only shows the templates of the chosen content that the
+  carousel 2 to 10 cards. A raw text has a body, plus buttons on RCS, or attachments by email. Every
+  email written in the node has a **Subject**. The template list only shows the templates of the chosen content that the
   channel can carry, and any other template is refused before sending.
 - **Picking items**: templates, contact groups, scenarios and gallery images are chosen **From List**
   (search by name or ID) or **By ID**, for example to map an ID returned by an earlier node.
 - **Recipients**: phone numbers in international format, for example `+33612345678`, or email
-  addresses on email channels. Addresses typed in Broadcast are not saved as contacts.
+  addresses on email channels: Broadcast reads every typed address as an email address on an email
+  channel, as a phone number on the others. Addresses typed in Broadcast are not saved as contacts.
 - **Personalization tags** of Bi-Way work for contacts and contact groups.
 - **Dates** are sent to Bi-Way in the Europe/Paris time zone, to the minute. A date without time zone
   is read in the time zone of the workflow. Bi-Way refuses dates in the past.
@@ -125,8 +126,8 @@ Good to know:
   4 buttons at most. A carousel shows 2 to 10 such cards side by side, each with its own buttons. An
   RCS text takes 11 buttons at most. Button labels are 25 characters at most. Button kinds: Suggested
   Reply, Open URL, Dial and View Location.
-- **Emails**: the subject of a card is its title, and that of a carousel the title of its first
-  card. The body of a text email is HTML. Attachments are files of your Bi-Way gallery: upload a file
+- **Emails**: an email sent from a template takes the template's subject. The body of a text email
+  is HTML. Attachments are files of your Bi-Way gallery: upload a file
   of the workflow first with **Asset › Upload**.
 - **Fallback SMS of an RCS message** (field **If the Phone Is Not RCS-Capable**): the fallback SMS of
   your account (default), an SMS written in the node, or nothing (see
@@ -134,7 +135,7 @@ Good to know:
 - **No duplicates when a workflow runs again**: Template › Create, Contact › Create Group, Contact ›
   Create and RCS Agent › Create Keyword Reply reuse the existing item by default (field **If …
   Already Exists**). Names are compared ignoring case and surrounding spaces; contacts are matched on
-  their exact phone number, as stored in Bi-Way.
+  the exact value of their Match On Column, as stored in Bi-Way.
 - The node can be used as a tool by AI agents.
 
 ## Bi-Way SMS/RCS Trigger

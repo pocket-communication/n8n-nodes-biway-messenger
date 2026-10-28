@@ -10,16 +10,17 @@ First public release.
   contact groups; send date, segmentation, status reports, priority, simulation, excluded groups,
   filters). Content: text, card or carousel (2 to 10 cards), written in the node or taken from a
   template, with buttons (Suggested Reply, Open URL, Dial, View Location).
-- **Channels**: SMS (text), RCS (text with buttons, card, carousel) and email (text with a title and
-  attachments from the gallery, card, carousel; the buttons lead to the Bi-Way web chat when needed).
+- **Channels**: SMS (text), RCS (text with buttons, card, carousel) and email (a subject, then a text
+  with attachments from the gallery, a card or a carousel; the buttons lead to the Bi-Way web chat
+  when needed).
 - **Fallback SMS of RCS messages** ("If the Phone Is Not RCS-Capable"): the account's fallback SMS,
   an SMS written in the node, or none, so that a workflow decides on the `unsupported` status.
 - **Templates, content and channels**: Send and Broadcast only list the templates of the chosen
   content that the chosen channel can carry, and refuse any other template before sending.
 - **Template**: Create (text, card, carousel).
 - **Asset**: Upload to the Bi-Way gallery.
-- **Contact**: Create (columns of the account, existing contact recognized by its phone number:
-  reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
+- **Contact**: Create (columns of the account, existing contact recognized by the column picked in
+  Match On Column, the phone number by default: reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
 - **RCS Agent**: Create Keyword Reply, Get Status (declaration, state at each operator, next step).
 - **RCS Scenario**: Create, Get, Get Many, Activate, Deactivate, Delete and Start, with a Simplify
   option on Create, Get and Get Many.

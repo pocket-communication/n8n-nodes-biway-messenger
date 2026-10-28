@@ -20,8 +20,11 @@ Programmatic style, built on the `npm create @n8n/node` template.
 - Messages and templates take a 'Content' (Text, Card, Carousel; SMS channels get a Text-only
   'content' field); messages then a 'Source' (Raw Message or Template). The content also filters the
   templates offered (`templateContent()`: a card template with several `extra.cards` is a carousel).
-  Email text = Title (`subject`), HTML body, attachments sent as `"asset:<id>"`; carousels go with
-  format `cards`.
+  Email: a required Subject on every content written in the node (a template brings its own);
+  text = HTML body + attachments sent as `"asset:<id>"`; carousels go with format `cards`. Broadcast
+  reads typed addresses by channel (email or phone).
+- Contact › Create recognizes a contact by the Match On Column, a name of the account's column list
+  only: Bi-Way puts it as is in its search condition.
 - Card fields follow the card (Image, Title, Body, Buttons), except inside a carousel card: the
   official scanner requires alphabetical order in a fixed collection and ignores `eslint-disable`.
 - Single items are picked with resource locators ("From List" / "By ID",

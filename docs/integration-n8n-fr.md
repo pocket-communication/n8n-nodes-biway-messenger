@@ -86,11 +86,12 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
   groupes de contacts, envoi programmé, envoi par vagues, accusés de réception et de lecture). Un
   texte, une carte ou un carrousel de 2 à 10 cartes, rédigé dans le nœud ou tiré d'un modèle, avec
   boutons : réponse suggérée, ouverture d'un lien, appel, lieu affiché sur une carte. En SMS, le
-  texte seul ; par e-mail, un texte avec titre et pièces jointes, une carte ou un carrousel.
+  texte seul ; par e-mail, un objet puis un texte avec pièces jointes, une carte ou un carrousel.
 - **Template** : créer un modèle de message (texte, carte, carrousel).
 - **Asset** : déposer un fichier dans votre galerie Bi-Way, pour l'afficher dans une carte ou le
   joindre à un e-mail.
-- **Contact** : créer un contact (reconnu par son numéro de téléphone pour éviter les doublons),
+- **Contact** : créer un contact (reconnu par la colonne de votre choix, le téléphone par défaut,
+  pour éviter les doublons),
   créer un groupe, importer un fichier CSV ou Excel.
 - **RCS Agent** : créer une réponse automatique à un mot-clé, connaître l'état de votre service de
   chat RCS chez chaque opérateur.
