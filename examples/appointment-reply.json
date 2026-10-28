@@ -1,0 +1,501 @@
+{
+	"name": "Bi-Way: appointment reply",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Appointment reply\nHandles the answers to **Appointment reminder**: a tapped button (`CONFIRM`, `CANCEL`, `CALL_ME`) or a typed YES / NO on SMS. Updates the sheet, answers the customer and tells your team.\n\n### Setup\n1. Same **Bi-Way API** credential and Google Sheet as **Appointment reminder** (replace `YOUR_SHEET_ID`).\n2. An SMTP credential for the emails to your team; replace `team@example.com`.\n3. Your n8n must be reachable over HTTPS, then publish the workflow: the trigger registers its webhook on Bi-Way by itself.",
+				"height": 300,
+				"width": 500,
+				"color": 4
+			},
+			"id": "90c2962f-569e-4697-a5d2-5be9dc7c1d59",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-420
+			]
+		},
+		{
+			"parameters": {
+				"content": "### Phone numbers\nThe sheet is matched on `Phone`: write the numbers as Bi-Way reports them (international format). Other messages go to the last output and are left to your other workflows.",
+				"height": 160,
+				"width": 360
+			},
+			"id": "e0263ed5-8c2e-45d7-a642-beeaaa0938f7",
+			"name": "Sticky Note match",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				660,
+				-380
+			]
+		},
+		{
+			"parameters": {
+				"events": [
+					"MESSENGER_DELIVERY"
+				]
+			},
+			"id": "32562d09-f8cf-4ee6-a1fe-9bccbaf19c55",
+			"name": "Reply received",
+			"type": "n8n-nodes-biway-messenger.biwayTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				0
+			],
+			"webhookId": "285ce3eb-431c-4a7f-ae03-09e0c7e12842"
+		},
+		{
+			"parameters": {
+				"assignments": {
+					"assignments": [
+						{
+							"id": "b52cab4b-7e46-46eb-aa78-a01c9205465e",
+							"name": "answer",
+							"value": "={{ String($json.keyword || $json.message || '').trim().toUpperCase() }}",
+							"type": "string"
+						},
+						{
+							"id": "9e212b4f-1d44-416f-ade3-58c66b76695a",
+							"name": "phone",
+							"value": "={{ $json.address }}",
+							"type": "string"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "85349440-5501-4bd3-a83c-a061577c615c",
+			"name": "Read the answer",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"rules": {
+					"values": [
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "d1682cb9-b934-43de-a690-273cecae9dc0",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CONFIRM",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									},
+									{
+										"id": "29de5c4c-4297-4d82-a665-fde4e97fa34e",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "YES",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Confirmed"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "6f6a6436-cabc-47c4-acd7-c3f64f80b347",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CANCEL",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									},
+									{
+										"id": "82c2a713-00df-4aae-a237-0f69f82aaaa2",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "NO",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Cancelled"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "2698c994-89af-494a-a1b9-fe13763dbb64",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CALL_ME",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Call back"
+						}
+					]
+				},
+				"options": {
+					"fallbackOutput": "extra",
+					"renameFallbackOutput": "Other message"
+				}
+			},
+			"id": "0259cfbe-54e1-4df6-add4-86d5b7f8b849",
+			"name": "Route by answer",
+			"type": "n8n-nodes-base.switch",
+			"typeVersion": 3.2,
+			"position": [
+				440,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"operation": "update",
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Appointments",
+					"mode": "name"
+				},
+				"columns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"Phone": "={{ $json.phone }}",
+						"Status": "Confirmed"
+					},
+					"matchingColumns": [
+						"Phone"
+					],
+					"schema": [
+						{
+							"id": "Phone",
+							"displayName": "Phone",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						},
+						{
+							"id": "Status",
+							"displayName": "Status",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "eec4eec5-5b52-48b5-a990-87cb315c29b6",
+			"name": "Mark as confirmed",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				700,
+				-200
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Thank you, your appointment is confirmed. See you tomorrow!",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Thank you, your appointment is confirmed. See you tomorrow!"
+			},
+			"id": "e76c0bc0-01ec-4891-a143-fb6bbcfe6a00",
+			"name": "Thank the customer",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				-200
+			]
+		},
+		{
+			"parameters": {
+				"operation": "update",
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Appointments",
+					"mode": "name"
+				},
+				"columns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"Phone": "={{ $json.phone }}",
+						"Status": "Cancelled"
+					},
+					"matchingColumns": [
+						"Phone"
+					],
+					"schema": [
+						{
+							"id": "Phone",
+							"displayName": "Phone",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						},
+						{
+							"id": "Status",
+							"displayName": "Status",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "cafdf26d-2a77-4571-ab5a-38906d92b59f",
+			"name": "Mark as cancelled",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				700,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Your appointment is cancelled. Our team will call you to find another time.",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Your appointment is cancelled. Our team will call you to find another time."
+			},
+			"id": "f74f0f82-cf51-4b93-ad5c-47627e09be2c",
+			"name": "Acknowledge the cancellation",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "team@example.com",
+				"subject": "=Appointment cancelled by {{ $('Read the answer').item.json.phone }}",
+				"emailFormat": "text",
+				"text": "=The customer {{ $('Read the answer').item.json.phone }} cancelled tomorrow's appointment. Please call them to find another time.",
+				"options": {}
+			},
+			"id": "e759c2e9-c87f-4249-a572-36eaab684e6c",
+			"name": "Tell the team: cancelled",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				1140,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "team@example.com",
+				"subject": "=Call back {{ $json.phone }}",
+				"emailFormat": "text",
+				"text": "=The customer {{ $json.phone }} asked to be called about tomorrow's appointment.",
+				"options": {}
+			},
+			"id": "b8273f94-0318-45d5-a7bd-fd52dc18b24d",
+			"name": "Tell the team: call back",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				200
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Noted, our team will call you back shortly.",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Noted, our team will call you back shortly."
+			},
+			"id": "ed8fbb1d-a6ed-4f56-adfc-e856eb230c63",
+			"name": "Confirm the call back",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				200
+			]
+		}
+	],
+	"connections": {
+		"Reply received": {
+			"main": [
+				[
+					{
+						"node": "Read the answer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Read the answer": {
+			"main": [
+				[
+					{
+						"node": "Route by answer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Route by answer": {
+			"main": [
+				[
+					{
+						"node": "Mark as confirmed",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Mark as cancelled",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Tell the team: call back",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Mark as confirmed": {
+			"main": [
+				[
+					{
+						"node": "Thank the customer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Mark as cancelled": {
+			"main": [
+				[
+					{
+						"node": "Acknowledge the cancellation",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Acknowledge the cancellation": {
+			"main": [
+				[
+					{
+						"node": "Tell the team: cancelled",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Tell the team: call back": {
+			"main": [
+				[
+					{
+						"node": "Confirm the call back",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
