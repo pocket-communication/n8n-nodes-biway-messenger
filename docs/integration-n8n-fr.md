@@ -72,7 +72,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 
 1. Dans n8n, en tant que propriétaire ou administrateur : **Settings › Community Nodes › Install**,
    saisissez `n8n-nodes-biway-messenger` et validez.
-2. Ajoutez le nœud **Bi-Way SMS/RCS** à un workflow (cherchez « Bi-Way », « SMS » ou « RCS »).
+2. Ajoutez le nœud **Bi-Way** à un workflow (cherchez « Bi-Way », « SMS », « RCS » ou « e-mail »).
 3. Créez l'identifiant **Bi-Way API** : collez le jeton et le secret de votre clé. n8n vérifie la clé
    à l'enregistrement.
 4. Choisissez **Message › Send**, le canal, le numéro du destinataire au format international
@@ -97,7 +97,7 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
   chat RCS chez chaque opérateur.
 - **RCS Scenario** : créer, consulter, activer, désactiver, supprimer et démarrer des scénarios de
   conversation RCS guidés par boutons.
-- **Bi-Way SMS/RCS Trigger** : démarrer un workflow sur un accusé de réception ou de lecture, un
+- **Bi-Way Trigger** : démarrer un workflow sur un accusé de réception ou de lecture, un
   message reçu ou un bouton touché, la fin d'un import de contacts, un changement d'état de votre
   service de chat RCS.
 

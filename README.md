@@ -4,7 +4,7 @@
   <img src="docs/images/pocket-communication.png" alt="Pocket Communication" width="96" height="96">
 </p>
 
-# Bi-Way SMS/RCS for n8n
+# Bi-Way for n8n
 
 Send SMS, RCS rich messages and emails from [n8n](https://n8n.io/): cards and carousels with images,
 suggestion buttons, your verified brand as the sender, and a fallback SMS when a phone cannot receive
@@ -22,7 +22,7 @@ messaging platform of Pocket Communication.
 - [Installation](#installation)
 - [Credentials](#credentials)
 - [Operations](#operations)
-- [Bi-Way SMS/RCS Trigger](#bi-way-smsrcs-trigger)
+- [Bi-Way Trigger](#bi-way-trigger)
 - [RCS with your own fallback](#rcs-with-your-own-fallback)
 - [RCS scenarios](#rcs-scenarios)
 - [Example workflows](#example-workflows)
@@ -31,7 +31,7 @@ messaging platform of Pocket Communication.
 
 ## Why Bi-Way in n8n
 
-- **Two-way conversations.** The Bi-Way SMS/RCS Trigger starts a workflow when a customer replies or
+- **Two-way conversations.** The Bi-Way Trigger starts a workflow when a customer replies or
   taps a suggestion button, and tells you which button. Delivery and read reports arrive the same
   way, so a workflow can follow up on messages that were not delivered or not read.
 - **RCS with a safety net.** When a phone cannot receive RCS, Bi-Way sends the fallback SMS of your
@@ -65,7 +65,7 @@ What else each operation needs:
 | Anything RCS: RCS channel, cards and buttons, keyword replies, scenarios | Recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/) or in your [Bi-Way RCS settings](https://v3.bi-way.fr/settings/chatbot); a declaration fee applies. **RCS Agent › Get Status** tells you where it stands. |
 | Template, Asset and Contact operations | The matching permissions on your Bi-Way user profile. |
 | Email channels | The email option of your account, set up by Bi-Way: Mailjet for the `email` channel, SMTP for the `email_smtp` channel. |
-| Bi-Way SMS/RCS Trigger | An n8n instance reachable from the internet over HTTPS. |
+| Bi-Way Trigger | An n8n instance reachable from the internet over HTTPS. |
 
 When something is missing, the node stops with a message that says what to do.
 
@@ -78,7 +78,7 @@ When something is missing, the node stops with a message that says what to do.
 - **n8n Cloud**: only community nodes verified by n8n can be installed there. This package will be
   available once n8n has verified it.
 
-Then add the **Bi-Way SMS/RCS** node to a workflow: search for "Bi-Way", "SMS" or "RCS" in the nodes
+Then add the **Bi-Way** node to a workflow: search for "Bi-Way", "SMS", "RCS" or "Email" in the nodes
 panel.
 
 ## Credentials
@@ -93,7 +93,7 @@ change it. n8n tests the key when you save the credential.
 |---|---|---|
 | Message | Send | Sends a text, a card or a carousel to one phone number (SMS, RCS) or email address, written in the node or taken from a template. Returns the ID of the sending, which status reports carry as `order_id`. |
 | Message | Broadcast | Sends the same content to phone numbers or email addresses, contacts and contact groups, now or later, optionally in segments. |
-| Template | Create | Creates a message template: text (with RCS buttons if needed), card or carousel. Reuses the template with the same title by default. |
+| Template | Create | Creates a message template: a subject (used by email), then a text (with RCS buttons if needed), a card or a carousel. Reuses the template with the same title by default. |
 | Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in a card or attach it to an email. |
 | Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by the column you pick in **Match On Column** (the phone number by default, or the email address, a customer number…) and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
@@ -120,7 +120,7 @@ Good to know:
 - **Dates** are sent to Bi-Way in the Europe/Paris time zone, to the minute. A date without time zone
   is read in the time zone of the workflow. Bi-Way refuses dates in the past.
 - **Status reports**: Broadcast asks for delivery and read reports by default (option **Status
-  Reports**). They reach the Bi-Way SMS/RCS Trigger as *Message Status Updated* events.
+  Reports**). They reach the Bi-Way Trigger as *Message Status Updated* events.
 - **Cards, carousels and buttons** need an RCS or email channel. A card has an image or a video
   (from your Bi-Way gallery, where it must be public, or from an HTTPS address), a title, a body and
   4 buttons at most. A carousel shows 2 to 10 such cards side by side, each with its own buttons. An
@@ -138,7 +138,7 @@ Good to know:
   the exact value of their Match On Column, as stored in Bi-Way.
 - The node can be used as a tool by AI agents.
 
-## Bi-Way SMS/RCS Trigger
+## Bi-Way Trigger
 
 The trigger registers its webhook URL on your Bi-Way account when the workflow is published (activated,
 on n8n 1), and removes it when the workflow is unpublished. It adds its URL next to the callback URLs
@@ -190,10 +190,10 @@ Good to know:
 By default, when a phone cannot receive RCS, Bi-Way sends the fallback SMS of your account. To decide
 in n8n instead:
 
-1. **Bi-Way SMS/RCS › Message › Send** on the RCS channel, with **If the Phone Is Not RCS-Capable** set
+1. **Bi-Way › Message › Send** on the RCS channel, with **If the Phone Is Not RCS-Capable** set
    to *Send Nothing*.
-2. In another workflow, **Bi-Way SMS/RCS Trigger** with the event *Message Status Updated* → **If**
-   `{{ $json.status }}` is `unsupported` → **Bi-Way SMS/RCS › Message › Send** on an SMS channel to
+2. In another workflow, **Bi-Way Trigger** with the event *Message Status Updated* → **If**
+   `{{ $json.status }}` is `unsupported` → **Bi-Way › Message › Send** on an SMS channel to
    `{{ $json.address }}`, or anything else: a call task, a different wording, nothing at all.
 
 ## RCS scenarios
@@ -209,7 +209,7 @@ keyword, and a keyword reply answers it with the next message. Build one from n8
 4. **RCS Scenario › Start** to send the first message to a phone number.
 
 To take over the conversation in n8n, give the last templates Suggested Reply buttons whose keywords
-have **no** keyword reply, and catch them with a **Bi-Way SMS/RCS Trigger** on *Message Received* with
+have **no** keyword reply, and catch them with a **Bi-Way Trigger** on *Message Received* with
 the **Button Keywords** option. The workflow receives the customer's phone number (`address`) and the
 tapped keyword (`keyword`), and can answer with **Message › Send** or run any other action.
 

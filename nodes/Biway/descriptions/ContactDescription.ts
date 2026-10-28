@@ -184,7 +184,7 @@ export const contactFields: INodeProperties[] = [
 	// ── Import File ──────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			"The import runs in the background: this node returns the ID of the import task. Use the Bi-Way SMS/RCS Trigger node with the 'Contact Import State Changed' event to know when it is finished.",
+			"The import runs in the background: this node returns the ID of the import task. Use the Bi-Way Trigger node with the 'Contact Import State Changed' event to know when it is finished.",
 		name: 'importNotice',
 		type: 'notice',
 		default: '',

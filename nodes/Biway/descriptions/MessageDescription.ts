@@ -448,7 +448,7 @@ export const messageFields: INodeProperties[] = [
 				],
 				default: 'all',
 				description:
-					"Status reports to collect. They are sent to the Bi-Way SMS/RCS Trigger node ('Message Status Updated' event).",
+					"Status reports to collect. They are sent to the Bi-Way Trigger node ('Message Status Updated' event).",
 			},
 			sharedOptions[4],
 		],

@@ -4,7 +4,7 @@
 
 First public release.
 
-### Bi-Way SMS/RCS node
+### Bi-Way node
 
 - **Message**: Send (one phone number or email address) and Broadcast (addresses, contacts and
   contact groups; send date, segmentation, status reports, priority, simulation, excluded groups,
@@ -17,7 +17,7 @@ First public release.
   an SMS written in the node, or none, so that a workflow decides on the `unsupported` status.
 - **Templates, content and channels**: Send and Broadcast only list the templates of the chosen
   content that the chosen channel can carry, and refuse any other template before sending.
-- **Template**: Create (text, card, carousel).
+- **Template**: Create (subject for email, then text, card or carousel).
 - **Asset**: Upload to the Bi-Way gallery.
 - **Contact**: Create (columns of the account, existing contact recognized by the column picked in
   Match On Column, the phone number by default: reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
@@ -31,7 +31,7 @@ First public release.
   item when several are processed.
 - Usable as a tool by AI agents.
 
-### Bi-Way SMS/RCS Trigger
+### Bi-Way Trigger
 
 - Events: Message Status Updated (with the `unsupported` and `expired` statuses and the `fallback`
   field), Message Received, Contact Import State Changed, RCS Agent State Changed, RCS Capability

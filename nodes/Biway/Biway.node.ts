@@ -432,6 +432,8 @@ const createTemplate: Handler = async function (i) {
 	const content = this.getNodeParameter('content', i, 'text') as MessageContent;
 	const body: IDataObject = {
 		title: this.getNodeParameter('title', i) as string,
+		// Emails sent from the template take its subject, whatever the format.
+		subject: this.getNodeParameter('subject', i) as string,
 		// A carousel template is a card template with several cards.
 		format: content === 'text' ? 'text' : 'card',
 	};
@@ -1004,7 +1006,7 @@ const HANDLERS: Record<string, Record<string, Handler>> = {
 
 export class Biway implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Bi-Way SMS/RCS',
+		displayName: 'Bi-Way',
 		name: 'biway',
 		icon: { light: 'file:../../icons/biway.png', dark: 'file:../../icons/biway.png' },
 		group: ['transform'],
@@ -1012,7 +1014,7 @@ export class Biway implements INodeType {
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
 			'Send SMS, RCS and email messages (cards, carousels, buttons) with Bi-Way. RCS is currently available on French mobile operators only.',
-		defaults: { name: 'Bi-Way SMS/RCS' },
+		defaults: { name: 'Bi-Way' },
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,

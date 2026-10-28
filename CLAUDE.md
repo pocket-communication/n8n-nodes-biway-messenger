@@ -1,7 +1,7 @@
 # n8n-nodes-biway-messenger
 
-n8n community package of Bi-Way (Pocket Communication): the "Bi-Way SMS/RCS" node, the
-"Bi-Way SMS/RCS Trigger" node and the "Bi-Way API" credential (API key: token + secret, HTTP Basic).
+n8n community package of Bi-Way (Pocket Communication): the "Bi-Way" node, the
+"Bi-Way Trigger" node and the "Bi-Way API" credential (API key: token + secret, HTTP Basic).
 Programmatic style, built on the `npm create @n8n/node` template.
 
 ## Rules

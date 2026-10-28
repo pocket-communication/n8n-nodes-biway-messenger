@@ -46,6 +46,15 @@ export const templateFields: INodeProperties[] = [
 		description: 'Name of the template in your Bi-Way account',
 		displayOptions: showForCreate,
 	},
+	{
+		displayName: 'Subject',
+		name: 'subject',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Subject of the emails sent from this template',
+		displayOptions: showForCreate,
+	},
 	contentField(showForCreate),
 	{
 		displayName: 'Body',

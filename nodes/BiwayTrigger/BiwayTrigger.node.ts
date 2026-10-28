@@ -75,7 +75,7 @@ async function removeCallback(
 
 export class BiwayTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Bi-Way SMS/RCS Trigger',
+		displayName: 'Bi-Way Trigger',
 		name: 'biwayTrigger',
 		icon: { light: 'file:../../icons/biway.png', dark: 'file:../../icons/biway.png' },
 		group: ['trigger'],
@@ -83,7 +83,7 @@ export class BiwayTrigger implements INodeType {
 		subtitle: '={{$parameter["events"].join(", ")}}',
 		description:
 			'Starts the workflow on Bi-Way events: message status updates, received messages, replies and button taps, contact imports, RCS agent state',
-		defaults: { name: 'Bi-Way SMS/RCS Trigger' },
+		defaults: { name: 'Bi-Way Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'biwayApi', required: true }],

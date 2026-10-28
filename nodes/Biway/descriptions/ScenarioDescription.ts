@@ -67,7 +67,7 @@ const scenarioIdField = scenarioLocator({
 export const scenarioFields: INodeProperties[] = [
 	{
 		displayName:
-			'RCS scenarios reach phones on French mobile operators only. A scenario starts with a message template whose RCS Suggested Reply buttons carry keywords. Each keyword leads to the next step through an RCS Agent › Create Keyword Reply that sends another template. To take over the conversation in n8n, catch the keywords of the last buttons with the Bi-Way SMS/RCS Trigger (Button Keywords option).',
+			'RCS scenarios reach phones on French mobile operators only. A scenario starts with a message template whose RCS Suggested Reply buttons carry keywords. Each keyword leads to the next step through an RCS Agent › Create Keyword Reply that sends another template. To take over the conversation in n8n, catch the keywords of the last buttons with the Bi-Way Trigger (Button Keywords option).',
 		name: 'scenarioNotice',
 		type: 'notice',
 		default: '',

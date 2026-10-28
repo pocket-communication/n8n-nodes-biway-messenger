@@ -258,7 +258,7 @@ export function rcsButtonsField(show: Show): INodeProperties {
 		placeholder: 'Add Button',
 		default: {},
 		description:
-			'Buttons of the message: 4 at most on a card, 11 at most on an RCS text, suggested replies first, then the actions. A suggested reply sends its keyword back to Bi-Way: answer it with an RCS Agent › Create Keyword Reply using the same keyword, or catch it with the Bi-Way SMS/RCS Trigger (Button Keywords option). By email, the buttons lead to the Bi-Way web chat when needed.',
+			'Buttons of the message: 4 at most on a card, 11 at most on an RCS text, suggested replies first, then the actions. A suggested reply sends its keyword back to Bi-Way: answer it with an RCS Agent › Create Keyword Reply using the same keyword, or catch it with the Bi-Way Trigger (Button Keywords option). By email, the buttons lead to the Bi-Way web chat when needed.',
 		displayOptions: { show },
 		options: buttonOptions,
 	};
