@@ -1,0 +1,156 @@
+{
+	"name": "Bi-Way: appointment reminder with quick replies",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Appointment reminder with quick replies\nEvery evening, reminds the customers of tomorrow's appointments by RCS, with three buttons: **Confirm**, **Cancel**, **Call me**. Phones that cannot receive RCS get an SMS instead.\n\n### Setup\n1. Create a **Bi-Way API** credential (Bi-Way › Settings › Security › API keys).\n2. Make a Google Sheet with a tab **Appointments** and the columns `Date` (YYYY-MM-DD), `Time`, `First name`, `Phone` (international format, e.g. +33612345678) and `Status`. Replace `YOUR_SHEET_ID`.\n3. RCS needs an RCS agent launched by the French operators (Bi-Way › RCS Agent › Get Status).\n4. Import **Appointment reply** too: it handles the buttons. Then publish both workflows.",
+				"height": 340,
+				"width": 520,
+				"color": 4
+			},
+			"id": "81e06477-a0da-44f9-a353-c9e884a00166",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-380
+			]
+		},
+		{
+			"parameters": {
+				"content": "### Buttons and fallback\nEach button sends its keyword (`CONFIRM`, `CANCEL`, `CALL_ME`) to the **Appointment reply** workflow. Without RCS, the SMS asks for **YES** or **NO**, which the same workflow understands. No online rebooking: a cancellation is followed by a call from your team.",
+				"height": 200,
+				"width": 380
+			},
+			"id": "ab002007-c39c-4efb-ac95-b359a2704532",
+			"name": "Sticky Note buttons",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				700,
+				-300
+			]
+		},
+		{
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "days",
+							"triggerAtHour": 18
+						}
+					]
+				}
+			},
+			"id": "e80d0c68-fe4e-433e-a044-9fe59a4f1751",
+			"name": "Every day at 6 pm",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [
+				0,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Appointments",
+					"mode": "name"
+				},
+				"filtersUI": {
+					"values": [
+						{
+							"lookupColumn": "Date",
+							"lookupValue": "={{ $now.plus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "1e1f822e-476e-45b7-a472-9d6b77473454",
+			"name": "Get tomorrow's appointments",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "=Hello {{ $json['First name'] }}, this is a reminder of your appointment tomorrow at {{ $json.Time }}. Can you confirm?",
+				"receiver": "={{ $json.Phone }}",
+				"options": {},
+				"rcsButtons": {
+					"reply": [
+						{
+							"keyword": "CONFIRM",
+							"text": "Confirm"
+						},
+						{
+							"keyword": "CANCEL",
+							"text": "Cancel"
+						},
+						{
+							"keyword": "CALL_ME",
+							"text": "Call me"
+						}
+					]
+				},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "=Reminder: your appointment is tomorrow at {{ $json.Time }}. Reply YES to confirm or NO to cancel."
+			},
+			"id": "56bcde00-16d4-4509-a36e-654b057180ae",
+			"name": "Send the reminder",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				460,
+				0
+			]
+		}
+	],
+	"connections": {
+		"Every day at 6 pm": {
+			"main": [
+				[
+					{
+						"node": "Get tomorrow's appointments",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get tomorrow's appointments": {
+			"main": [
+				[
+					{
+						"node": "Send the reminder",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
