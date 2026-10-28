@@ -14,7 +14,8 @@ export interface BiwayErrorDescription {
 	description: string;
 }
 
-type ErrorBuilder = (detail: string) => BiwayErrorDescription;
+/** `detail`: the first quoted word of the server message (a channel, a column…). */
+type ErrorBuilder = (detail: string, serverMessage: string) => BiwayErrorDescription;
 
 const NODE_BUG = `This should not happen with this node. Please report it to ${SUPPORT_EMAIL}.`;
 
@@ -83,9 +84,13 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'The send date is not valid',
 		'The date must be in the future. Bi-Way schedules messages in the Europe/Paris time zone, to the minute.',
 	),
-	message_not_created_for_channel: (channel) => ({
+	message_not_created_for_channel: (channel, serverMessage) => ({
 		message: `Bi-Way refused the message for ${channel || 'this channel'}`,
-		description: `For RCS, your RCS agent must be declared and launched: check it with RCS › Get Status, or declare it at ${RCS_DECLARATION_URL}.`,
+		description: /missing property receivers/i.test(serverMessage)
+			? 'None of the recipients can receive it on this channel: the contacts need a phone number (an email address on an email channel), and unsubscribed or duplicate recipients are skipped.'
+			: /rcs/i.test(channel)
+				? `Your RCS agent must be declared and launched: check it with RCS Agent › Get Status, or declare it at ${RCS_DECLARATION_URL}. Bi-Way answered (in French): ${serverMessage}`
+				: `Bi-Way answered (in French): ${serverMessage}`,
 	}),
 	asset_not_found: fixed(
 		'One of the attachments was not found',
@@ -107,7 +112,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	// RCS
 	agent_not_found: fixed(
 		'Your Bi-Way account has no RCS agent',
-		`Declare your RCS agent at ${RCS_DECLARATION_URL} or in your RCS settings (${RCS_SETTINGS_URL}), then check its state with RCS › Get Status.`,
+		`Declare your RCS agent at ${RCS_DECLARATION_URL} or in your RCS settings (${RCS_SETTINGS_URL}), then check its state with RCS Agent › Get Status.`,
 	),
 	chat_service_not_allowed: fixed(
 		'Your Bi-Way plan does not include RCS',
@@ -277,7 +282,7 @@ function quotedDetail(serverMessage: string): string {
 export function describeBiwayError(code: string, serverMessage: string): BiwayErrorDescription {
 	const builder = ERRORS[code];
 	if (builder) {
-		return builder(quotedDetail(serverMessage));
+		return builder(quotedDetail(serverMessage), serverMessage);
 	}
 	return {
 		message: code ? `Bi-Way refused the request (${code})` : 'Bi-Way refused the request',

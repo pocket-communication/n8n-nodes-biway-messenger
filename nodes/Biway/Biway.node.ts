@@ -637,6 +637,20 @@ const createContact: Handler = async function (i) {
 		if (matchValue !== undefined) {
 			const existing = await findContact.call(this, i, matchOn, String(matchValue));
 			if (existing && ifExists === 'update') {
+				// Bi-Way rewrites the whole contact: the columns not mapped here keep their value.
+				for (const column of allowed) {
+					const current = existing[column];
+					if (column in values || current === undefined || current === null || current === '') {
+						continue;
+					}
+					// An empty date is stored as 0000-00-00.
+					if (!String(current).startsWith('0000-00-00')) {
+						body[column] = current;
+					}
+				}
+				if (body.group_id === undefined && existing.group_id) {
+					body.group_id = existing.group_id;
+				}
 				// Bi-Way updates the contact of the account that has the same value in this column.
 				body.check_double = 'account';
 				body.key_column = matchOn;
