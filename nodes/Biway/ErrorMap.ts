@@ -95,6 +95,10 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'The message template was not found',
 		'Pick a template from the list, or create one with Template › Create.',
 	),
+	no_template: fixed(
+		'The message template was not found',
+		'Pick a template from the list, or create one with Template › Create.',
+	),
 	template_asset_id_not_found: fixed(
 		'One of the template attachments was not found',
 		'Check the asset IDs: they must belong to your Bi-Way gallery.',
