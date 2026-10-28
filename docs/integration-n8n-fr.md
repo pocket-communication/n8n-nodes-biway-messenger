@@ -28,7 +28,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 | Suivi de commande | À l'expédition d'une commande WooCommerce, envoie une carte RCS avec un bouton de suivi, ou un SMS si le téléphone ne lit pas le RCS. |
 | Réponses vers l'équipe | Oriente les réponses de vos clients vers le bon service selon leurs mots-clés. |
 | Bienvenue après formulaire | Crée ou met à jour le contact à partir d'un formulaire, puis lui envoie un message de bienvenue. |
-| Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et leur envoie leurs informations pratiques. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
+| Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et, si votre formulaire d'inscription demande leur téléphone, leur envoie un message RCS. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
 
 ## Pourquoi Bi-Way plutôt qu'un simple envoi de SMS ?
 
@@ -40,13 +40,15 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
   workflow décider.
 - **Un expéditeur de confiance.** Vos messages RCS arrivent sous le nom et le logo de votre marque,
   vérifiés par Google et validés par les opérateurs mobiles.
-- **Vos données restent chez vous.** Avec un n8n auto-hébergé, numéros de téléphone et messages ne
-  circulent qu'entre vos serveurs et Bi-Way, service de Pocket Communication, entreprise française
-  soumise au RGPD. Aucun service d'automatisation tiers ne les voit passer.
+- **Vos données restent en France.** Bi-Way est un service de Pocket Communication, entreprise
+  française soumise au RGPD, hébergé en France. Avec un n8n auto-hébergé, numéros de téléphone et
+  messages ne circulent qu'entre vos serveurs et Bi-Way : aucun service d'automatisation tiers ne les
+  voit passer.
 
 ## Ce qu'il vous faut
 
-1. **Un compte Bi-Way** : {{TRIAL_SIGNUP_URL}}. L'envoi depuis n8n demande une offre avec accès API.
+1. **Un compte Bi-Way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'envoi depuis n8n
+   demande une offre avec accès API.
 2. **Une clé d'API** : dans Bi-Way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
    Notez le jeton et le secret : le secret ne s'affiche qu'une fois. Vous pouvez révoquer une clé à
    tout moment.

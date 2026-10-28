@@ -38,13 +38,13 @@ messaging platform of Pocket Communication.
   account, an SMS written in the node, or nothing at all so that your workflow decides.
 - **A verified sender.** RCS messages come from your RCS agent: your brand name and logo, verified by
   Google and approved by the mobile operators.
-- **Your data stays on your side.** With a self-hosted n8n, phone numbers and messages only travel
-  between your servers and Bi-Way, run by Pocket Communication, a French company subject to the GDPR.
-  No third-party automation cloud is involved.
+- **Your data stays in France.** Bi-Way is run by Pocket Communication, a French company subject to
+  the GDPR, and hosted in France. With a self-hosted n8n, phone numbers and messages only travel
+  between your servers and Bi-Way: no third-party automation cloud is involved.
 
 ## Get an API key
 
-1. Create your Bi-Way account: {{TRIAL_SIGNUP_URL}}
+1. Create your Bi-Way account: [v3.bi-way.fr/signup](https://v3.bi-way.fr/signup)
 2. In Bi-Way, open **Settings › Security › API keys**
    ([v3.bi-way.fr/settings/security](https://v3.bi-way.fr/settings/security)).
 3. Click **Create a key**, give it a name (for example `n8n`), and copy the **token** and the
@@ -217,7 +217,7 @@ the Bi-Way nodes; replace the placeholders (phone numbers, sheet IDs, templates)
 | [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order ships, with a fallback SMS. |
 | [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
 | [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |
-| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, adds them to a contact group and sends them the practical information. Needs access to the Weezevent API, which Weezevent grants to its partners. |
+| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, adds them to a contact group and, when the registration form asks for their phone number, sends them an RCS message. Needs access to the Weezevent API, which Weezevent grants to its partners. |
 
 ## Compatibility
 

@@ -60,7 +60,7 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 
 ### Phase 2 — README and French page
 - [x] README in English: pitch, differentiators (trigger for replies and button taps, self-hosted
-      n8n), "Get an API key" (`{{TRIAL_SIGNUP_URL}}` placeholder), installation, credentials,
+      n8n), "Get an API key" (sign-up at v3.bi-way.fr/signup), installation, credentials,
       operations, examples, compatibility, API documentation, support
 - [x] No email in the README (recipients, HTML templates, contact matching)
 - [x] Note that an `error` event with `fallback: "sms"` can come before `sent`
@@ -82,8 +82,9 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [ ] Form to welcome message (contact create or update)
 - [ ] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
       access, `POST /auth/access_token`, `GET /participant/list` with `last_update`; no documented
-      webhook), contact group, practical information. Read the API PDF (api.weezevent.com) for
-      where the phone number of a participant lives before writing it
+      webhook), contact in a group, RCS message. A participant only has name and email
+      (`owner`); a phone number exists only if the organizer adds a question to the registration
+      form, read from `GET /participant/{id}/answers` (`answers[]` of `label` / `value`)
 - [ ] `examples/README.md` with audience and canvas screenshots
 
 ### Phase 4 — Validation
@@ -93,7 +94,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [ ] Final recap and release command
 
 ### Release (maintainer)
-- [ ] `{{TRIAL_SIGNUP_URL}}` replaced
+- [x] `{{TRIAL_SIGNUP_URL}}` replaced by https://v3.bi-way.fr/signup (2026-10-28)
 - [ ] Phases merged into `main`, CI green
 - [ ] `NPM_TOKEN` still valid (expires around 2026-11-03), or replaced
 - [ ] Tag `0.1.0` pushed: `git tag 0.1.0 && git push origin 0.1.0`
