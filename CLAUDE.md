@@ -55,16 +55,19 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 - [x] SMS and RCS only: no email wording, format or option left in the node
 
 ### Phase 2 — README and French page
-- [ ] README in English: pitch, differentiators (trigger for replies and button taps, self-hosted
+- [x] README in English: pitch, differentiators (trigger for replies and button taps, self-hosted
       n8n), "Get an API key" (`{{TRIAL_SIGNUP_URL}}` placeholder), installation, credentials,
       operations, examples, compatibility, API documentation, support
-- [ ] No email in the README (recipients, HTML templates, contact matching)
-- [ ] Note that an `error` event with `fallback: "sms"` can come before `sent`
-- [ ] CHANGELOG: "Unreleased" merged into 0.1.0, with the phase 1 changes (resource locators,
+- [x] No email in the README (recipients, HTML templates, contact matching)
+- [x] Note that an `error` event with `fallback: "sms"` can come before `sent`
+- [x] CHANGELOG: "Unreleased" merged into 0.1.0, with the phase 1 changes (resource locators,
       Simplify, SMS/RCS only, contacts matched by phone number, no template attachments)
-- [ ] `docs/integration-n8n-fr.md` for bi-way.fr
+- [x] `docs/integration-n8n-fr.md` for bi-way.fr
 
 ### Phase 3 — Example workflows (`examples/`)
+File names already linked from the README: `appointment-reminder.json`, `appointment-reply.json`,
+`review-request.json`, `order-notifications.json`, `inbound-to-team-inbox.json`,
+`form-welcome-message.json`.
 - [ ] Appointment reminder with quick replies, and the reply workflow (no online rebooking)
 - [ ] Review request with routing
 - [ ] E-commerce order notifications (card, tracking button, SMS fallback)

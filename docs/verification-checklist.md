@@ -39,16 +39,16 @@ States: **OK**, **Fixed** (during this audit, with the commit), **To do**, **N/A
 | npm repository URL matches the GitHub repository | OK | `repository.url` = `github.com/pocket-communication/n8n-nodes-biway-messenger`; to look at again on the npm page after publication |
 | Same author/maintainer on npm and on the repository | To do | Author is "Pocket Communication <tech@pocketcommunication.com>"; the npm account that publishes must be the Pocket Communication one |
 | Git link works, repository public | OK | Public repository on GitHub |
-| Proper documentation (README, usage examples) | To do | README rewrite (phase 2) and example workflows (phase 3) |
+| Proper documentation (README, usage examples) | Partial | README rewritten (phase 2); example workflows in phase 3 |
 | MIT license | OK | `LICENSE.md`, `package.json` › `license` |
 | Published from a GitHub action with provenance | To do | First publication |
 | No external dependencies | OK | No `dependencies`; `n8n-workflow` as peer; the code uses only `n8n-workflow`, Node's `crypto` (webhook token) and the global `FormData` and `Blob` |
-| README with usage, example workflows, authentication | To do | Phases 2 and 3 |
+| README with usage, example workflows, authentication | Partial | Usage, API key and credential in the README (phase 2); the example workflows it links to come in phase 3 |
 | No environment variable or file system access | OK | No `process.env`, no `fs`; binary data goes through `this.helpers` |
 | TypeScript, clear style, n8n guidelines | OK | TypeScript strict, Prettier config of the template |
 | Proper error handling and validation | OK | Every known Bi-Way error code mapped to an English message and fix ([`ErrorMap.ts`](../nodes/Biway/ErrorMap.ts)), `NodeApiError` with item index, `continueOnFail`, checks before sending (RCS content on SMS, template vs channel, button text length, dates) |
 | Scanner rules pass | OK | Run locally on sources and tarball, see above |
-| English only | OK, with a reservation | Node, credential and README in English. Bi-Way services answer in French (server-wide setting): the node shows its own English text for every known code, and only for an unknown code shows the server text in the description, labelled "(in French)". `docs/integration-n8n-fr.md` (phase 2) is French on purpose, for bi-way.fr, and is not in the npm package |
+| English only | OK, with a reservation | Node, credential and README in English. Bi-Way services answer in French (server-wide setting): the node shows its own English text for every known code, and only for an unknown code shows the server text in the description, labelled "(in French)". `docs/integration-n8n-fr.md` is French on purpose, for bi-way.fr, and is not in the npm package |
 
 ## UX guidelines
 
