@@ -1,6 +1,11 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-import { rcsButtonsField, rcsCardFields } from './RcsContentDescription';
+import {
+	contentField,
+	rcsButtonsField,
+	rcsCardFields,
+	rcsCarouselField,
+} from './RcsContentDescription';
 import { contactGroupLocator, templateLocator } from './ResourceLocators';
 
 const showFor = (operation: string[]) => ({ show: { resource: ['message'], operation } });
@@ -46,34 +51,34 @@ const contentFields: INodeProperties[] = [
 		hint: 'Only the channels enabled on your Bi-Way account are listed',
 		displayOptions: showFor(['send', 'broadcast']),
 	},
+	contentField(showFor(['send', 'broadcast']).show),
 	{
-		displayName: 'Content',
-		name: 'contentSource',
+		displayName: 'Source',
+		name: 'source',
 		type: 'options',
 		options: [
 			{
-				name: 'RCS Card',
-				value: 'card',
-				description: 'A rich card with a title, a text, an image and buttons (RCS channel only)',
+				name: 'Raw Message',
+				value: 'raw',
+				description: 'Write the message in this node',
 			},
 			{
 				name: 'Template',
 				value: 'template',
 				description: 'Use a message template of your Bi-Way account',
 			},
-			{ name: 'Text', value: 'text', description: 'Write the message in this node' },
 		],
-		default: 'text',
+		default: 'raw',
 		displayOptions: showFor(['send', 'broadcast']),
 	},
-	{
-		displayName: 'Subject',
-		name: 'subject',
-		type: 'string',
-		default: '',
-		description: 'Subject of an MMS. SMS and RCS messages have none: leave it empty.',
-		displayOptions: { show: { ...showFor(['send', 'broadcast']).show, contentSource: ['text'] } },
-	},
+	templateLocator('Template', {
+		required: true,
+		typeOptions: { loadOptionsDependsOn: ['channel', 'content'] },
+		hint: "Only the templates of the chosen 'Content' that the channel can carry are listed: cards and carousels only go through RCS",
+		displayOptions: {
+			show: { ...showFor(['send', 'broadcast']).show, source: ['template'] },
+		},
+	}),
 	{
 		displayName: 'Body',
 		name: 'body',
@@ -83,25 +88,27 @@ const contentFields: INodeProperties[] = [
 		default: '',
 		description:
 			'Text of the message. Personalization tags of Bi-Way work for contacts and contact groups.',
-		displayOptions: { show: { ...showFor(['send', 'broadcast']).show, contentSource: ['text'] } },
-	},
-	templateLocator('Template', {
-		required: true,
-		typeOptions: { loadOptionsDependsOn: ['channel'] },
-		hint: 'Only the templates the chosen channel can carry are listed: no RCS card or button outside RCS, no subject or attachment on an SMS',
 		displayOptions: {
-			show: { ...showFor(['send', 'broadcast']).show, contentSource: ['template'] },
+			show: { ...showFor(['send', 'broadcast']).show, source: ['raw'], content: ['text'] },
 		},
-	}),
+	},
 	...rcsCardFields({
 		...showFor(['send', 'broadcast']).show,
 		...rcsChannel,
-		contentSource: ['card'],
+		source: ['raw'],
+		content: ['card'],
+	}),
+	rcsCarouselField({
+		...showFor(['send', 'broadcast']).show,
+		...rcsChannel,
+		source: ['raw'],
+		content: ['carousel'],
 	}),
 	rcsButtonsField({
 		...showFor(['send', 'broadcast']).show,
 		...rcsChannel,
-		contentSource: ['text', 'card'],
+		source: ['raw'],
+		content: ['text', 'card'],
 	}),
 	// Also offered with templates: Bi-Way keeps the request's "alternate" on top of the template's RCS content.
 	{
@@ -133,7 +140,6 @@ const contentFields: INodeProperties[] = [
 			show: {
 				...showFor(['send', 'broadcast']).show,
 				...rcsChannel,
-				contentSource: ['text', 'card', 'template'],
 			},
 		},
 	},
@@ -150,7 +156,6 @@ const contentFields: INodeProperties[] = [
 			show: {
 				...showFor(['send', 'broadcast']).show,
 				...rcsChannel,
-				contentSource: ['text', 'card', 'template'],
 				rcsFallback: ['custom'],
 			},
 		},
@@ -165,7 +170,6 @@ const contentFields: INodeProperties[] = [
 			show: {
 				...showFor(['send', 'broadcast']).show,
 				...rcsChannel,
-				contentSource: ['text', 'card', 'template'],
 				rcsFallback: ['custom'],
 			},
 		},

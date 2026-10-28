@@ -1,7 +1,8 @@
 import type { IDataObject, IExecuteFunctions } from 'n8n-workflow';
 import { NodeOperationError } from 'n8n-workflow';
 
-import { biwayApiRequest, getBaseUrl, normalizeKeyword } from './GenericFunctions';
+import { CAROUSEL_CARDS_MAX, CAROUSEL_CARDS_MIN } from './descriptions/RcsContentDescription';
+import { biwayApiRequest, getBaseUrl, locatorValue, normalizeKeyword } from './GenericFunctions';
 
 /** RCS limits checked by Bi-Way (byte lengths, as PHP strlen counts them). */
 const BUTTON_TEXT_MAX = 25;
@@ -25,8 +26,27 @@ const BUTTON_KINDS = ['reply', 'openUrl', 'dial', 'viewLocation'] as const;
 
 type ButtonKind = (typeof BUTTON_KINDS)[number];
 
+type ButtonsInput = Partial<Record<ButtonKind, ButtonInput[]>>;
+
+/** Fields of a card, whether it stands alone or belongs to a carousel. */
+interface CardInput {
+	title?: string;
+	text?: string;
+	image?: string;
+	/** Gallery file: a number at the top level, a raw resource locator inside a carousel. */
+	cardImageId?: unknown;
+	imageUrl?: string;
+	imageMimeType?: string;
+	imageHeight?: string;
+	buttons?: ButtonsInput;
+}
+
 function byteLength(value: string): number {
 	return new TextEncoder().encode(value).length;
+}
+
+function capitalize(value: string): string {
+	return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 function fail(context: IExecuteFunctions, i: number, message: string, description: string): never {
@@ -38,35 +58,42 @@ export function isRcsChannel(channel: string): boolean {
 }
 
 /**
- * Buttons of the RCS Buttons field, in the format Bi-Way validates (CRCSMessage::validSuggestion).
+ * Buttons in the format Bi-Way validates (CRCSMessage::validSuggestion). `card` is the position of
+ * the card in a carousel, to name the button in messages.
  */
-export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number): IDataObject[] {
-	const input = this.getNodeParameter('rcsButtons', i, {}) as Partial<
-		Record<ButtonKind, ButtonInput[]>
-	>;
+function rcsButtons(
+	context: IExecuteFunctions,
+	i: number,
+	input: ButtonsInput,
+	max: number,
+	card?: number,
+): IDataObject[] {
 	const buttons = BUTTON_KINDS.flatMap((kind) =>
 		(input[kind] ?? []).map((button) => ({ ...button, kind })),
 	);
+	const where = card === undefined ? '' : ` of card ${card}`;
 	if (buttons.length > max) {
 		fail(
-			this,
+			context,
 			i,
-			`Too many RCS buttons (${buttons.length})`,
+			`Too many RCS buttons${where} (${buttons.length})`,
 			`RCS allows ${max} buttons at most here. Remove some buttons.`,
 		);
 	}
 
 	return buttons.map((button, index) => {
 		const position = index + 1;
+		const label = `RCS button ${position}${where}`;
+		const tag = card === undefined ? `${position}` : `${card}_${position}`;
 		const text = String(button.text ?? '').trim();
 		if (text === '') {
-			fail(this, i, `RCS button ${position} has no text`, "Fill in the 'Text' of the button.");
+			fail(context, i, `${label} has no text`, "Fill in the 'Text' of the button.");
 		}
 		if (byteLength(text) > BUTTON_TEXT_MAX) {
 			fail(
-				this,
+				context,
 				i,
-				`The text of RCS button ${position} is too long`,
+				`The text of ${label} is too long`,
 				`'${text}' is longer than ${BUTTON_TEXT_MAX} characters (accented letters count twice).`,
 			);
 		}
@@ -75,16 +102,11 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 			case 'openUrl': {
 				const url = String(button.url ?? '').trim();
 				if (!/^https?:\/\//i.test(url)) {
-					fail(
-						this,
-						i,
-						`RCS button ${position} needs a URL`,
-						'Use a full address starting with https://.',
-					);
+					fail(context, i, `${label} needs a URL`, 'Use a full address starting with https://.');
 				}
 				return {
 					text,
-					postbackData: `n8n_open_url_${position}`,
+					postbackData: `n8n_open_url_${tag}`,
 					'extra-type': 'action',
 					'action-type': 'open-url',
 					url,
@@ -94,15 +116,15 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 				const phoneNumber = String(button.phoneNumber ?? '').replace(/\s+/g, '');
 				if (phoneNumber === '') {
 					fail(
-						this,
+						context,
 						i,
-						`RCS button ${position} needs a phone number`,
+						`${label} needs a phone number`,
 						'Use the international format, e.g. +33612345678.',
 					);
 				}
 				return {
 					text,
-					postbackData: `n8n_dial_${position}`,
+					postbackData: `n8n_dial_${tag}`,
 					'extra-type': 'action',
 					'action-type': 'dial',
 					phoneNumber,
@@ -111,7 +133,7 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 			case 'viewLocation':
 				return {
 					text,
-					postbackData: `n8n_location_${position}`,
+					postbackData: `n8n_location_${tag}`,
 					'extra-type': 'action',
 					'action-type': 'view-location',
 					latitude: String(button.latitude ?? 0),
@@ -125,6 +147,11 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 			}
 		}
 	});
+}
+
+/** Buttons of the RCS Buttons field of a text or a card. */
+export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number): IDataObject[] {
+	return rcsButtons(this, i, this.getNodeParameter('rcsButtons', i, {}) as ButtonsInput, max);
 }
 
 /** Longest fallback SMS Bi-Way sends: a longer one, once personalized, is not sent at all. */
@@ -197,12 +224,13 @@ async function galleryMedia(
 	i: number,
 	assetId: number,
 	height: string,
+	label: string,
 ): Promise<IDataObject> {
 	if (!(assetId > 0)) {
 		fail(
 			this,
 			i,
-			'No image is selected for the card',
+			`No image is selected for ${label}`,
 			"Pick an image of your gallery, or map the 'id' of Asset › Upload.",
 		);
 	}
@@ -233,19 +261,25 @@ async function galleryMedia(
 }
 
 /**
- * RCS card of the card fields, in the format Bi-Way validates (CRCSMessage::validCard).
+ * Card in the format Bi-Way validates (CRCSMessage::validCard), without orientation. `label` names
+ * the card in messages: "the card", "card 2".
  */
-export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<IDataObject> {
-	const title = String(this.getNodeParameter('cardTitle', i, '')).trim();
-	const text = String(this.getNodeParameter('cardText', i, '')).trim();
-	const image = this.getNodeParameter('cardImage', i, 'none') as string;
-	const orientation = this.getNodeParameter('cardOrientation', i, 'VERTICAL') as string;
+async function rcsCard(
+	this: IExecuteFunctions,
+	i: number,
+	input: CardInput,
+	label: string,
+	card?: number,
+): Promise<IDataObject> {
+	const title = String(input.title ?? '').trim();
+	const text = String(input.text ?? '').trim();
+	const image = input.image ?? 'none';
 
 	if (byteLength(title) > CARD_TITLE_MAX) {
 		fail(
 			this,
 			i,
-			'The card title is too long',
+			`The title of ${label} is too long`,
 			`${CARD_TITLE_MAX} characters at most (accented letters count twice).`,
 		);
 	}
@@ -253,49 +287,102 @@ export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<
 		fail(
 			this,
 			i,
-			'The card text is too long',
+			`The body of ${label} is too long`,
 			`${CARD_TEXT_MAX} characters at most (accented letters count twice).`,
 		);
 	}
 	if (title === '' && text === '' && image === 'none') {
-		fail(this, i, 'The RCS card is empty', 'Give the card a title, a text or an image.');
+		fail(this, i, `${capitalize(label)} is empty`, 'Give the card a title, a body or an image.');
 	}
 
-	const card: IDataObject = { cardOrientation: orientation };
-	if (orientation === 'HORIZONTAL') {
-		card.thumbnailImageAlignment = this.getNodeParameter('cardImageAlignment', i, 'LEFT');
-	}
+	const result: IDataObject = {};
 	if (title) {
-		card.title = title;
+		result.title = title;
 	}
 	if (text) {
-		card.text = text;
+		result.text = text;
 	}
 
-	const height = this.getNodeParameter('cardImageHeight', i, 'MEDIUM') as string;
+	const height = input.imageHeight || 'MEDIUM';
 	if (image === 'gallery') {
-		card.media = await galleryMedia.call(
+		result.media = await galleryMedia.call(
 			this,
 			i,
-			Number(this.getNodeParameter('cardImageId', i, '', { extractValue: true })),
+			Number(locatorValue(input.cardImageId)),
 			height,
+			label,
 		);
 	} else if (image === 'url') {
-		const source = String(this.getNodeParameter('cardImageUrl', i, '')).trim();
+		const source = String(input.imageUrl ?? '').trim();
 		if (!/^https:\/\//i.test(source)) {
-			fail(this, i, 'The image URL must use HTTPS', 'Use a public address starting with https://.');
+			fail(
+				this,
+				i,
+				`The image URL of ${label} must use HTTPS`,
+				'Use a public address starting with https://.',
+			);
 		}
-		card.media = {
+		result.media = {
 			height,
 			source,
-			type: String(this.getNodeParameter('cardImageMimeType', i, 'image/jpeg')).trim(),
+			type: String(input.imageMimeType || 'image/jpeg').trim(),
 			size: 0,
 		};
 	}
 
-	const buttons = buildRcsButtons.call(this, i, CARD_BUTTONS_MAX);
+	const buttons = rcsButtons(this, i, input.buttons ?? {}, CARD_BUTTONS_MAX, card);
 	if (buttons.length) {
-		card.suggestions = buttons;
+		result.suggestions = buttons;
 	}
-	return card;
+	return result;
+}
+
+/**
+ * RCS card of the card fields, in the format Bi-Way validates (CRCSMessage::validCard).
+ */
+export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<IDataObject> {
+	const orientation = this.getNodeParameter('cardOrientation', i, 'VERTICAL') as string;
+	const card = await rcsCard.call(
+		this,
+		i,
+		{
+			title: this.getNodeParameter('cardTitle', i, '') as string,
+			text: this.getNodeParameter('cardText', i, '') as string,
+			image: this.getNodeParameter('cardImage', i, 'none') as string,
+			cardImageId: this.getNodeParameter('cardImageId', i, '', { extractValue: true }),
+			imageUrl: this.getNodeParameter('cardImageUrl', i, '') as string,
+			imageMimeType: this.getNodeParameter('cardImageMimeType', i, 'image/jpeg') as string,
+			imageHeight: this.getNodeParameter('cardImageHeight', i, 'MEDIUM') as string,
+			buttons: this.getNodeParameter('rcsButtons', i, {}) as ButtonsInput,
+		},
+		'the card',
+	);
+	const result: IDataObject = { cardOrientation: orientation, ...card };
+	if (orientation === 'HORIZONTAL') {
+		result.thumbnailImageAlignment = this.getNodeParameter('cardImageAlignment', i, 'LEFT');
+	}
+	return result;
+}
+
+/**
+ * Cards of the Cards field of a carousel. Bi-Way sends a list of several cards as a carousel.
+ */
+export async function buildRcsCarousel(this: IExecuteFunctions, i: number): Promise<IDataObject[]> {
+	const input = this.getNodeParameter('carouselCards', i, {}) as { card?: CardInput[] };
+	const cards = input.card ?? [];
+	if (cards.length < CAROUSEL_CARDS_MIN || cards.length > CAROUSEL_CARDS_MAX) {
+		fail(
+			this,
+			i,
+			`A carousel has ${CAROUSEL_CARDS_MIN} to ${CAROUSEL_CARDS_MAX} cards, not ${cards.length}`,
+			cards.length < CAROUSEL_CARDS_MIN
+				? "Add cards in 'Cards', or pick 'Card' in 'Content' for a single card."
+				: "Remove cards from 'Cards'.",
+		);
+	}
+	const result: IDataObject[] = [];
+	for (const [index, card] of cards.entries()) {
+		result.push(await rcsCard.call(this, i, card, `card ${index + 1}`, index + 1));
+	}
+	return result;
 }

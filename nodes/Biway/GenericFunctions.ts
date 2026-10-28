@@ -264,6 +264,22 @@ export function locatorValue(value: unknown): string {
 	return String(value ?? '');
 }
 
+/** Values of the 'Content' field. */
+export type MessageContent = 'text' | 'card' | 'carousel';
+
+/**
+ * Content of a Bi-Way template, as the 'Content' field names it. Card templates keep their cards
+ * in `extra.cards`, and several cards make a carousel. Any other format counts as a text.
+ */
+export function templateContent(template: IDataObject): MessageContent {
+	if (template.format !== 'card') {
+		return 'text';
+	}
+	const extra = template.extra as IDataObject | null | undefined;
+	const cards = extra && Array.isArray(extra.cards) ? extra.cards : [];
+	return cards.length > 1 ? 'carousel' : 'card';
+}
+
 export function parseIdList(value: unknown): number[] {
 	const raw = Array.isArray(value) ? value : String(value ?? '').split(/[\s,;]+/);
 	return raw.map((id) => Number(String(id).trim())).filter((id) => Number.isInteger(id) && id > 0);

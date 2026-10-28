@@ -19,11 +19,13 @@ import {
 	biwayApiRequest,
 	biwayListAll,
 	locatorValue,
+	type MessageContent,
 	normalizeKeyword,
 	normalizeResponse,
 	parseIdList,
 	parseJsonParameter,
 	sameName,
+	templateContent,
 	toBiwayDate,
 	toBiwayError,
 } from './GenericFunctions';
@@ -38,6 +40,7 @@ import { getChannels, getContactGroups, getSenders } from './methods/loadOptions
 import {
 	buildRcsButtons,
 	buildRcsCard,
+	buildRcsCarousel,
 	buildRcsFallback,
 	isRcsChannel,
 	MESSAGE_BUTTONS_MAX,
@@ -94,32 +97,30 @@ function requireRcsChannel(
 	}
 }
 
-/**
- * Content (text, RCS card or template) and options shared by Send and Broadcast.
- *
- * RCS content of a direct sending goes under the channel name: {"rcs": {"format", "cards" or
- * "suggestions"}}. Bi-Way only files it there itself for templates.
- */
-/** Templates each channel can carry, read once per execution. */
-const compatibleTemplates = new WeakMap<IExecuteFunctions, Map<string, Set<number>>>();
+/** Templates each channel can carry, with their content, read once per execution. */
+const compatibleTemplates = new WeakMap<
+	IExecuteFunctions,
+	Map<string, Map<number, MessageContent>>
+>();
 
 /**
- * Bi-Way lists, for a channel, the templates it can carry: no RCS card or button outside RCS,
- * no subject or attachment on an SMS… A template outside that list is refused before sending.
+ * Bi-Way lists, for a channel, the templates it can carry: no RCS card or button outside RCS…
+ * A template outside that list, or whose content is not the chosen one, is refused before sending.
  */
 async function requireCompatibleTemplate(
 	this: IExecuteFunctions,
 	i: number,
 	templateId: number,
 	channel: string,
+	content: MessageContent,
 ): Promise<void> {
 	let byChannel = compatibleTemplates.get(this);
 	if (!byChannel) {
 		byChannel = new Map();
 		compatibleTemplates.set(this, byChannel);
 	}
-	let ids = byChannel.get(channel);
-	if (!ids) {
+	let templates = byChannel.get(channel);
+	if (!templates) {
 		const response = await biwayApiCall.call(
 			this,
 			'COLLECTION',
@@ -134,45 +135,75 @@ async function requireCompatibleTemplate(
 		const list = Array.isArray(response.body)
 			? (response.body as IDataObject[])
 			: (((response.body as IDataObject | null)?.templates ?? []) as IDataObject[]);
-		ids = new Set(list.map((template) => Number(template.id)));
-		byChannel.set(channel, ids);
+		templates = new Map(
+			list.map((template) => [Number(template.id), templateContent(template)] as const),
+		);
+		byChannel.set(channel, templates);
 	}
-	if (!ids.has(templateId)) {
+	const actual = templates.get(templateId);
+	if (actual === undefined) {
 		throw new NodeOperationError(
 			this.getNode(),
 			`Template ${templateId} cannot be sent on the '${channel}' channel`,
 			{
 				itemIndex: i,
 				description:
-					'Bi-Way checked the content of the template against the channel: RCS cards and buttons only go through RCS, and an SMS takes neither a subject nor attachments. Choose another template, or another channel.',
+					'Bi-Way checked the content of the template against the channel: RCS cards and buttons only go through RCS. Choose another template, or another channel.',
+			},
+		);
+	}
+	if (actual !== content) {
+		throw new NodeOperationError(
+			this.getNode(),
+			`Template ${templateId} is a ${actual}, not a ${content}`,
+			{
+				itemIndex: i,
+				description: `Set 'Content' to '${CONTENT_NAMES[actual]}', or choose another template.`,
 			},
 		);
 	}
 }
 
+/** Names of the 'Content' options, for messages. */
+const CONTENT_NAMES: Record<MessageContent, string> = {
+	card: 'Card',
+	carousel: 'Carousel',
+	text: 'Text',
+};
+
+/**
+ * Content (text, card or carousel, raw or from a template) and options shared by Send and
+ * Broadcast.
+ *
+ * RCS content of a direct sending goes under the channel name: {"rcs": {"format", "cards" or
+ * "suggestions"}}. Bi-Way only files it there itself for templates.
+ */
 async function messageContent(
 	this: IExecuteFunctions,
 	i: number,
 	channel: string,
 ): Promise<IDataObject> {
 	const body: IDataObject = {};
-	const contentSource = this.getNodeParameter('contentSource', i) as string;
+	const content = this.getNodeParameter('content', i, 'text') as MessageContent;
+	const source = this.getNodeParameter('source', i, 'raw') as string;
 	let rcs: IDataObject | null = null;
-	if (contentSource === 'template') {
+	if (source === 'template') {
 		const templateId = Number(this.getNodeParameter('templateId', i, '', { extractValue: true }));
-		await requireCompatibleTemplate.call(this, i, templateId, channel);
+		await requireCompatibleTemplate.call(this, i, templateId, channel, content);
 		body.template_id = templateId;
-	} else if (contentSource === 'card') {
+	} else if (content === 'card') {
 		requireRcsChannel.call(this, i, channel, 'RCS cards');
 		const card = await buildRcsCard.call(this, i);
 		// Kept as the message text in the history and for the fallback SMS.
 		body.body = String(card.text ?? card.title ?? '');
 		rcs = { format: 'card', cards: [card] };
+	} else if (content === 'carousel') {
+		requireRcsChannel.call(this, i, channel, 'RCS carousels');
+		const cards = await buildRcsCarousel.call(this, i);
+		body.body = String(cards[0].text ?? cards[0].title ?? '');
+		// Several cards: Bi-Way sends them as a carousel.
+		rcs = { format: 'card', cards };
 	} else {
-		const subject = this.getNodeParameter('subject', i, '') as string;
-		if (subject) {
-			body.subject = subject;
-		}
 		body.body = this.getNodeParameter('body', i) as string;
 		const buttons = buildRcsButtons.call(this, i, MESSAGE_BUTTONS_MAX);
 		if (buttons.length) {
@@ -186,10 +217,7 @@ async function messageContent(
 	if (isRcsChannel(channel)) {
 		const alternate = buildRcsFallback.call(this, i);
 		if (alternate !== undefined) {
-			rcs =
-				contentSource === 'template'
-					? { alternate }
-					: { ...(rcs ?? { format: 'text' }), alternate };
+			rcs = source === 'template' ? { alternate } : { ...(rcs ?? { format: 'text' }), alternate };
 		}
 	}
 
@@ -364,10 +392,11 @@ function existingOutcome(
 
 const createTemplate: Handler = async function (i) {
 	const options = this.getNodeParameter('options', i, {}) as IDataObject;
-	const format = this.getNodeParameter('format', i) as string;
+	const content = this.getNodeParameter('content', i, 'text') as MessageContent;
 	const body: IDataObject = {
 		title: this.getNodeParameter('title', i) as string,
-		format,
+		// A carousel template is a card template with several cards.
+		format: content === 'text' ? 'text' : 'card',
 	};
 
 	if (this.getNodeParameter('ifExists', i, 'useExisting') !== 'create') {
@@ -390,22 +419,17 @@ const createTemplate: Handler = async function (i) {
 		}
 	}
 
-	const subject = this.getNodeParameter('subject', i, '') as string;
-	if (subject) {
-		body.subject = subject;
-	}
-	const text = this.getNodeParameter('body', i, '') as string;
-	if (text) {
-		body.body = text;
-	}
 	if (options.comment) {
 		body.comment = options.comment;
 	}
 	const extra = (jsonParameter.call(this, options.extra, i, 'Extra (JSON)') ?? {}) as IDataObject;
 	// Templates keep their RCS content at the root: Bi-Way files it under the channel when sending.
-	if (format === 'card') {
+	if (content === 'card') {
 		extra.cards = [await buildRcsCard.call(this, i)];
-	} else if (format === 'text') {
+	} else if (content === 'carousel') {
+		extra.cards = await buildRcsCarousel.call(this, i);
+	} else {
+		body.body = this.getNodeParameter('body', i) as string;
 		const buttons = buildRcsButtons.call(this, i, MESSAGE_BUTTONS_MAX);
 		if (buttons.length) {
 			extra.suggestions = buttons;

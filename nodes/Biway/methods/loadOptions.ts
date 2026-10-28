@@ -1,6 +1,6 @@
 import type { IDataObject, ILoadOptionsFunctions, INodePropertyOptions } from 'n8n-workflow';
 
-import { biwayApiCall, biwayApiRequest } from '../GenericFunctions';
+import { biwayApiCall, biwayApiRequest, templateContent } from '../GenericFunctions';
 
 /** Used when Bi-Way cannot list the channels of the account. */
 const DEFAULT_CHANNELS: INodePropertyOptions[] = [
@@ -64,23 +64,24 @@ export async function getSenders(this: ILoadOptionsFunctions): Promise<INodeProp
 	return options;
 }
 
-/** Channel chosen in the node, when it is a plain value and not an expression. */
-function chosenChannel(this: ILoadOptionsFunctions): string {
-	let channel: unknown;
+/** Parameter chosen in the node, when it is a plain value and not an expression. */
+function chosenValue(this: ILoadOptionsFunctions, name: string): string {
+	let value: unknown;
 	try {
-		channel = this.getCurrentNodeParameter('channel');
+		value = this.getCurrentNodeParameter(name);
 	} catch (error) {
-		// Fields that list templates without a channel (scenarios, keyword replies).
-		this.logger.debug('Bi-Way: no channel to filter the templates', { error });
+		// Fields that list templates without a channel or a content (scenarios, keyword replies).
+		this.logger.debug(`Bi-Way: no '${name}' to filter the templates`, { error });
 		return '';
 	}
-	return typeof channel === 'string' && channel !== '' && !channel.startsWith('=') ? channel : '';
+	return typeof value === 'string' && value !== '' && !value.startsWith('=') ? value : '';
 }
 
 export async function getTemplates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 	const query: IDataObject = { limit: 200, sort_by: 'title', sort_dir: 'asc' };
 	// With a channel, Bi-Way only lists the templates that channel can carry.
-	const channel = chosenChannel.call(this);
+	const channel = chosenValue.call(this, 'channel');
+	const content = chosenValue.call(this, 'content');
 	let response = await biwayApiCall.call(this, 'COLLECTION', '/messenger/template', undefined, {
 		...query,
 		...(channel ? { channel } : {}),
@@ -95,10 +96,12 @@ export async function getTemplates(this: ILoadOptionsFunctions): Promise<INodePr
 	const body = response.errorCode
 		? await biwayApiRequest.call(this, 'COLLECTION', '/messenger/template', undefined, query)
 		: response.body;
-	return asList(body, 'templates').map((template) => ({
-		name: `${String(template.title || `Template ${template.id}`)} (${String(template.format ?? '')})`,
-		value: Number(template.id),
-	}));
+	return asList(body, 'templates')
+		.filter((template) => !content || templateContent(template) === content)
+		.map((template) => ({
+			name: `${String(template.title || `Template ${template.id}`)} (${templateContent(template)})`,
+			value: Number(template.id),
+		}));
 }
 
 export async function getContactGroups(

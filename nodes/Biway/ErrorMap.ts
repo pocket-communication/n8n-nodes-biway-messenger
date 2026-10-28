@@ -126,15 +126,11 @@ const ERRORS: Record<string, ErrorBuilder> = {
 
 	// Templates
 	missing_template_title: fixed('The template title is missing', "Fill in the 'Title' field."),
-	missing_template_format: fixed('The template format is missing', 'Pick a format.'),
+	missing_template_format: fixed('The template format is missing', "Pick a 'Content'."),
 	missing_template_body: fixed('The template body is missing', "Fill in the 'Body' field."),
-	missing_template_subject: fixed(
-		'The template subject is missing',
-		"Fill in the 'Subject' field.",
-	),
 	wrong_template_extra: fixed(
-		"The 'Extra (JSON)' field of the template is not valid",
-		"Card templates need a 'cards' array in 'Extra (JSON)'. See the Bi-Way API documentation: https://services.bi-way.fr/openapi/.",
+		'The RCS content of the template is not valid',
+		"Check the cards, the buttons and the 'Extra (JSON)' option. See the Bi-Way API documentation: https://services.bi-way.fr/openapi/.",
 	),
 
 	// Gallery
