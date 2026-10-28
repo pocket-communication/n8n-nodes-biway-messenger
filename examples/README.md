@@ -14,7 +14,8 @@ with a yellow note that lists its setup, and smaller notes explain the key steps
 
 Before you start: the workflows send by RCS, which needs an RCS agent launched by the French
 operators (check it with the Bi-Way node: **RCS Agent › Get Status**). Without one, set the channel
-of their Bi-Way nodes to your SMS channel; the buttons are then left out.
+of their Bi-Way nodes to your SMS channel, and Content to Text where they send a card; the buttons
+are then left out.
 
 Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` addresses,
 `https://g.page/r/YOUR_PLACE_ID/review`, `https://tracking.example.com/`, `https://www.example.com`,

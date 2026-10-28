@@ -244,7 +244,7 @@ tapped keyword (`keyword`), and can answer with **Message › Send** or run any 
 
 Ready-to-import workflows are in [`examples/`](examples/README.md), with how to import them and the
 placeholders to replace. They use n8n's own nodes and the Bi-Way nodes, and send by RCS: without an
-RCS agent, switch their Bi-Way nodes to an SMS channel.
+RCS agent, switch their Bi-Way nodes to an SMS channel (Content Text instead of Card).
 
 | Workflow | What it does |
 |---|---|
