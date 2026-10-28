@@ -5,8 +5,7 @@
 			"parameters": {
 				"content": "## Route customer replies to the team inbox\nEvery message a customer sends to your Bi-Way numbers or RCS agent is emailed to the right team, chosen by keywords: billing, delivery, or customer service for the rest.\n\n### Setup\n1. **Bi-Way API** credential; your n8n reachable over HTTPS.\n2. SMTP credential; replace the `@example.com` addresses by your team inboxes.\n3. Adapt the keywords in **Route by keywords**. Publish the workflow.",
 				"height": 280,
-				"width": 500,
-				"color": 4
+				"width": 500
 			},
 			"id": "dac48ecf-114b-4aee-a9e9-337ad57f3918",
 			"name": "Sticky Note setup",

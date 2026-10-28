@@ -3,10 +3,9 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## WooCommerce order notifications\nWhen an order is completed in WooCommerce, sends an RCS card with a **Track my parcel** button. Phones that cannot receive RCS get an SMS with the tracking link.\n\n### Setup\n1. **WooCommerce** credential; the trigger creates the webhook in your shop when the workflow is published. WooCommerce reports every change of an order: a completed order changed again sends a new message.\n2. **Bi-Way API** credential; RCS agent launched by the French operators.\n3. In **Build the tracking link**, replace `https://tracking.example.com/` by the tracking page of your carrier, or read the link your shipping plugin stores in the order.",
+				"content": "## WooCommerce order notifications\nWhen an order is completed in WooCommerce, sends an RCS card with a **Track my parcel** button. Phones that cannot receive RCS get an SMS with the tracking link.\n\n### Setup\n1. **WooCommerce** credential; the trigger creates the webhook in your shop when the workflow is published. WooCommerce reports every change of an order: a completed order changed again sends a new message.\n2. **Bi-Way API** credential. An RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel: the buttons are then left out.\n3. In **Build the tracking link**, replace `https://tracking.example.com/` by the tracking page of your carrier, or read the link your shipping plugin stores in the order.",
 				"height": 300,
-				"width": 520,
-				"color": 4
+				"width": 520
 			},
 			"id": "10cec411-d1ba-48cd-a771-90478202a012",
 			"name": "Sticky Note setup",

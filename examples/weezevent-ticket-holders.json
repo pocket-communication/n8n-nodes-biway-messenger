@@ -3,10 +3,9 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Weezevent ticket holders\nEvery 15 minutes, fetches the new participants of a Weezevent event, saves them as Bi-Way contacts and sends them their practical information: an RCS card when the registration form asks for a phone number, an email otherwise.\n\n### Setup\n1. Weezevent API access (granted to Weezevent partners): replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n2. **Bi-Way API** credential; RCS agent for the card, the email option of your account for the email.\n3. Adapt the card (event name, address, coordinates, practical information URL) and the email. Publish the workflow.",
+				"content": "## Weezevent ticket holders\nEvery 15 minutes, fetches the new participants of a Weezevent event, saves them as Bi-Way contacts and sends them their practical information: an RCS card when the registration form asks for a phone number, an email otherwise.\n\n### Setup\n1. Weezevent API access (granted to Weezevent partners): replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n2. **Bi-Way API** credential; an RCS agent launched by the French operators for the card, and the email option of your account for the email.\n3. Adapt the card (event name, address, coordinates, practical information URL) and the email. Publish the workflow.",
 				"height": 340,
-				"width": 560,
-				"color": 4
+				"width": 560
 			},
 			"id": "12b42fcc-d931-42d9-a705-cfe7801539d4",
 			"name": "Sticky Note setup",

@@ -3,10 +3,9 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Review request with routing\nThe day after a visit, asks for a rating from 1 to 5. Happy customers (4 or 5) get the link to your Google reviews; unhappy ones (1 or 2) are reported to your team by email, and get an answer saying you will contact them.\n\n### Setup\n1. **Bi-Way API** credential; RCS agent launched (buttons), SMS for the other phones.\n2. Google Sheet with a tab **Visits** and the columns `Date` (YYYY-MM-DD), `First name`, `Phone`. Replace `YOUR_SHEET_ID`.\n3. Replace `https://g.page/r/YOUR_PLACE_ID/review` by the review link of your Google Business Profile.\n4. SMTP credential for the alert; replace `team@example.com`. Publish the workflow.",
+				"content": "## Review request with routing\nThe day after a visit, asks for a rating from 1 to 5. Happy customers (4 or 5) get the link to your Google reviews; unhappy ones (1 or 2) are reported to your team by email, and get an answer saying you will contact them.\n\n### Setup\n1. **Bi-Way API** credential. An RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel: the buttons are then left out.\n2. Google Sheet with a tab **Visits** and the columns `Date` (YYYY-MM-DD), `First name`, `Phone` (international format). Format these columns as **Plain text** in Google Sheets, so that it keeps the `+` of the phone numbers and the dates as written. Replace `YOUR_SHEET_ID`.\n3. Replace `https://g.page/r/YOUR_PLACE_ID/review` by the review link of your Google Business Profile.\n4. SMTP credential for the alert; replace `team@example.com`. Publish the workflow.",
 				"height": 340,
-				"width": 520,
-				"color": 4
+				"width": 520
 			},
 			"id": "642767a4-ccc8-4fb3-ac01-8e8ce505490b",
 			"name": "Sticky Note setup",
