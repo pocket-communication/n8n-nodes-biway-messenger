@@ -3,8 +3,8 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Form to welcome message\nAn n8n form collects the contact details, creates the contact in Bi-Way (or updates it if the phone number is already known) and sends a welcome message by RCS, or by SMS on phones without RCS.\n\n### Setup\n1. **Bi-Way API** credential. The welcome message goes by RCS: An RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. Optional: pick a contact group in **Save the contact** › Options; without it, Bi-Way uses your default group.\n3. Add a consent field to the form if your privacy policy asks for one. Publish the workflow and share the form URL.",
-				"height": 300,
+				"content": "## Form to welcome message\nAn n8n form collects the contact details, creates the contact in Bi-Way (or updates it if the phone number is already known) and sends a welcome message by RCS, or by SMS on phones without RCS.\n\n### Setup\n1. **Bi-Way API** credential. The welcome message goes by RCS, which needs an RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. Optional: pick a contact group in **Save the contact** › Options; without it, Bi-Way uses your default group.\n3. Add a consent field to the form if your privacy policy asks for one. Publish the workflow and share the form URL.",
+				"height": 340,
 				"width": 500
 			},
 			"id": "8197beca-048b-4635-a75d-a3b2bed54e07",
@@ -13,7 +13,7 @@
 			"typeVersion": 1,
 			"position": [
 				-80,
-				-400
+				-440
 			]
 		},
 		{

@@ -3,8 +3,8 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Appointment reply\nHandles the answers to **Appointment reminder**: a tapped button (`CONFIRM`, `CANCEL`, `CALL_ME`) or a typed YES / NO on SMS. Updates the sheet, answers the customer and tells your team.\n\n### Setup\n1. Same **Bi-Way API** credential and Google Sheet as **Appointment reminder** (replace `YOUR_SHEET_ID`). The answers go by RCS: An RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. An SMTP credential for the emails to your team; replace `team@example.com`.\n3. Your n8n must be reachable over HTTPS, then publish the workflow: the trigger registers its webhook on Bi-Way by itself.",
-				"height": 300,
+				"content": "## Appointment reply\nHandles the answers to **Appointment reminder**: a tapped button (`CONFIRM`, `CANCEL`, `CALL_ME`) or a typed YES / NO on SMS. Updates the sheet, answers the customer and tells your team.\n\n### Setup\n1. Same **Bi-Way API** credential and Google Sheet as **Appointment reminder** (replace `YOUR_SHEET_ID`). The answers go by RCS, which needs an RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. An SMTP credential for the emails to your team; replace `team@example.com`.\n3. Your n8n must be reachable over HTTPS, then publish the workflow: the trigger registers its webhook on Bi-Way by itself.",
+				"height": 360,
 				"width": 500
 			},
 			"id": "90c2962f-569e-4697-a5d2-5be9dc7c1d59",
@@ -13,7 +13,7 @@
 			"typeVersion": 1,
 			"position": [
 				-80,
-				-420
+				-480
 			]
 		},
 		{

@@ -4,7 +4,7 @@
 		{
 			"parameters": {
 				"content": "## Appointment reminder with quick replies\nEvery evening, reminds the customers of tomorrow's appointments by RCS, with three buttons: **Confirm**, **Cancel**, **Call me**. Phones that cannot receive RCS get an SMS instead.\n\n### Setup\n1. Create a **Bi-Way API** credential with an API key made in the Bi-Way app (Settings › Security › API keys).\n2. Make a Google Sheet with a tab **Appointments** and the columns `Date` (YYYY-MM-DD), `Time`, `First name`, `Phone` (international format, e.g. +33612345678) and `Status`. Format these columns as **Plain text** in Google Sheets, so that it keeps the `+` of the phone numbers and the dates as written. Replace `YOUR_SHEET_ID`.\n3. An RCS agent launched by the French operators (check it with the Bi-Way node: RCS Agent › Get Status). Without one, set the channel of the Bi-Way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n4. Import **Appointment reply** too: it handles the buttons. Then publish both workflows.",
-				"height": 340,
+				"height": 420,
 				"width": 520
 			},
 			"id": "81e06477-a0da-44f9-a353-c9e884a00166",
@@ -13,7 +13,7 @@
 			"typeVersion": 1,
 			"position": [
 				-80,
-				-380
+				-460
 			]
 		},
 		{
