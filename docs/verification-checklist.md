@@ -64,7 +64,7 @@ States: **OK**, **Fixed** (during this audit, with the commit), **To do**, **N/A
 | Simplify when more than 10 fields | Fixed (`7d44410`) | RCS Scenario › Create, Get and Get Many. RCS Agent › Get Status already returns 8 chosen fields; creations return ids |
 | Output parameter for AI tool nodes | N/A | Usable as a tool, but not an AI tool node |
 | Title Case labels, sentence case descriptions | OK | Lint rules |
-| Service terminology | OK | Bi-Way's English terms: RCS agent, keyword reply, scenario, gallery, contact group. The node speaks of SMS and RCS only (`b6dc40f`): phone numbers as recipients, no email format or wording |
+| Service terminology | OK | Bi-Way's English terms: RCS agent, keyword reply, scenario, gallery, contact group. Channels named SMS, RCS and email (`4e9b24c`): phone numbers or email addresses as recipients |
 | Placeholders start with "e.g." | OK | Lint rule; "Add Option" placeholders are collection buttons |
 | Operation names | OK | Title Case, resource not repeated |
 | Operation actions: sentence case, no article, resource named | Fixed (`e6f104c`) | "Send message", "Create RCS keyword reply", "Get many RCS scenarios"… |

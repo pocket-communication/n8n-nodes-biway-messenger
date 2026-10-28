@@ -6,7 +6,7 @@
 
 # Bi-Way SMS/RCS for n8n
 
-Send SMS and RCS rich messages from [n8n](https://n8n.io/): cards and carousels with images,
+Send SMS, RCS rich messages and emails from [n8n](https://n8n.io/): cards and carousels with images,
 suggestion buttons, your verified brand as the sender, and a fallback SMS when a phone cannot receive
 RCS.
 
@@ -36,6 +36,9 @@ messaging platform of Pocket Communication.
   way, so a workflow can follow up on messages that were not delivered or not read.
 - **RCS with a safety net.** When a phone cannot receive RCS, Bi-Way sends the fallback SMS of your
   account, an SMS written in the node, or nothing at all so that your workflow decides.
+- **The same cards by email.** A card or a carousel also goes by email, laid out by Bi-Way, with its
+  buttons: they lead to the Bi-Way web chat when needed, where keyword replies and the trigger take
+  over.
 - **A verified sender.** RCS messages come from your RCS agent: your brand name and logo, verified by
   Google and approved by the mobile operators.
 - **Your data stays in France.** Bi-Way is run by Pocket Communication, a French company subject to
@@ -61,6 +64,7 @@ What else each operation needs:
 | Message › Send, Message › Broadcast | A Bi-Way plan with API access. Only the channels enabled on your account are offered; channels that need a sender use the default sender of your account unless you pick one. |
 | Anything RCS: RCS channel, cards and buttons, keyword replies, scenarios | Recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/) or in your [Bi-Way RCS settings](https://v3.bi-way.fr/settings/chatbot); a declaration fee applies. **RCS Agent › Get Status** tells you where it stands. |
 | Template, Asset and Contact operations | The matching permissions on your Bi-Way user profile. |
+| Email channels | The email option of your account, set up by Bi-Way: Mailjet for the `email` channel, SMTP for the `email_smtp` channel. |
 | Bi-Way SMS/RCS Trigger | An n8n instance reachable from the internet over HTTPS. |
 
 When something is missing, the node stops with a message that says what to do.
@@ -87,10 +91,10 @@ change it. n8n tests the key when you save the credential.
 
 | Resource | Operation | What it does |
 |---|---|---|
-| Message | Send | Sends a text, an RCS card or an RCS carousel to one phone number, written in the node or taken from a template, with RCS buttons if needed. Returns the ID of the sending, which status reports carry as `order_id`. |
-| Message | Broadcast | Sends the same content to phone numbers, contacts and contact groups, now or later, optionally in segments. |
-| Template | Create | Creates a message template: text (with RCS buttons if needed), RCS card or RCS carousel. Reuses the template with the same title by default. |
-| Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in an RCS card. |
+| Message | Send | Sends a text, a card or a carousel to one phone number (SMS, RCS) or email address, written in the node or taken from a template. Returns the ID of the sending, which status reports carry as `order_id`. |
+| Message | Broadcast | Sends the same content to phone numbers or email addresses, contacts and contact groups, now or later, optionally in segments. |
+| Template | Create | Creates a message template: text (with RCS buttons if needed), card or carousel. Reuses the template with the same title by default. |
+| Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in a card or attach it to an email. |
 | Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by its phone number and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
 | Contact | Import File | Imports contacts from a CSV, XLS or XLSX file into a group. The import runs in the background: the node returns the ID of the import task. |
@@ -101,25 +105,29 @@ change it. n8n tests the key when you save the credential.
 
 Good to know:
 
-- **Content, then source**: Send and Broadcast first ask for the **Content** (*Text*, *Card* or
-  *Carousel*), then whether you write it in the node (*Raw Message*) or use a *Template*. A raw text
-  has a body and RCS buttons; a card a title, a body, an image and buttons; a carousel 2 to 10 cards.
-  The template list only shows the templates of the chosen content that the channel can carry, and a
-  template of another content or for another channel is refused before sending.
+- **Content, then source**: Send and Broadcast first ask for the **Content**, then whether you write
+  it in the node (*Raw Message*) or use a *Template*. SMS channels only take *Text*; RCS and email
+  channels also take *Card* and *Carousel*. A card has an image, a title, a body and buttons; a
+  carousel 2 to 10 cards. A raw text has a body, plus buttons on RCS, or a title (the subject) and
+  attachments by email. The template list only shows the templates of the chosen content that the
+  channel can carry, and any other template is refused before sending.
 - **Picking items**: templates, contact groups, scenarios and gallery images are chosen **From List**
   (search by name or ID) or **By ID**, for example to map an ID returned by an earlier node.
-- **Phone numbers** are written in international format, for example `+33612345678`. Numbers typed
-  in Broadcast are not saved as contacts.
+- **Recipients**: phone numbers in international format, for example `+33612345678`, or email
+  addresses on email channels. Addresses typed in Broadcast are not saved as contacts.
 - **Personalization tags** of Bi-Way work for contacts and contact groups.
 - **Dates** are sent to Bi-Way in the Europe/Paris time zone, to the minute. A date without time zone
   is read in the time zone of the workflow. Bi-Way refuses dates in the past.
 - **Status reports**: Broadcast asks for delivery and read reports by default (option **Status
   Reports**). They reach the Bi-Way SMS/RCS Trigger as *Message Status Updated* events.
-- **RCS cards, carousels and buttons** need the RCS channel. A card has a title, a body, an image or
-  a video (from your Bi-Way gallery, where it must be public, or from an HTTPS address) and 4 buttons
-  at most. A carousel shows 2 to 10 such cards side by side, each with its own buttons. A text
-  message takes 11 buttons at most. Button labels are 25 characters at most. Button kinds: Suggested
+- **Cards, carousels and buttons** need an RCS or email channel. A card has an image or a video
+  (from your Bi-Way gallery, where it must be public, or from an HTTPS address), a title, a body and
+  4 buttons at most. A carousel shows 2 to 10 such cards side by side, each with its own buttons. An
+  RCS text takes 11 buttons at most. Button labels are 25 characters at most. Button kinds: Suggested
   Reply, Open URL, Dial and View Location.
+- **Emails**: the subject of a card is its title, and that of a carousel the title of its first
+  card. The body of a text email is HTML. Attachments are files of your Bi-Way gallery: upload a file
+  of the workflow first with **Asset › Upload**.
 - **Fallback SMS of an RCS message** (field **If the Phone Is Not RCS-Capable**): the fallback SMS of
   your account (default), an SMS written in the node, or nothing (see
   [RCS with your own fallback](#rcs-with-your-own-fallback)).
@@ -159,7 +167,7 @@ Broadcast), the `message_id`, the `channel`, the recipient's phone number (`addr
 |---|---|
 | `sent`, `error` | The message left Bi-Way, or could not. |
 | `delivered`, `undelivered`, `rejected` | Delivery report of the operator. |
-| `read`, `click`, … | Read report, for the channels that have one. |
+| `read`, `open`, `click`, … | Read report, for the channels that have one. |
 | `unsupported` | RCS was not possible (phone not RCS-capable) and **no SMS was sent**: handle it in your workflow. |
 | `expired` | The RCS message was not delivered before its expiry. |
 
@@ -217,7 +225,7 @@ the Bi-Way nodes; replace the placeholders (phone numbers, sheet IDs, templates)
 | [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order ships, with a fallback SMS. |
 | [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
 | [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |
-| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, adds them to a contact group and, when the registration form asks for their phone number, sends them an RCS message. Needs access to the Weezevent API, which Weezevent grants to its partners. |
+| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, adds them to a contact group and sends them an RCS message, or an email when the registration form does not ask for their phone number. Needs access to the Weezevent API, which Weezevent grants to its partners. |
 
 ## Compatibility
 

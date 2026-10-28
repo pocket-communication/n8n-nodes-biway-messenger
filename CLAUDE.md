@@ -14,11 +14,16 @@ Programmatic style, built on the `npm create @n8n/node` template.
 - English only in the node, the credential, the README and the docs in this repository, except
   `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly; the brand is
   written "Bi-Way".
-- SMS and RCS only: no email wording, format or option in the node or its documentation. No MMS
-  either (channel no longer supported), hence no 'Subject' field.
-- Messages and templates take a 'Content' (Text, Card, Carousel); messages then a 'Source' (Raw
-  Message or Template). The content also filters the templates offered (`templateContent()`: a card
-  template with several `extra.cards` is a carousel).
+- Channels: SMS (text only), RCS and email (`email` needs the account option `mailjet_api`,
+  `email_smtp` the option `smtp`). No MMS (no longer supported). Channel conditions live in
+  `descriptions/Channels.ts`.
+- Messages and templates take a 'Content' (Text, Card, Carousel; SMS channels get a Text-only
+  'content' field); messages then a 'Source' (Raw Message or Template). The content also filters the
+  templates offered (`templateContent()`: a card template with several `extra.cards` is a carousel).
+  Email text = Title (`subject`), HTML body, attachments sent as `"asset:<id>"`; carousels go with
+  format `cards`.
+- Card fields follow the card (Image, Title, Body, Buttons), except inside a carousel card: the
+  official scanner requires alphabetical order in a fixed collection and ignores `eslint-disable`.
 - Single items are picked with resource locators ("From List" / "By ID",
   `descriptions/ResourceLocators.ts`); inside a collection, read them with `locatorValue()`.
 - No runtime dependency, no `process.env`, no file system access (verification rules).
@@ -56,7 +61,8 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 - [x] Simplify option on RCS Scenario Create, Get and Get Many
 - [x] Publish workflow (template, tags `*.*.*`) and secrets documented
 - [x] Resource Locators for template, contact group, scenario and gallery image
-- [x] SMS and RCS only: no email wording, format or option left in the node
+- [x] SMS and RCS only: no email wording, format or option left in the node (reverted in phase 2:
+      email channels are back, see Rules)
 
 ### Phase 2 — README and French page
 - [x] README in English: pitch, differentiators (trigger for replies and button taps, self-hosted
@@ -70,6 +76,8 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 - [x] Content Text / Card / Carousel, then Source Raw Message / Template, on Send, Broadcast and
       Template › Create; templates filtered by content; no 'Subject' and no 'Media' format (MMS
       no longer supported)
+- [x] Email channels: text (title, HTML body, attachments), card and carousel; SMS channels
+      offer Text only
 
 ### Phase 3 — Example workflows (`examples/`)
 File names already linked from the README: `appointment-reminder.json`, `appointment-reply.json`,
@@ -82,7 +90,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [ ] Form to welcome message (contact create or update)
 - [ ] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
       access, `POST /auth/access_token`, `GET /participant/list` with `last_update`; no documented
-      webhook), contact in a group, RCS message. A participant only has name and email
+      webhook), contact in a group, RCS message, or email when no phone number. A participant only has name and email
       (`owner`); a phone number exists only if the organizer adds a question to the registration
       form, read from `GET /participant/{id}/answers` (`answers[]` of `label` / `value`)
 - [ ] `examples/README.md` with audience and canvas screenshots

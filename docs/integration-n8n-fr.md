@@ -1,9 +1,9 @@
-# Bi-Way dans n8n : vos SMS et messages RCS au cœur de vos automatisations
+# Bi-Way dans n8n : vos SMS, messages RCS et e-mails au cœur de vos automatisations
 
 [n8n](https://n8n.io/) relie vos outils entre eux : boutique en ligne, billetterie, formulaires,
-tableurs, CRM, agenda… Avec les nœuds Bi-Way, chacune de ces automatisations peut envoyer un SMS ou un
+tableurs, CRM, agenda… Avec les nœuds Bi-Way, chacune de ces automatisations peut envoyer un SMS, un
 message RCS enrichi (carte ou carrousel avec images, boutons de réponse, votre marque comme
-expéditeur), puis réagir aux réponses de vos clients.
+expéditeur) ou un e-mail, puis réagir aux réponses de vos clients.
 
 Les nœuds sont gratuits et publiés en open source : paquet `n8n-nodes-biway-messenger`.
 
@@ -13,7 +13,7 @@ Les nœuds sont gratuits et publiés en open source : paquet `n8n-nodes-biway-me
   bienvenue… sans développement, à partir des outils que vous utilisez déjà.
 - **Agences** : un même workflow sert à plusieurs clients, chacun avec la clé d'API de son propre
   compte Bi-Way.
-- **Freelances en automatisation** : un connecteur SMS et RCS français, prêt à l'emploi, avec
+- **Freelances en automatisation** : un connecteur SMS, RCS et e-mail français, prêt à l'emploi, avec
   déclencheur sur les réponses et les clics de boutons.
 
 ## Ce que vous pouvez automatiser
@@ -28,7 +28,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 | Suivi de commande | À l'expédition d'une commande WooCommerce, envoie une carte RCS avec un bouton de suivi, ou un SMS si le téléphone ne lit pas le RCS. |
 | Réponses vers l'équipe | Oriente les réponses de vos clients vers le bon service selon leurs mots-clés. |
 | Bienvenue après formulaire | Crée ou met à jour le contact à partir d'un formulaire, puis lui envoie un message de bienvenue. |
-| Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et, si votre formulaire d'inscription demande leur téléphone, leur envoie un message RCS. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
+| Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et leur envoie un message RCS, ou un e-mail si votre formulaire d'inscription ne demande pas leur téléphone. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
 
 ## Pourquoi Bi-Way plutôt qu'un simple envoi de SMS ?
 
@@ -38,6 +38,9 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 - **Le RCS sans prendre de risque.** Si le téléphone ne lit pas le RCS, Bi-Way envoie à la place le
   SMS de repli de votre compte, un SMS rédigé dans le workflow, ou rien du tout pour laisser votre
   workflow décider.
+- **Les mêmes cartes par e-mail.** Une carte ou un carrousel part aussi par e-mail, mis en page par
+  Bi-Way avec ses boutons : ils mènent au chat web de Bi-Way si nécessaire, où les réponses
+  automatiques et le déclencheur prennent le relais.
 - **Un expéditeur de confiance.** Vos messages RCS arrivent sous le nom et le logo de votre marque,
   vérifiés par Google et validés par les opérateurs mobiles.
 - **Vos données restent en France.** Bi-Way est un service de Pocket Communication, entreprise
@@ -56,7 +59,9 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
    déclarez-le sur le [formulaire de déclaration RCS](https://app.bi-way.fr/rcs-registration/) ou dans
    les paramètres de votre service de chat dans Bi-Way (des frais de déclaration s'appliquent). Le RCS
    n'est disponible aujourd'hui que vers les numéros des opérateurs mobiles français.
-4. **Un n8n** :
+4. **Pour l'e-mail**, l'option e-mail de votre compte, mise en place par Bi-Way : Mailjet (canal
+   `email`) ou SMTP (canal `email_smtp`).
+5. **Un n8n** :
    - auto-hébergé : le paquet s'installe en quelques clics ;
    - n8n Cloud : seuls les nœuds vérifiés par n8n s'y installent ; le nôtre y sera disponible dès que
      n8n l'aura vérifié.
@@ -77,13 +82,14 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 
 L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n.
 
-- **Message** : *Send* (un destinataire) et *Broadcast* (numéros, contacts et groupes de contacts,
-  envoi programmé, envoi par vagues, accusés de réception et de lecture). Un texte, une carte RCS ou
-  un carrousel de 2 à 10 cartes, rédigé dans le nœud ou tiré d'un modèle, avec boutons RCS : réponse
-  suggérée, ouverture d'un lien, appel, lieu affiché sur une carte.
-- **Template** : créer un modèle de message (texte, carte RCS, carrousel RCS).
-- **Asset** : déposer une image ou une vidéo dans votre galerie Bi-Way, pour l'afficher dans une
-  carte RCS.
+- **Message** : *Send* (un destinataire) et *Broadcast* (numéros ou adresses e-mail, contacts et
+  groupes de contacts, envoi programmé, envoi par vagues, accusés de réception et de lecture). Un
+  texte, une carte ou un carrousel de 2 à 10 cartes, rédigé dans le nœud ou tiré d'un modèle, avec
+  boutons : réponse suggérée, ouverture d'un lien, appel, lieu affiché sur une carte. En SMS, le
+  texte seul ; par e-mail, un texte avec titre et pièces jointes, une carte ou un carrousel.
+- **Template** : créer un modèle de message (texte, carte, carrousel).
+- **Asset** : déposer un fichier dans votre galerie Bi-Way, pour l'afficher dans une carte ou le
+  joindre à un e-mail.
 - **Contact** : créer un contact (reconnu par son numéro de téléphone pour éviter les doublons),
   créer un groupe, importer un fichier CSV ou Excel.
 - **RCS Agent** : créer une réponse automatique à un mot-clé, connaître l'état de votre service de

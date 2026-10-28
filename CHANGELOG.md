@@ -6,15 +6,17 @@ First public release.
 
 ### Bi-Way SMS/RCS node
 
-- **Message**: Send (one phone number) and Broadcast (phone numbers, contacts and contact groups;
-  send date, segmentation, status reports, priority, simulation, excluded groups, filters). Content:
-  text, RCS card or RCS carousel (2 to 10 cards), written in the node or taken from a template, with
-  RCS buttons (Suggested Reply, Open URL, Dial, View Location).
+- **Message**: Send (one phone number or email address) and Broadcast (addresses, contacts and
+  contact groups; send date, segmentation, status reports, priority, simulation, excluded groups,
+  filters). Content: text, card or carousel (2 to 10 cards), written in the node or taken from a
+  template, with buttons (Suggested Reply, Open URL, Dial, View Location).
+- **Channels**: SMS (text), RCS (text with buttons, card, carousel) and email (text with a title and
+  attachments from the gallery, card, carousel; the buttons lead to the Bi-Way web chat when needed).
 - **Fallback SMS of RCS messages** ("If the Phone Is Not RCS-Capable"): the account's fallback SMS,
   an SMS written in the node, or none, so that a workflow decides on the `unsupported` status.
 - **Templates, content and channels**: Send and Broadcast only list the templates of the chosen
   content that the chosen channel can carry, and refuse any other template before sending.
-- **Template**: Create (text, RCS card, RCS carousel).
+- **Template**: Create (text, card, carousel).
 - **Asset**: Upload to the Bi-Way gallery.
 - **Contact**: Create (columns of the account, existing contact recognized by its phone number:
   reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
@@ -23,8 +25,7 @@ First public release.
   option on Create, Get and Get Many.
 - **No duplicates**: Template › Create, Contact › Create Group, Contact › Create and RCS Agent ›
   Create Keyword Reply reuse the existing item by default ("If … Already Exists").
-- Templates, contact groups, scenarios and gallery images are picked from a searchable list or by ID.
-- SMS and RCS only: recipients are phone numbers.
+- Templates, contact groups, scenarios and gallery files are picked from a searchable list or by ID.
 - Every known Bi-Way error code is shown as an English message with the way to fix it, naming the
   item when several are processed.
 - Usable as a tool by AI agents.
