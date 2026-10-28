@@ -42,6 +42,7 @@ import {
 	buildRcsCard,
 	buildRcsCarousel,
 	buildRcsFallback,
+	isEmailChannel,
 	isRcsChannel,
 	MESSAGE_BUTTONS_MAX,
 } from './RcsContent';
@@ -83,16 +84,17 @@ function jsonParameter(
 	}
 }
 
-function requireRcsChannel(
+/** Cards and carousels go through RCS and email channels only. */
+function requireRichChannel(
 	this: IExecuteFunctions,
 	i: number,
 	channel: string,
 	what: string,
 ): void {
-	if (!isRcsChannel(channel)) {
-		throw new NodeOperationError(this.getNode(), `${what} need the RCS channel`, {
+	if (!isRcsChannel(channel) && !isEmailChannel(channel)) {
+		throw new NodeOperationError(this.getNode(), `${what} need an RCS or email channel`, {
 			itemIndex: i,
-			description: `The channel '${channel}' cannot show them. Pick the RCS channel.`,
+			description: `The channel '${channel}' cannot show them. Pick an RCS or email channel, or set 'Content' to 'Text'.`,
 		});
 	}
 }
@@ -104,7 +106,7 @@ const compatibleTemplates = new WeakMap<
 >();
 
 /**
- * Bi-Way lists, for a channel, the templates it can carry: no RCS card or button outside RCS…
+ * Bi-Way lists, for a channel, the templates it can carry: no card outside RCS and email…
  * A template outside that list, or whose content is not the chosen one, is refused before sending.
  */
 async function requireCompatibleTemplate(
@@ -148,7 +150,7 @@ async function requireCompatibleTemplate(
 			{
 				itemIndex: i,
 				description:
-					'Bi-Way checked the content of the template against the channel: RCS cards and buttons only go through RCS. Choose another template, or another channel.',
+					'Bi-Way checked the content of the template against the channel: cards and carousels only go through RCS and email, RCS buttons only through RCS. Choose another template, or another channel.',
 			},
 		);
 	}
@@ -175,8 +177,9 @@ const CONTENT_NAMES: Record<MessageContent, string> = {
  * Content (text, card or carousel, raw or from a template) and options shared by Send and
  * Broadcast.
  *
- * RCS content of a direct sending goes under the channel name: {"rcs": {"format", "cards" or
- * "suggestions"}}. Bi-Way only files it there itself for templates.
+ * Cards and buttons of a direct sending go under the channel name: {"rcs": {"format", "cards" or
+ * "suggestions"}}, {"email": {"format", "cards"}}. Bi-Way only files them there itself for
+ * templates.
  */
 async function messageContent(
 	this: IExecuteFunctions,
@@ -186,29 +189,48 @@ async function messageContent(
 	const body: IDataObject = {};
 	const content = this.getNodeParameter('content', i, 'text') as MessageContent;
 	const source = this.getNodeParameter('source', i, 'raw') as string;
-	let rcs: IDataObject | null = null;
+	const email = isEmailChannel(channel);
+	let channelExtra: IDataObject | null = null;
 	if (source === 'template') {
 		const templateId = Number(this.getNodeParameter('templateId', i, '', { extractValue: true }));
 		await requireCompatibleTemplate.call(this, i, templateId, channel, content);
 		body.template_id = templateId;
 	} else if (content === 'card') {
-		requireRcsChannel.call(this, i, channel, 'RCS cards');
+		requireRichChannel.call(this, i, channel, 'Cards');
 		const card = await buildRcsCard.call(this, i);
-		// Kept as the message text in the history and for the fallback SMS.
+		// Kept as the message text in the history and for the fallback SMS. By email, Bi-Way takes
+		// the subject from the title of the card.
 		body.body = String(card.text ?? card.title ?? '');
-		rcs = { format: 'card', cards: [card] };
+		channelExtra = { format: 'card', cards: [card] };
 	} else if (content === 'carousel') {
-		requireRcsChannel.call(this, i, channel, 'RCS carousels');
+		requireRichChannel.call(this, i, channel, 'Carousels');
 		const cards = await buildRcsCarousel.call(this, i);
 		body.body = String(cards[0].text ?? cards[0].title ?? '');
-		// Several cards: Bi-Way sends them as a carousel.
-		rcs = { format: 'card', cards };
+		if (email) {
+			// An email carousel has no subject of its own: the title of its first card.
+			body.subject = String(cards[0].title ?? '');
+		}
+		// "cards": Bi-Way checks every card, and sends several cards as a carousel.
+		channelExtra = { format: 'cards', cards };
+	} else if (email) {
+		body.subject = this.getNodeParameter('subject', i) as string;
+		body.body = this.getNodeParameter('body', i) as string;
+		const attachments = this.getNodeParameter('attachments', i, {}) as {
+			attachment?: Array<{ assetId?: unknown }>;
+		};
+		const parts = (attachments.attachment ?? [])
+			.map((attachment) => Number(locatorValue(attachment.assetId)))
+			.filter((id) => id > 0)
+			.map((id) => `asset:${id}`);
+		if (parts.length) {
+			body.parts = parts;
+		}
 	} else {
 		body.body = this.getNodeParameter('body', i) as string;
-		const buttons = buildRcsButtons.call(this, i, MESSAGE_BUTTONS_MAX);
+		// Buttons only exist on RCS: on SMS the field is hidden and ignored.
+		const buttons = isRcsChannel(channel) ? buildRcsButtons.call(this, i, MESSAGE_BUTTONS_MAX) : [];
 		if (buttons.length) {
-			requireRcsChannel.call(this, i, channel, 'RCS buttons');
-			rcs = { format: 'text', suggestions: buttons };
+			channelExtra = { format: 'text', suggestions: buttons };
 		}
 	}
 
@@ -217,7 +239,10 @@ async function messageContent(
 	if (isRcsChannel(channel)) {
 		const alternate = buildRcsFallback.call(this, i);
 		if (alternate !== undefined) {
-			rcs = source === 'template' ? { alternate } : { ...(rcs ?? { format: 'text' }), alternate };
+			channelExtra =
+				source === 'template'
+					? { alternate }
+					: { ...(channelExtra ?? { format: 'text' }), alternate };
 		}
 	}
 
@@ -235,11 +260,11 @@ async function messageContent(
 		body.date = dateParameter.call(this, options.sendAt, i, 'Send At');
 	}
 	const extra = (jsonParameter.call(this, options.extra, i, 'Extra (JSON)') ?? {}) as IDataObject;
-	if (rcs) {
+	if (channelExtra) {
 		const current = extra[channel];
 		extra[channel] = {
 			...(typeof current === 'object' && current !== null ? (current as IDataObject) : {}),
-			...rcs,
+			...channelExtra,
 		};
 	}
 	if (Object.keys(extra).length) {
@@ -278,14 +303,14 @@ const broadcastMessage: Handler = async function (i) {
 		groups?: Array<{ groupId?: unknown }>;
 	};
 
-	// Typed phone numbers become temporary contacts: Bi-Way reads the 'phone' column.
+	// Typed addresses become temporary contacts: Bi-Way reads the column named by the key.
 	const receivers: Array<IDataObject | string> = [];
 	const addresses = [
 		...(recipients.addresses ?? []).map((entry) => String(entry.address ?? '').trim()),
 		...splitAddresses(options.bulkAddresses),
 	].filter(Boolean);
 	for (const address of addresses) {
-		receivers.push({ phone: address });
+		receivers.push(address.includes('@') ? { email: address } : { phone: address });
 	}
 	for (const contact of recipients.contacts ?? []) {
 		if (Number(contact.contactId) > 0) {
@@ -300,7 +325,7 @@ const broadcastMessage: Handler = async function (i) {
 	if (!receivers.length && !groups.length) {
 		throw new NodeOperationError(this.getNode(), 'Add at least one recipient', {
 			itemIndex: i,
-			description: "Add a phone number, a contact or a contact group in 'Recipients'.",
+			description: "Add an address, a contact or a contact group in 'Recipients'.",
 		});
 	}
 
@@ -958,7 +983,7 @@ export class Biway implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
-			'Send SMS and RCS messages (rich cards, buttons) with Bi-Way. RCS is currently available on French mobile operators only.',
+			'Send SMS, RCS and email messages (cards, carousels, buttons) with Bi-Way. RCS is currently available on French mobile operators only.',
 		defaults: { name: 'Bi-Way SMS/RCS' },
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],

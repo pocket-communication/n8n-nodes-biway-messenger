@@ -67,17 +67,17 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	receiver_missing: fixed('The recipient is missing', "Fill in the 'Recipient' field."),
 	receivers_missing: fixed('The recipients are missing', 'Add at least one recipient.'),
 	receiver_error: fixed(
-		'The phone number of the recipient is not valid',
-		'Use the international format, e.g. +33612345678.',
+		'The address of the recipient is not valid for this channel',
+		'Use a phone number in international format (e.g. +33612345678) for SMS and RCS, or an email address for email channels.',
 	),
 	no_valid_receivers: fixed(
 		'None of the recipients can receive this message',
-		'Phone numbers must be in international format (e.g. +33612345678). Unsubscribed recipients are skipped.',
+		'SMS and RCS need phone numbers in international format (e.g. +33612345678), email channels email addresses. Unsubscribed recipients are skipped.',
 	),
 	no_valid_receivers_for_channel: (channel) => ({
 		message: `None of the recipients can receive messages on ${channel || 'this channel'}`,
 		description:
-			'Phone numbers must be in international format (e.g. +33612345678). Unsubscribed recipients are skipped.',
+			'SMS and RCS need phone numbers in international format (e.g. +33612345678), email channels email addresses. Unsubscribed recipients are skipped.',
 	}),
 	no_valid_date: fixed(
 		'The send date is not valid',
@@ -188,7 +188,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	entry_control_wrong_value: (detail) => ({
 		message: `The value of the contact column ${detail || ''} is not valid`.replace('  ', ' '),
 		description:
-			'Check its format: phone numbers in international format (e.g. +33612345678), dates as YYYY-MM-DD.',
+			'Check its format: phone numbers in international format (e.g. +33612345678), valid email addresses, dates as YYYY-MM-DD.',
 	}),
 	entry_control_missing_value: (detail) => ({
 		message: `The contact column ${detail || ''} is required`.replace('  ', ' '),

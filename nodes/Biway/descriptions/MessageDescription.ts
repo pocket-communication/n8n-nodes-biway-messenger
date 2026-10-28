@@ -1,6 +1,8 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { EMAIL_CHANNELS, RCS_CHANNELS, RICH_CHANNELS } from './Channels';
 import {
+	attachmentsField,
 	contentField,
 	rcsButtonsField,
 	rcsCardFields,
@@ -9,9 +11,6 @@ import {
 import { contactGroupLocator, templateLocator } from './ResourceLocators';
 
 const showFor = (operation: string[]) => ({ show: { resource: ['message'], operation } });
-
-/** RCS channels of Bi-Way: rcs, and any channel whose name contains it. */
-const rcsChannel = { channel: [{ _cnd: { includes: 'rcs' } }] };
 
 export const messageOperations: INodeProperties[] = [
 	{
@@ -51,7 +50,12 @@ const contentFields: INodeProperties[] = [
 		hint: 'Only the channels enabled on your Bi-Way account are listed',
 		displayOptions: showFor(['send', 'broadcast']),
 	},
-	contentField(showFor(['send', 'broadcast']).show),
+	// RCS and email channels show cards and carousels; the other channels (SMS) only take a text.
+	contentField({ show: { ...showFor(['send', 'broadcast']).show, channel: RICH_CHANNELS } }),
+	contentField(
+		{ show: showFor(['send', 'broadcast']).show, hide: { channel: RICH_CHANNELS } },
+		true,
+	),
 	{
 		displayName: 'Source',
 		name: 'source',
@@ -74,11 +78,53 @@ const contentFields: INodeProperties[] = [
 	templateLocator('Template', {
 		required: true,
 		typeOptions: { loadOptionsDependsOn: ['channel', 'content'] },
-		hint: "Only the templates of the chosen 'Content' that the channel can carry are listed: cards and carousels only go through RCS",
+		hint: "Only the templates of the chosen 'Content' that the channel can carry are listed: cards and carousels only go through RCS and email",
 		displayOptions: {
 			show: { ...showFor(['send', 'broadcast']).show, source: ['template'] },
 		},
 	}),
+	// Text by email: title, body, attachments.
+	{
+		displayName: 'Title',
+		name: 'subject',
+		type: 'string',
+		required: true,
+		default: '',
+		description: 'Title of the email, shown as its subject',
+		displayOptions: {
+			show: {
+				...showFor(['send', 'broadcast']).show,
+				channel: EMAIL_CHANNELS,
+				source: ['raw'],
+				content: ['text'],
+			},
+		},
+	},
+	{
+		displayName: 'Body',
+		name: 'body',
+		type: 'string',
+		typeOptions: { rows: 4 },
+		required: true,
+		default: '',
+		description:
+			'Text of the email, in HTML: write line breaks and paragraphs as HTML tags. Personalization tags of Bi-Way work for contacts and contact groups.',
+		displayOptions: {
+			show: {
+				...showFor(['send', 'broadcast']).show,
+				channel: EMAIL_CHANNELS,
+				source: ['raw'],
+				content: ['text'],
+			},
+		},
+	},
+	attachmentsField({
+		...showFor(['send', 'broadcast']).show,
+		channel: EMAIL_CHANNELS,
+		source: ['raw'],
+		content: ['text'],
+	}),
+	// Text on the other channels: body, and buttons on RCS.
 	{
 		displayName: 'Body',
 		name: 'body',
@@ -90,25 +136,32 @@ const contentFields: INodeProperties[] = [
 			'Text of the message. Personalization tags of Bi-Way work for contacts and contact groups.',
 		displayOptions: {
 			show: { ...showFor(['send', 'broadcast']).show, source: ['raw'], content: ['text'] },
+			hide: { channel: EMAIL_CHANNELS },
 		},
 	},
 	...rcsCardFields({
 		...showFor(['send', 'broadcast']).show,
-		...rcsChannel,
+		channel: RICH_CHANNELS,
 		source: ['raw'],
 		content: ['card'],
 	}),
 	rcsCarouselField({
 		...showFor(['send', 'broadcast']).show,
-		...rcsChannel,
+		channel: RICH_CHANNELS,
 		source: ['raw'],
 		content: ['carousel'],
 	}),
 	rcsButtonsField({
 		...showFor(['send', 'broadcast']).show,
-		...rcsChannel,
+		channel: RCS_CHANNELS,
 		source: ['raw'],
 		content: ['text', 'card'],
+	}),
+	rcsButtonsField({
+		...showFor(['send', 'broadcast']).show,
+		channel: EMAIL_CHANNELS,
+		source: ['raw'],
+		content: ['card'],
 	}),
 	// Also offered with templates: Bi-Way keeps the request's "alternate" on top of the template's RCS content.
 	{
@@ -139,7 +192,7 @@ const contentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				...rcsChannel,
+				channel: RCS_CHANNELS,
 			},
 		},
 	},
@@ -155,7 +208,7 @@ const contentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				...rcsChannel,
+				channel: RCS_CHANNELS,
 				rcsFallback: ['custom'],
 			},
 		},
@@ -169,7 +222,7 @@ const contentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				...rcsChannel,
+				channel: RCS_CHANNELS,
 				rcsFallback: ['custom'],
 			},
 		},
@@ -245,7 +298,7 @@ const sharedOptions: INodeProperties[] = [
 		description: 'Whether to send the body as is, without the message layout of your account',
 	},
 	{
-		displayName: 'Title',
+		displayName: 'History Title',
 		name: 'title',
 		type: 'string',
 		default: '',
@@ -257,7 +310,7 @@ export const messageFields: INodeProperties[] = [
 	// ── Send ─────────────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'Sending needs a Bi-Way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only.',
+			'Sending needs a Bi-Way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only. Email needs the email option of your account (Mailjet for the email channel, SMTP for email_smtp).',
 		name: 'sendNotice',
 		type: 'notice',
 		default: '',
@@ -265,7 +318,7 @@ export const messageFields: INodeProperties[] = [
 	},
 	{
 		displayName:
-			'Broadcast sends one message to many recipients. Phone numbers typed here are not saved as contacts, so personalization tags only work for contacts and contact groups.',
+			'Broadcast sends one message to many recipients. Addresses typed here are not saved as contacts, so personalization tags only work for contacts and contact groups.',
 		name: 'broadcastNotice',
 		type: 'notice',
 		default: '',
@@ -280,7 +333,17 @@ export const messageFields: INodeProperties[] = [
 		default: '',
 		placeholder: 'e.g. +33612345678',
 		description: 'Phone number of the recipient, in international format',
-		displayOptions: showFor(['send']),
+		displayOptions: { show: showFor(['send']).show, hide: { channel: EMAIL_CHANNELS } },
+	},
+	{
+		displayName: 'Recipient',
+		name: 'receiver',
+		type: 'string',
+		required: true,
+		default: '',
+		placeholder: 'e.g. name@example.com',
+		description: 'Email address of the recipient',
+		displayOptions: { show: { ...showFor(['send']).show, channel: EMAIL_CHANNELS } },
 	},
 	{
 		displayName: 'Recipients',
@@ -292,16 +355,17 @@ export const messageFields: INodeProperties[] = [
 		displayOptions: showFor(['broadcast']),
 		options: [
 			{
-				displayName: 'Phone Number',
+				displayName: 'Address',
 				name: 'addresses',
 				values: [
 					{
-						displayName: 'Phone Number',
+						displayName: 'Address',
 						name: 'address',
 						type: 'string',
 						default: '',
 						placeholder: 'e.g. +33612345678',
-						description: 'Phone number in international format',
+						description:
+							'Phone number in international format, or email address on an email channel',
 					},
 				],
 			},
@@ -343,13 +407,13 @@ export const messageFields: INodeProperties[] = [
 		displayOptions: showFor(['broadcast']),
 		options: [
 			{
-				displayName: 'Additional Phone Numbers',
+				displayName: 'Additional Addresses',
 				name: 'bulkAddresses',
 				type: 'string',
 				default: '',
 				placeholder: 'e.g. +33612345678, +33698765432',
 				description:
-					'Phone numbers separated by commas or new lines. You can also map an array with an expression.',
+					'Phone numbers, or email addresses on an email channel, separated by commas or new lines. You can also map an array with an expression.',
 			},
 			{
 				displayName: 'Exclude Contact Group Names or IDs',

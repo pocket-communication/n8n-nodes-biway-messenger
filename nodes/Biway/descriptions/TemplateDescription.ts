@@ -46,7 +46,7 @@ export const templateFields: INodeProperties[] = [
 		description: 'Name of the template in your Bi-Way account',
 		displayOptions: showForCreate,
 	},
-	contentField(showForCreate.show),
+	contentField(showForCreate),
 	{
 		displayName: 'Body',
 		name: 'body',

@@ -4,7 +4,13 @@ import type {
 	INodePropertyOptions,
 } from 'n8n-workflow';
 
-import { getContactGroups, getGalleryImages, getScenarios, getTemplates } from './loadOptions';
+import {
+	getContactGroups,
+	getGalleryFiles,
+	getGalleryImages,
+	getScenarios,
+	getTemplates,
+} from './loadOptions';
 
 /** Bi-Way lists are short: the node loads them once and filters on the name or the ID. */
 function matching(options: INodePropertyOptions[], filter?: string): INodeListSearchResult {
@@ -44,4 +50,11 @@ export async function searchGalleryImages(
 	filter?: string,
 ): Promise<INodeListSearchResult> {
 	return matching(await getGalleryImages.call(this), filter);
+}
+
+export async function searchGalleryFiles(
+	this: ILoadOptionsFunctions,
+	filter?: string,
+): Promise<INodeListSearchResult> {
+	return matching(await getGalleryFiles.call(this), filter);
 }

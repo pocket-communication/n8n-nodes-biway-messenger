@@ -57,6 +57,11 @@ export function isRcsChannel(channel: string): boolean {
 	return /rcs/i.test(channel);
 }
 
+/** Email channels of Bi-Way: email (Mailjet) and email_smtp. */
+export function isEmailChannel(channel: string): boolean {
+	return /email/i.test(channel);
+}
+
 /**
  * Buttons in the format Bi-Way validates (CRCSMessage::validSuggestion). `card` is the position of
  * the card in a carousel, to name the button in messages.
@@ -338,7 +343,7 @@ async function rcsCard(
 }
 
 /**
- * RCS card of the card fields, in the format Bi-Way validates (CRCSMessage::validCard).
+ * Card of the card fields, in the format Bi-Way validates (CRCSMessage::validCard) for RCS and email.
  */
 export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<IDataObject> {
 	const orientation = this.getNodeParameter('cardOrientation', i, 'VERTICAL') as string;
@@ -365,7 +370,8 @@ export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<
 }
 
 /**
- * Cards of the Cards field of a carousel. Bi-Way sends a list of several cards as a carousel.
+ * Cards of the Cards field of a carousel. Bi-Way sends a list of several cards as a carousel, by RCS
+ * and by email.
  */
 export async function buildRcsCarousel(this: IExecuteFunctions, i: number): Promise<IDataObject[]> {
 	const input = this.getNodeParameter('carouselCards', i, {}) as { card?: CardInput[] };

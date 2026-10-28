@@ -82,7 +82,7 @@ export class BiwayTrigger implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["events"].join(", ")}}',
 		description:
-			'Starts the workflow on Bi-Way SMS and RCS events: message status updates, received messages and replies, contact imports, RCS agent state',
+			'Starts the workflow on Bi-Way events: message status updates, received messages, replies and button taps, contact imports, RCS agent state',
 		defaults: { name: 'Bi-Way SMS/RCS Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],

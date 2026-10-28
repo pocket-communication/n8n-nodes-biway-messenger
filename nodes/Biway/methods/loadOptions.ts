@@ -4,6 +4,7 @@ import { biwayApiCall, biwayApiRequest, templateContent } from '../GenericFuncti
 
 /** Used when Bi-Way cannot list the channels of the account. */
 const DEFAULT_CHANNELS: INodePropertyOptions[] = [
+	{ name: 'Email', value: 'email' },
 	{ name: 'RCS', value: 'rcs' },
 	{ name: 'SMS (Long Number)', value: 'sms_long_number' },
 	{ name: 'SMS (Short Number)', value: 'sms_short_id' },
@@ -121,8 +122,22 @@ export async function getContactGroups(
 export async function getGalleryImages(
 	this: ILoadOptionsFunctions,
 ): Promise<INodePropertyOptions[]> {
+	return await galleryFiles.call(this, 'image,video');
+}
+
+/** Every file of the gallery, for email attachments. */
+export async function getGalleryFiles(
+	this: ILoadOptionsFunctions,
+): Promise<INodePropertyOptions[]> {
+	return await galleryFiles.call(this);
+}
+
+async function galleryFiles(
+	this: ILoadOptionsFunctions,
+	types?: string,
+): Promise<INodePropertyOptions[]> {
 	const body = await biwayApiRequest.call(this, 'COLLECTION', '/gallery/asset', undefined, {
-		filter_by_type: 'image,video',
+		...(types ? { filter_by_type: types } : {}),
 		limit: 200,
 		// The listing embeds a thumbnail: keep it tiny.
 		thumbnail_width: 1,

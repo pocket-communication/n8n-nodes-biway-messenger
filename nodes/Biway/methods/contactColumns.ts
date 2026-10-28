@@ -21,6 +21,7 @@ const DEFAULT_COLUMNS: ContactColumn[] = [
 	{ name: 'birthday', label: 'Birthday', type: 'date', mandatory: false },
 	{ name: 'civility', label: 'Civility', type: 'string', mandatory: false },
 	{ name: 'custom_id', label: 'Custom ID', type: 'string', mandatory: false },
+	{ name: 'email', label: 'Email', type: 'email', mandatory: false },
 	{ name: 'name', label: 'Name', type: 'string', mandatory: false },
 	{ name: 'phone', label: 'Phone', type: 'phone', mandatory: false },
 	{ name: 'surname', label: 'First Name', type: 'string', mandatory: false },
@@ -76,6 +77,9 @@ function fieldType(type: string): FieldType {
 function displayName(column: ContactColumn): string {
 	if (column.type === 'phone') {
 		return `${column.label} (international format, e.g. +33612345678)`;
+	}
+	if (column.type === 'email') {
+		return `${column.label} (email address)`;
 	}
 	return column.label;
 }

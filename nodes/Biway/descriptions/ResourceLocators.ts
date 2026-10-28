@@ -53,4 +53,7 @@ export const scenarioLocator = (extra: Partial<INodeProperties> = {}): INodeProp
 	locator('scenarioId', 'Scenario', 'searchScenarios', 'scenario', extra);
 
 export const galleryImageLocator = (extra: Partial<INodeProperties> = {}): INodeProperties =>
-	locator('cardImageId', 'Image', 'searchGalleryImages', 'gallery file', extra);
+	locator('cardImageId', 'Gallery Image', 'searchGalleryImages', 'gallery file', extra);
+
+export const galleryFileLocator = (extra: Partial<INodeProperties> = {}): INodeProperties =>
+	locator('assetId', 'File', 'searchGalleryFiles', 'gallery file', extra);

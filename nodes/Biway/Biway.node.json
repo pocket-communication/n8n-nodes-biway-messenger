@@ -3,7 +3,17 @@
 	"nodeVersion": "1.0",
 	"codexVersion": "1.0",
 	"categories": ["Communication"],
-	"alias": ["SMS", "RCS", "Text message", "Rich card", "Messaging", "Chatbot", "France"],
+	"alias": [
+		"SMS",
+		"RCS",
+		"Email",
+		"Text message",
+		"Rich card",
+		"Carousel",
+		"Messaging",
+		"Chatbot",
+		"France"
+	],
 	"resources": {
 		"credentialDocumentation": [
 			{
