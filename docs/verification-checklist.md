@@ -39,11 +39,11 @@ States: **OK**, **Fixed** (during this audit, with the commit), **To do**, **N/A
 | npm repository URL matches the GitHub repository | OK | `repository.url` = `github.com/pocket-communication/n8n-nodes-biway-messenger`; to look at again on the npm page after publication |
 | Same author/maintainer on npm and on the repository | To do | Author is "Pocket Communication <tech@pocketcommunication.com>"; the npm account that publishes must be the Pocket Communication one |
 | Git link works, repository public | OK | Public repository on GitHub |
-| Proper documentation (README, usage examples) | Partial | README rewritten (phase 2); example workflows in phase 3 |
+| Proper documentation (README, usage examples) | OK | README (phase 2) and seven example workflows in `examples/` (phase 3) |
 | MIT license | OK | `LICENSE.md`, `package.json` › `license` |
 | Published from a GitHub action with provenance | To do | First publication |
 | No external dependencies | OK | No `dependencies`; `n8n-workflow` as peer; the code uses only `n8n-workflow`, Node's `crypto` (webhook token) and the global `FormData` and `Blob` |
-| README with usage, example workflows, authentication | Partial | Usage, API key and credential in the README (phase 2); the example workflows it links to come in phase 3 |
+| README with usage, example workflows, authentication | OK | Usage, API key and credential in the README; example workflows in `examples/`, linked from it |
 | No environment variable or file system access | OK | No `process.env`, no `fs`; binary data goes through `this.helpers` |
 | TypeScript, clear style, n8n guidelines | OK | TypeScript strict, Prettier config of the template |
 | Proper error handling and validation | OK | Every known Bi-Way error code mapped to an English message and fix ([`ErrorMap.ts`](../nodes/Biway/ErrorMap.ts)), `NodeApiError` with item index, `continueOnFail`, checks before sending (RCS content on SMS, template vs channel, button text length, dates) |

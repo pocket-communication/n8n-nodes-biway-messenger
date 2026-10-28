@@ -27,6 +27,11 @@ Programmatic style, built on the `npm create @n8n/node` template.
   only: Bi-Way puts it as is in its search condition.
 - Card fields follow the card (Image, Title, Body, Buttons), except inside a carousel card: the
   official scanner requires alphabetical order in a fixed collection and ignores `eslint-disable`.
+- The channel is the last key of every `show`: n8n displays a field as soon as a `show` condition
+  names an expression, skipping the conditions after it and `hide` (`descriptions/Channels.ts`).
+- Examples (`examples/*.json`) use the npm node types (`n8n-nodes-biway-messenger.biway`), n8n's
+  own nodes in versions available on n8n 1.x as well (Schedule 1.2, Switch 3.2, If 2.2, Set 3.4,
+  HTTP Request 4.2, Form 2.2, Google Sheets 4.5), English names, placeholders and sticky notes.
 - Single items are picked with resource locators ("From List" / "By ID",
   `descriptions/ResourceLocators.ts`); inside a collection, read them with `locatorValue()`.
 - No runtime dependency, no `process.env`, no file system access (verification rules).
@@ -86,17 +91,20 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
 File names already linked from the README: `appointment-reminder.json`, `appointment-reply.json`,
 `review-request.json`, `order-notifications.json`, `inbound-to-team-inbox.json`,
 `form-welcome-message.json`, `weezevent-ticket-holders.json`.
-- [ ] Appointment reminder with quick replies, and the reply workflow (no online rebooking)
-- [ ] Review request with routing
-- [ ] E-commerce order notifications (card, tracking button, SMS fallback)
-- [ ] Inbound reply to team inbox
-- [ ] Form to welcome message (contact create or update)
-- [ ] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
+- [x] Appointment reminder with quick replies, and the reply workflow (no online rebooking)
+- [x] Review request with routing
+- [x] E-commerce order notifications (card, tracking button, SMS fallback)
+- [x] Inbound reply to team inbox
+- [x] Form to welcome message (contact create or update)
+- [x] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
       access, `POST /auth/access_token`, `GET /participant/list` with `last_update`; no documented
       webhook), contact in a group, RCS message, or email when no phone number. A participant only has name and email
       (`owner`); a phone number exists only if the organizer adds a question to the registration
       form, read from `GET /participant/{id}/answers` (`answers[]` of `label` / `value`)
-- [ ] `examples/README.md` with audience and canvas screenshots
+- [x] `examples/README.md` with audience (canvas screenshots: TODO, taken in phase 4)
+- [x] Every example checked against the node definitions of n8n 2.45.4 (known type and version,
+      no dropped parameter, no parameter issue)
+- [x] Fix found on the way: a channel given as an expression showed every field (`bc64110`)
 
 ### Phase 4 — Validation
 - [ ] Every example imported in local n8n without missing node or parameter issue
