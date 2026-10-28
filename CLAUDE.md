@@ -113,19 +113,20 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Every operation run against Bi-Way production with the test account (21 runs: status,
       group, contact create / reuse / update, XLSX import, asset, templates, keyword reply, scenario
       create to delete, Broadcast simulations on SMS, RCS card, carousel, template and group)
-- [ ] Real sendings (Send, Scenario › Start, email channel), the trigger through a tunnel, and the
-      examples with their own credentials (Google Sheets, SMTP, WooCommerce, Weezevent): maintainer
+- [x] Real sendings, the trigger through a tunnel and the examples, tested by the maintainer as far
+      as their accounts allow (2026-10-28)
 - [x] Review as a newcomer (two-minute test), findings applied to the README and the examples
 - [x] Fixes found: Update It emptied the unmapped columns of a contact; Import File now lists the
       formats of the account (its CSV is tab-separated); refused-message errors no longer speak of
       RCS on SMS
-- [ ] Canvas screenshots for `examples/README.md`
+- [x] Canvas screenshots for `examples/README.md` (`examples/images/`), one in the README; taking
+      them showed five setup notes too short for their text and two notes overlapping, fixed
 - [x] Final recap and release command
 
 ### Release (maintainer)
 - [x] `{{TRIAL_SIGNUP_URL}}` replaced by https://v3.bi-way.fr/signup (2026-10-28)
-- [ ] bi-way-services `tools/messenger/class/Template.class.php` deployed (template subject for
-      every format, card templates listed for email channels)
+- [x] bi-way-services `tools/messenger/class/Template.class.php` deployed on 2026-10-28 (template
+      subject for every format, card templates listed for email channels)
 - [ ] Phases merged into `main`, CI green
 - [ ] `NPM_TOKEN` still valid (expires around 2026-11-03), or replaced
 - [ ] Tag `0.1.0` pushed: `git tag 0.1.0 && git push origin 0.1.0`
