@@ -6,141 +6,171 @@
 
 # Bi-Way SMS/RCS for n8n
 
-`n8n-nodes-biway-messenger` — [n8n](https://n8n.io/) community nodes for [Bi-Way](https://www.bi-way.fr/),
-the SMS and RCS messaging platform of Pocket Communication: send SMS and RCS messages (rich cards,
-buttons, scenarios), manage message templates, gallery files and contacts, and start workflows when
-Bi-Way sends an event (status reports, replies, imports).
+Send SMS and RCS rich messages from [n8n](https://n8n.io/): cards with images, suggestion buttons, your
+verified brand as the sender, and a fallback SMS when a phone cannot receive RCS.
 
-> **RCS is currently available on French mobile operators only** (French phone numbers). For the other
-> numbers, or phones that cannot receive RCS, Bi-Way can send an SMS instead, or let your workflow
-> decide (see [RCS with your own fallback](#rcs-with-your-own-fallback)).
+`n8n-nodes-biway-messenger` is the n8n community package of [Bi-Way](https://www.bi-way.fr/), the
+messaging platform of Pocket Communication.
 
+> **RCS is currently available on French mobile operators only** (French phone numbers). For other
+> numbers, and for phones that cannot receive RCS, Bi-Way can send an SMS instead, or let your
+> workflow decide (see [RCS with your own fallback](#rcs-with-your-own-fallback)).
+
+- [Why Bi-Way in n8n](#why-bi-way-in-n8n)
+- [Get an API key](#get-an-api-key)
 - [Installation](#installation)
-- [Prerequisites](#prerequisites)
 - [Credentials](#credentials)
-- [Bi-Way SMS/RCS node](#bi-way-smsrcs-node)
+- [Operations](#operations)
 - [Bi-Way SMS/RCS Trigger](#bi-way-smsrcs-trigger)
 - [RCS with your own fallback](#rcs-with-your-own-fallback)
 - [RCS scenarios](#rcs-scenarios)
 - [Example workflows](#example-workflows)
 - [Compatibility](#compatibility)
-- [Resources](#resources)
+- [API documentation and support](#api-documentation-and-support)
+
+## Why Bi-Way in n8n
+
+- **Two-way conversations.** The Bi-Way SMS/RCS Trigger starts a workflow when a customer replies or
+  taps a suggestion button, and tells you which button. Delivery and read reports arrive the same
+  way, so a workflow can follow up on messages that were not delivered or not read.
+- **RCS with a safety net.** When a phone cannot receive RCS, Bi-Way sends the fallback SMS of your
+  account, an SMS written in the node, or nothing at all so that your workflow decides.
+- **A verified sender.** RCS messages come from your RCS agent: your brand name and logo, verified by
+  Google and approved by the mobile operators.
+- **Your data stays on your side.** With a self-hosted n8n, phone numbers and messages only travel
+  between your servers and Bi-Way, run by Pocket Communication, a French company subject to the GDPR.
+  No third-party automation cloud is involved.
+
+## Get an API key
+
+1. Create your Bi-Way account: {{TRIAL_SIGNUP_URL}}
+2. In Bi-Way, open **Settings › Security › API keys**
+   ([v3.bi-way.fr/settings/security](https://v3.bi-way.fr/settings/security)).
+3. Click **Create a key**, give it a name (for example `n8n`), and copy the **token** and the
+   **secret**. The secret is shown only once.
+
+You can revoke a key at any time from the same page; the workflows that use it then stop working.
+The page also lists the **Account key**, the key the former Bi-Way application shows: it works too,
+but cannot be revoked, so prefer a key of your own.
+
+What else each operation needs:
+
+| Operation | Needs |
+|---|---|
+| Message › Send, Message › Broadcast | A Bi-Way plan with API access. Only the channels enabled on your account are offered; channels that need a sender use the default sender of your account unless you pick one. |
+| Anything RCS: RCS channel, cards and buttons, keyword replies, scenarios | Recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/) or in your [Bi-Way RCS settings](https://v3.bi-way.fr/settings/chatbot); a declaration fee applies. **RCS Agent › Get Status** tells you where it stands. |
+| Template, Asset and Contact operations | The matching permissions on your Bi-Way user profile. |
+| Bi-Way SMS/RCS Trigger | An n8n instance reachable from the internet over HTTPS. |
+
+When something is missing, the node stops with a message that says what to do.
 
 ## Installation
 
-Follow the [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) in the
-n8n community nodes documentation, and install the package `n8n-nodes-biway-messenger`.
+- **Self-hosted n8n**: as an owner or admin, open **Settings › Community Nodes › Install**, enter
+  `n8n-nodes-biway-messenger` and confirm. See the n8n
+  [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for the manual
+  installation (queue mode, Docker images built in advance).
+- **n8n Cloud**: only community nodes verified by n8n can be installed there. This package will be
+  available once n8n has verified it.
 
-## Prerequisites
-
-This package does not create Bi-Way accounts nor subscribe to plans: you need an existing Bi-Way
-account. What each operation requires:
-
-| Operation | Requires |
-|---|---|
-| Every operation | An API key of your Bi-Way account (see [Credentials](#credentials)). |
-| Message › Send, Message › Broadcast | A Bi-Way plan with API access ([sign up](https://v3.bi-way.fr/signup) or ask Bi-Way support). Only the channels enabled on your account work; channels that need a sender use the default sender of your account unless you pick one. |
-| Sending on the RCS channel, RCS cards and buttons, RCS Agent › Create Keyword Reply, RCS Scenario | Recipients on French mobile operators (RCS is not available elsewhere yet), and an RCS agent declared by your company and launched by the mobile operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/) or in your [Bi-Way RCS settings](https://v3.bi-way.fr/settings/chatbot); a declaration fee applies. Check its state with **RCS Agent › Get Status**. |
-| Template › Create, Asset › Upload, Contact › Create, Contact › Create Group, Contact › Import File | The matching permissions on your Bi-Way profile. |
-| Bi-Way SMS/RCS Trigger | An n8n instance reachable from the internet over HTTPS. |
-
-When a prerequisite is missing, the node stops with an explicit message telling what to do.
+Then add the **Bi-Way SMS/RCS** node to a workflow: search for "Bi-Way", "SMS" or "RCS" in the nodes
+panel.
 
 ## Credentials
 
-The **Bi-Way API** credential uses an API key, made of a **token** and a **secret**:
+The **Bi-Way API** credential uses the API key: paste the **token** and the **secret** created in
+[Get an API key](#get-an-api-key). Leave **Base URL** unchanged unless Bi-Way support asks you to
+change it. n8n tests the key when you save the credential.
 
-1. Sign in to Bi-Way and open **Settings › Security › API keys**
-   ([v3.bi-way.fr/settings/security](https://v3.bi-way.fr/settings/security)).
-2. Click **Create a key**, give it a name (for example `n8n`) and copy the token and the secret. The
-   secret is shown only once.
-3. In n8n, create a **Bi-Way API** credential and paste the token and the secret. Leave **Base URL**
-   unchanged unless Bi-Way support asks you to change it.
-
-You can revoke the key at any time from the same page; the workflows using it then stop working.
-The key of your account (shown as "account key") is also visible in the former Bi-Way application,
-under **Mon compte**.
-
-## Bi-Way SMS/RCS node
+## Operations
 
 | Resource | Operation | What it does |
 |---|---|---|
-| Message | Send | Sends a message to one recipient (phone number or email address): text, template or RCS card, with RCS buttons if needed. Returns the ID of the sending. |
-| Message | Broadcast | Sends a message to addresses, contacts and contact groups, now or later, optionally in segments. |
-| Template | Create | Creates a message template: text (with RCS buttons if needed), HTML, media or RCS card. Reuses the template with the same title by default. |
-| Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to attach it to messages and templates or to show it in an RCS card. |
-| Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by its phone number or email address and, by default, returns it instead of creating a duplicate (or updates it, or fails). |
+| Message | Send | Sends a text, a template or an RCS card to one phone number, with RCS buttons if needed. Returns the ID of the sending, which status reports carry as `order_id`. |
+| Message | Broadcast | Sends one message to phone numbers, contacts and contact groups, now or later, optionally in segments. |
+| Template | Create | Creates a message template: text (with RCS buttons if needed), media or RCS card. Reuses the template with the same title by default. |
+| Asset | Upload | Uploads a file to your Bi-Way gallery (2 MB for images and documents, 30 MB for videos). Returns its ID, to show it in an RCS card. |
+| Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by its phone number and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
 | Contact | Import File | Imports contacts from a CSV, XLS or XLSX file into a group. The import runs in the background: the node returns the ID of the import task. |
-| RCS Agent | Create Keyword Reply | Replies with a template when a customer sends a keyword to your RCS agent, or taps a Suggested Reply button carrying it. Reuses the reply of the same keyword by default. |
+| RCS Agent | Create Keyword Reply | Replies with a template when a customer sends a keyword to your RCS agent, or taps a suggestion button that carries it. Reuses the reply to the same keyword by default. |
 | RCS Agent | Get Status | Returns the state of your RCS declaration and of your RCS agent at each operator, and the next step to take. |
-| RCS Scenario | Create, Get, Get Many, Activate, Deactivate, Delete | Manages the scenarios of your RCS agent (see [RCS scenarios](#rcs-scenarios)). Delete removes the scenario only, not its templates nor its keyword replies. |
+| RCS Scenario | Create, Get, Get Many, Activate, Deactivate, Delete | Manages the scenarios of your RCS agent (see [RCS scenarios](#rcs-scenarios)). Create, Get and Get Many return a simplified output unless you turn **Simplify** off. Delete removes the scenario only, not its templates nor its keyword replies. |
 | RCS Scenario | Start | Sends the first message of a scenario to a phone number. |
 
-Notes:
+Good to know:
 
+- **Picking items**: templates, contact groups, scenarios and gallery images are chosen **From List**
+  (search by name or ID) or **By ID**, for example to map an ID returned by an earlier node.
+- **Phone numbers** are written in international format, for example `+33612345678`. Numbers typed
+  in Broadcast are not saved as contacts.
+- **Personalization tags** of Bi-Way work for contacts and contact groups.
 - **Dates** are sent to Bi-Way in the Europe/Paris time zone, to the minute. A date without time zone
   is read in the time zone of the workflow. Bi-Way refuses dates in the past.
-- **Broadcast** collects delivery and read reports by default (option **Status Reports**). They reach
-  the Bi-Way SMS/RCS Trigger as "Message Status Updated" events.
-- **Personalization tags** of Bi-Way work for contacts and contact groups. Addresses typed in the node
-  are not saved as contacts.
-- **RCS cards and buttons** need the RCS channel. A card has a title, a text, an image or video (from
-  your Bi-Way gallery, which must be public, or from an HTTPS address) and 4 buttons at most; a text
-  message 11 buttons at most. Button labels are 25 characters at most.
-- **Fallback SMS of an RCS message** (field "If the Phone Is Not RCS-Capable", RCS channel, with a
-  text, a card or a template): send the fallback SMS of your account (default), send an SMS written in
-  the node, or send nothing and let a workflow decide (see
+- **Status reports**: Broadcast asks for delivery and read reports by default (option **Status
+  Reports**). They reach the Bi-Way SMS/RCS Trigger as *Message Status Updated* events.
+- **RCS cards and buttons** need the RCS channel. A card has a title, a text, an image or a video
+  (from your Bi-Way gallery, where it must be public, or from an HTTPS address) and 4 buttons at
+  most; a text message 11 buttons at most. Button labels are 25 characters at most. Button kinds:
+  Suggested Reply, Open URL, Dial and View Location.
+- **Fallback SMS of an RCS message** (field **If the Phone Is Not RCS-Capable**): the fallback SMS of
+  your account (default), an SMS written in the node, or nothing (see
   [RCS with your own fallback](#rcs-with-your-own-fallback)).
 - **Templates and channels**: Send and Broadcast only list the templates the chosen channel can carry,
-  and refuse a template that does not fit it (RCS cards and buttons only go through RCS; an SMS takes
-  neither a subject nor attachments).
-- **Duplicates**: Template › Create, Contact › Create Group, Contact › Create and RCS Agent › Create
-  Keyword Reply reuse the existing item by default (field "If … Already Exists"), so that running a
-  workflow again creates no duplicate. Names are compared ignoring case and surrounding spaces; contacts
-  are matched on their exact phone number or email address, as stored in Bi-Way.
+  and refuse a template that does not fit it before sending (RCS cards and buttons only go through
+  RCS).
+- **No duplicates when a workflow runs again**: Template › Create, Contact › Create Group, Contact ›
+  Create and RCS Agent › Create Keyword Reply reuse the existing item by default (field **If …
+  Already Exists**). Names are compared ignoring case and surrounding spaces; contacts are matched on
+  their exact phone number, as stored in Bi-Way.
 - The node can be used as a tool by AI agents.
 
 ## Bi-Way SMS/RCS Trigger
 
-The trigger registers its webhook URL on your Bi-Way account when the workflow is activated, and removes
-it when the workflow is deactivated. It adds its URL next to the callback URLs your account may already
-have: it never replaces them.
+The trigger registers its webhook URL on your Bi-Way account when the workflow is published (activated,
+on n8n 1), and removes it when the workflow is unpublished. It adds its URL next to the callback URLs
+your account may already have: it never replaces them.
 
 | Event | Starts the workflow when |
 |---|---|
 | Message Status Updated | A message you sent was delivered, read, refused, clicked or expired, or could not go through RCS. |
-| Message Received | A customer sent a message or replied to one of your messages. |
+| Message Received | A customer sent a message, replied to one of your messages or tapped a suggestion button. |
 | Contact Import State Changed | A contact import progressed or ended. |
 | RCS Agent State Changed | Your RCS agent changed state at a mobile operator. |
 | RCS Capability Check Completed | Bi-Way finished checking which phone numbers can receive RCS. |
 | Account State Changed | Your Bi-Way account was enabled or disabled. |
 
-Each event becomes one item. A *Message Received* item also carries `keyword`: the keyword of the RCS
-button the customer tapped, or `null` for a typed message. With the **Button Keywords** option, the
-workflow only starts for the buttons you list.
+Each event becomes one item.
 
-A *Message Status Updated* item carries the `order_id` (the ID returned by Message › Send or
-Broadcast), the `message_id`, the `channel`, the recipient `address` and a `status`:
+**Message Received** items carry the customer's phone number (`address`), the name of the contact
+when Bi-Way knows it, otherwise the phone number (`sender`), the text (`message`), the `channel`, and
+`keyword`: the keyword of the RCS button the customer tapped, or `null` for a typed message. With the
+**Button Keywords** option, the workflow only starts for the buttons you list.
+
+**Message Status Updated** items carry the `order_id` (the ID returned by Message › Send or
+Broadcast), the `message_id`, the `channel`, the recipient's phone number (`address`), the dates
+`sent_at`, `delivered_at` and `read_at`, and a `status`:
 
 | `status` | Meaning |
 |---|---|
 | `sent`, `error` | The message left Bi-Way, or could not. |
 | `delivered`, `undelivered`, `rejected` | Delivery report of the operator. |
-| `read`, `open`, `click`, … | Read report, for the channels that have one. |
+| `read`, `click`, … | Read report, for the channels that have one. |
 | `unsupported` | RCS was not possible (phone not RCS-capable) and **no SMS was sent**: handle it in your workflow. |
 | `expired` | The RCS message was not delivered before its expiry. |
 
-It also carries `fallback`: `"sms"` when a fallback SMS was sent instead of the RCS message, `"none"`
-when no SMS was sent, `null` otherwise.
+They also carry `fallback`: `"sms"` when a fallback SMS was sent instead of the RCS message, `"none"`
+when no SMS was sent, `null` otherwise. When Bi-Way falls back to SMS, an event with
+`status: "error"` and `fallback: "sms"` can arrive shortly before the `sent` of the SMS: do not treat
+it as final, wait for the delivery report.
 
 Good to know:
 
 - Bi-Way sends the events of the **whole account**, including messages not sent from n8n.
-- The webhook URL must be reachable from the internet over **HTTPS**. When n8n runs behind a proxy or a
-  tunnel, set the `WEBHOOK_URL` environment variable of n8n.
+- The webhook URL must be reachable from the internet over **HTTPS**. When n8n runs behind a proxy or
+  a tunnel, set the `WEBHOOK_URL` environment variable of n8n.
 - The registered URL carries a token derived from the secret of the API key; calls without it are
-  refused. If you change the key of the credential, deactivate and reactivate the workflow.
+  refused. If you change the key of the credential, unpublish the workflow and publish it again.
 
 ## RCS with your own fallback
 
@@ -149,62 +179,59 @@ in n8n instead:
 
 1. **Bi-Way SMS/RCS › Message › Send** on the RCS channel, with **If the Phone Is Not RCS-Capable** set
    to *Send Nothing*.
-2. In another workflow, **Bi-Way SMS/RCS Trigger** with the event *Message Status Updated* → IF
+2. In another workflow, **Bi-Way SMS/RCS Trigger** with the event *Message Status Updated* → **If**
    `{{ $json.status }}` is `unsupported` → **Bi-Way SMS/RCS › Message › Send** on an SMS channel to
-   `{{ $json.address }}` — or do nothing at all.
+   `{{ $json.address }}`, or anything else: a call task, a different wording, nothing at all.
 
 ## RCS scenarios
 
-A Bi-Way scenario is a conversation driven by RCS buttons: each Suggested Reply button sends a keyword, and a
-keyword reply answers it with the next message. Build one from n8n in four steps:
+A Bi-Way scenario is a conversation driven by RCS buttons: each Suggested Reply button sends a
+keyword, and a keyword reply answers it with the next message. Build one from n8n in four steps:
 
 1. **Template › Create** for each step: format *Text* or *Card (RCS)*, with **RCS Buttons** of type
-   *Suggested Reply*. Each button carries a keyword (for example `APPOINTMENT`, `CALL_ME`).
+   *Suggested Reply*. Each button carries a keyword (for example `CONFIRM`, `CALL_ME`).
 2. **RCS Agent › Create Keyword Reply** for each keyword: it sends the template of the next step.
-3. **RCS Scenario › Create** with the first template. The scenario appears in Bi-Way, where you can also
-   edit it.
+3. **RCS Scenario › Create** with the first template. The scenario appears in Bi-Way, where you can
+   also edit it.
 4. **RCS Scenario › Start** to send the first message to a phone number.
 
-To take over the conversation in n8n at the end of the path, give the last templates Suggested Reply buttons
-whose keywords have **no** keyword reply, and catch them with a **Bi-Way SMS/RCS Trigger** on *Message Received*
-with the **Button Keywords** option. The workflow then receives the customer's phone number (`address`) and
-the tapped keyword (`keyword`), and can answer with **Message › Send** or run any other action.
+To take over the conversation in n8n, give the last templates Suggested Reply buttons whose keywords
+have **no** keyword reply, and catch them with a **Bi-Way SMS/RCS Trigger** on *Message Received* with
+the **Button Keywords** option. The workflow receives the customer's phone number (`address`) and the
+tapped keyword (`keyword`), and can answer with **Message › Send** or run any other action.
 
 ## Example workflows
 
-**1. Confirm an order by SMS.** Shop trigger (for example WooCommerce › Order Created) → **Bi-Way SMS/RCS ›
-Message › Send**: channel *SMS*, recipient `{{ $json.billing.phone }}`, body
-`Hello {{ $json.billing.first_name }}, your order {{ $json.number }} is confirmed.`
+Ready-to-import workflows are in [`examples/`](examples/README.md). They use only n8n core nodes and
+the Bi-Way nodes; replace the placeholders (phone numbers, sheet IDs, templates) with yours.
 
-**2. Send a monthly SMS offer to a group.** Schedule Trigger (first Monday of the month, 9:00) →
-**Bi-Way SMS/RCS › Message › Broadcast**: channel *SMS*, content *Template* (your offer template), recipients
-*Contact Group* "Customers", option **Status Reports** *All*.
-
-**3. Route customer replies to your team.** **Bi-Way SMS/RCS Trigger** with the event *Message Received* →
-IF (`{{ $json.message }}` contains `STOP`) → otherwise Slack › Send Message with
-`{{ $json.sender }}: {{ $json.message }}`.
-
-**4. Import contacts from a spreadsheet, then message them.** Google Drive › Download File (XLSX) →
-**Bi-Way SMS/RCS › Contact › Import File** (format *XLSX*, group "Leads", duplicate handling *Deduplicate Within
-the Group*) → in another workflow, **Bi-Way SMS/RCS Trigger** with *Contact Import State Changed* → **Bi-Way SMS/RCS ›
-Message › Broadcast** to the group "Leads".
-
-**5. Hand over an RCS scenario to n8n.** Scenario built as described in [RCS scenarios](#rcs-scenarios),
-whose last step offers the buttons *Call me* (`CALL_ME`) and *No thanks* (`NO_THANKS`) → **Bi-Way SMS/RCS
-Trigger** with *Message Received* and **Button Keywords** `CALL_ME` → **Bi-Way SMS/RCS › Contact › Create**
-(phone `{{ $json.address }}`, group "To call back") → your CRM.
+| Workflow | What it does |
+|---|---|
+| [Appointment reminder](examples/appointment-reminder.json) | Reminds customers of tomorrow's appointments with quick-reply buttons. |
+| [Appointment reply](examples/appointment-reply.json) | Handles the buttons tapped on the reminder. |
+| [Review request](examples/review-request.json) | Asks for a rating, sends happy customers to your Google reviews and alerts your team about unhappy ones. |
+| [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order ships, with a fallback SMS. |
+| [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
+| [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |
 
 ## Compatibility
 
-Uses the n8n nodes API version 1 and has no runtime dependency.
+- Tested with n8n 2.45.4, self-hosted. On n8n 1, "publish" and "unpublish" read "activate" and
+  "deactivate".
+- n8n nodes API version 1, no runtime dependency.
+- RCS reaches phones on French mobile operators only; SMS reach the destinations of your Bi-Way plan.
 
-## Resources
+## API documentation and support
 
-- [Bi-Way API documentation](https://services.bi-way.fr/openapi/)
+- [Bi-Way API documentation](https://services.bi-way.fr/openapi/), for the requests behind each
+  operation and the advanced **Extra (JSON)** and **Filters (JSON)** options.
 - [RCS declaration form](https://app.bi-way.fr/rcs-registration/)
-- [Sign up to Bi-Way](https://v3.bi-way.fr/signup)
 - [n8n community nodes documentation](https://docs.n8n.io/integrations/#community-nodes)
-- Support: [tech@pocketcommunication.com](mailto:tech@pocketcommunication.com)
+- Issues and questions about this package:
+  [GitHub issues](https://github.com/pocket-communication/n8n-nodes-biway-messenger/issues)
+- Bi-Way support: [tech@pocketcommunication.com](mailto:tech@pocketcommunication.com)
+
+A French presentation for bi-way.fr is in [docs/integration-n8n-fr.md](docs/integration-n8n-fr.md).
 
 ## License
 
