@@ -100,3 +100,6 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [ ] Trusted Publisher configured on npmjs.com, `NPM_TOKEN` secret deleted and token revoked
 - [ ] `npx @n8n/scan-community-package n8n-nodes-biway-messenger` passes
 - [ ] Submitted on the n8n Creator Portal
+- [ ] Page presenting the integration on www.bi-way.fr (WordPress + Elementor, like the feature
+      pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
+      the page itself is not in this repository
