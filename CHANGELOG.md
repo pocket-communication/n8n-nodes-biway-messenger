@@ -1,41 +1,43 @@
 # Changelog
 
-## Unreleased
-
-- **Names**: the nodes are now "Bi-Way SMS/RCS" and "Bi-Way SMS/RCS Trigger" (internal names
-  unchanged, existing workflows keep working), with search aliases. Descriptions speak of SMS and RCS
-  and state that RCS is currently available on French mobile operators only.
-- **Fallback SMS of RCS messages**: Message › Send and Broadcast get "If the Phone Is Not RCS-Capable"
-  (RCS channel; text, card or template): the account's fallback SMS (default), an SMS written in the
-  node, or no SMS at all (`extra.rcs.alternate: false`). With a template, Bi-Way keeps the request's
-  `alternate` on top of the template's RCS content (recent Bi-Way services).
-- **Attachment Asset IDs** removed from the options of Message › Send and Broadcast.
-- **Message Status Updated**: documents the statuses `unsupported` (RCS not possible, no SMS sent) and
-  `expired`, and the `fallback` field (`sms`, `none` or `null`), sent by recent Bi-Way services.
-- **RCS cards and buttons**: Message › Send and Broadcast get an "RCS Card" content and an
-  "RCS Buttons" field, one kind of entry per kind of button so each shows only its own fields
-  (Suggested Reply, Open URL, Dial, View Location; sent replies first), shown on RCS channels only;
-  Template › Create builds card and
-  text templates with buttons. Card images come from the Bi-Way gallery or an HTTPS address.
-- **Templates and channels**: Message › Send and Broadcast only list the templates the chosen channel
-  can carry, and refuse a template that does not fit the channel before sending (RCS cards and
-  buttons only through RCS; no subject or attachment on an SMS). Relies on the `channel` filter of
-  `COLLECTION /messenger/template`, ignored by older Bi-Way services.
-- **RCS Scenario** resource: Create, Get, Get Many, Activate, Deactivate, Delete and Start.
-- **Contact › Create**: maps the contact columns of the account, recognizes an existing contact by
-  phone number or email address, and reuses, updates or refuses it.
-- **Duplicates**: Template › Create, Contact › Create Group and RCS Agent › Create Keyword Reply reuse
-  the item with the same name or keyword by default ("If … Already Exists" field).
-- **Bi-Way Trigger**: "Button Keywords" option to start the workflow only for some RCS buttons, and a
-  `keyword` field on every received message.
-- The "Extra (JSON)" option of messages documents the channel-keyed format Bi-Way expects.
-
 ## 0.1.0
 
 First public release.
 
-- **Bi-Way** node: Message (Send, Broadcast), Template (Create), Asset (Upload), Contact (Create Group,
-  Import File), RCS (Create Keyword Reply, Get Status).
-- **Bi-Way Trigger** node: message status updates, received messages, contact imports, RCS agent state,
-  RCS capability checks and account state, with a per-webhook token checked on every call.
-- **Bi-Way API** credential: API key (token + secret) created in Bi-Way › Settings › Security.
+### Bi-Way SMS/RCS node
+
+- **Message**: Send (one phone number) and Broadcast (phone numbers, contacts and contact groups;
+  send date, segmentation, status reports, priority, simulation, excluded groups, filters). Content:
+  text, template or RCS card, with RCS buttons (Suggested Reply, Open URL, Dial, View Location).
+- **Fallback SMS of RCS messages** ("If the Phone Is Not RCS-Capable"): the account's fallback SMS,
+  an SMS written in the node, or none, so that a workflow decides on the `unsupported` status.
+- **Templates and channels**: Send and Broadcast only list the templates the chosen channel can
+  carry, and refuse a template that does not fit it before sending.
+- **Template**: Create (text, media, RCS card).
+- **Asset**: Upload to the Bi-Way gallery.
+- **Contact**: Create (columns of the account, existing contact recognized by its phone number:
+  reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
+- **RCS Agent**: Create Keyword Reply, Get Status (declaration, state at each operator, next step).
+- **RCS Scenario**: Create, Get, Get Many, Activate, Deactivate, Delete and Start, with a Simplify
+  option on Create, Get and Get Many.
+- **No duplicates**: Template › Create, Contact › Create Group, Contact › Create and RCS Agent ›
+  Create Keyword Reply reuse the existing item by default ("If … Already Exists").
+- Templates, contact groups, scenarios and gallery images are picked from a searchable list or by ID.
+- SMS and RCS only: recipients are phone numbers.
+- Every known Bi-Way error code is shown as an English message with the way to fix it, naming the
+  item when several are processed.
+- Usable as a tool by AI agents.
+
+### Bi-Way SMS/RCS Trigger
+
+- Events: Message Status Updated (with the `unsupported` and `expired` statuses and the `fallback`
+  field), Message Received, Contact Import State Changed, RCS Agent State Changed, RCS Capability
+  Check Completed and Account State Changed.
+- `keyword` field on received messages, and a Button Keywords option to start only for some RCS
+  buttons.
+- Adds its webhook URL next to the callback URLs of the account without replacing them, and checks a
+  per-webhook token on every call.
+
+### Bi-Way API credential
+
+- API key (token and secret) created in Bi-Way › Settings › Security, sent with HTTP Basic.
