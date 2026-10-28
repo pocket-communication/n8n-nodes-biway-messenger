@@ -92,7 +92,7 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
   joindre à un e-mail.
 - **Contact** : créer un contact (reconnu par la colonne de votre choix, le téléphone par défaut,
   pour éviter les doublons),
-  créer un groupe, importer un fichier CSV ou Excel.
+  créer un groupe, importer un fichier Excel (ou un autre format d'import de votre compte).
 - **RCS Agent** : créer une réponse automatique à un mot-clé, connaître l'état de votre service de
   chat RCS chez chaque opérateur.
 - **RCS Scenario** : créer, consulter, activer, désactiver, supprimer et démarrer des scénarios de

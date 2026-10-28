@@ -6,11 +6,15 @@ with a yellow note that lists its setup, and smaller notes explain the key steps
 ## Import a workflow
 
 1. Install the `n8n-nodes-biway-messenger` community package (see the [main README](../README.md#installation)).
-2. Download the JSON file, then in n8n: **Workflows › Create › Import from File** (or paste its
-   content on an empty canvas).
+2. Open the JSON file on GitHub and download it (**Download raw file**), then in a new n8n workflow
+   open the **⋯** menu › **Import from File…** (or copy the raw content and paste it on the canvas).
 3. Select your credentials in the nodes that ask for one: **Bi-Way API**, and Google Sheets, SMTP or
    WooCommerce depending on the workflow.
 4. Replace the placeholders, then publish the workflow.
+
+Before you start: the workflows send by RCS, which needs an RCS agent launched by the French
+operators (check it with the Bi-Way node: **RCS Agent › Get Status**). Without one, set the channel
+of their Bi-Way nodes to your SMS channel; the buttons are then left out.
 
 Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` addresses,
 `https://g.page/r/YOUR_PLACE_ID/review`, `https://tracking.example.com/`, `https://www.example.com`,

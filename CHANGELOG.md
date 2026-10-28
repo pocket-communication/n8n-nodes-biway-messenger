@@ -20,7 +20,8 @@ First public release.
 - **Template**: Create (subject for email, then text, card or carousel).
 - **Asset**: Upload to the Bi-Way gallery.
 - **Contact**: Create (columns of the account, existing contact recognized by the column picked in
-  Match On Column, the phone number by default: reuse, update or stop), Create Group, Import File (CSV, XLS, XLSX, run in the background).
+  Match On Column, the phone number by default: reuse, update or stop), Create Group, Import File
+  (in the import formats of the account, XLS by default; run in the background).
 - **RCS Agent**: Create Keyword Reply, Get Status (declaration, state at each operator, next step).
 - **RCS Scenario**: Create, Get, Get Many, Activate, Deactivate, Delete and Start, with a Simplify
   option on Create, Get and Get Many.
