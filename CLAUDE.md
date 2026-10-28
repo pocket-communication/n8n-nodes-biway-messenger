@@ -106,20 +106,32 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
       no dropped parameter, no parameter issue)
 - [x] Fix found on the way: a channel given as an expression showed every field (`bc64110`)
 
-### Phase 4 — Validation
-- [ ] Every example imported in local n8n without missing node or parameter issue
-- [ ] Every operation and example run end to end with the test account
-- [ ] Review as a newcomer (two-minute test)
-- [ ] Final recap and release command
+### Phase 4 — Validation (branch `phase-4-validation`)
+- [x] Nodes renamed "Bi-Way" and "Bi-Way Trigger"; Template › Create asks for a Subject
+- [x] Every example imported in local n8n (`n8n import:workflow`, types converted to `CUSTOM.*`) and
+      checked against the node definitions: no missing node, no parameter issue
+- [x] Every operation run against Bi-Way production with the test account (21 runs: status,
+      group, contact create / reuse / update, XLSX import, asset, templates, keyword reply, scenario
+      create to delete, Broadcast simulations on SMS, RCS card, carousel, template and group)
+- [ ] Real sendings (Send, Scenario › Start, email channel), the trigger through a tunnel, and the
+      examples with their own credentials (Google Sheets, SMTP, WooCommerce, Weezevent): maintainer
+- [x] Review as a newcomer (two-minute test), findings applied to the README and the examples
+- [x] Fixes found: Update It emptied the unmapped columns of a contact; Import File now lists the
+      formats of the account (its CSV is tab-separated); refused-message errors no longer speak of
+      RCS on SMS
+- [ ] Canvas screenshots for `examples/README.md`
+- [x] Final recap and release command
 
 ### Release (maintainer)
 - [x] `{{TRIAL_SIGNUP_URL}}` replaced by https://v3.bi-way.fr/signup (2026-10-28)
+- [ ] bi-way-services `tools/messenger/class/Template.class.php` deployed (template subject for
+      every format, card templates listed for email channels)
 - [ ] Phases merged into `main`, CI green
 - [ ] `NPM_TOKEN` still valid (expires around 2026-11-03), or replaced
 - [ ] Tag `0.1.0` pushed: `git tag 0.1.0 && git push origin 0.1.0`
 - [ ] Trusted Publisher configured on npmjs.com, `NPM_TOKEN` secret deleted and token revoked
 - [ ] `npx @n8n/scan-community-package n8n-nodes-biway-messenger` passes
 - [ ] Submitted on the n8n Creator Portal
-- [ ] Page presenting the integration on www.bi-way.fr (WordPress + Elementor, like the feature
-      pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
+- [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
+      feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
