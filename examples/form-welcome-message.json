@@ -1,0 +1,182 @@
+{
+	"name": "Bi-Way: form to welcome message",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Form to welcome message\nAn n8n form collects the contact details, creates the contact in Bi-Way (or updates it if the phone number is already known) and sends a welcome message by RCS, or by SMS on phones without RCS.\n\n### Setup\n1. **Bi-Way API** credential.\n2. Optional: pick a contact group in **Save the contact** › Options; without it, Bi-Way uses your default group.\n3. Add a consent field to the form if your privacy policy asks for one. Publish the workflow and share the form URL.",
+				"height": 300,
+				"width": 500,
+				"color": 4
+			},
+			"id": "8197beca-048b-4635-a75d-a3b2bed54e07",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-400
+			]
+		},
+		{
+			"parameters": {
+				"formTitle": "Stay in touch",
+				"formDescription": "Leave your details to receive our news.",
+				"formFields": {
+					"values": [
+						{
+							"fieldLabel": "First name",
+							"requiredField": true
+						},
+						{
+							"fieldLabel": "Last name"
+						},
+						{
+							"fieldLabel": "Phone",
+							"placeholder": "+33612345678",
+							"requiredField": true
+						},
+						{
+							"fieldLabel": "Email",
+							"fieldType": "email"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "99d7a28b-cb92-4da3-aea0-409ecd68fb3c",
+			"name": "Sign-up form",
+			"type": "n8n-nodes-base.formTrigger",
+			"typeVersion": 2.2,
+			"position": [
+				0,
+				0
+			],
+			"webhookId": "c5f01ad1-78c0-4eca-a576-23e7f51e1e23"
+		},
+		{
+			"parameters": {
+				"resource": "contact",
+				"operation": "create",
+				"contactColumns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"surname": "={{ $json['First name'] }}",
+						"name": "={{ $json['Last name'] }}",
+						"phone": "={{ $json.Phone }}",
+						"email": "={{ $json.Email }}"
+					},
+					"matchingColumns": [],
+					"schema": [
+						{
+							"id": "surname",
+							"displayName": "First Name",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "name",
+							"displayName": "Name",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "phone",
+							"displayName": "Phone (international format, e.g. +33612345678)",
+							"required": false,
+							"defaultMatch": true,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						},
+						{
+							"id": "email",
+							"displayName": "Email (email address)",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": false
+						}
+					]
+				},
+				"ifExists": "update",
+				"matchOn": "phone",
+				"options": {}
+			},
+			"id": "68c5814b-5b10-4443-a6f8-184ff9d60db3",
+			"name": "Save the contact",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "=Welcome {{ $('Sign-up form').item.json['First name'] }}! Thank you for joining us.",
+				"receiver": "={{ $('Sign-up form').item.json.Phone }}",
+				"options": {},
+				"rcsButtons": {
+					"openUrl": [
+						{
+							"text": "Visit our website",
+							"url": "https://www.example.com"
+						}
+					]
+				},
+				"rcsFallback": "account"
+			},
+			"id": "979c4171-4582-4804-a74e-c2a72d5418a6",
+			"name": "Send the welcome message",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				460,
+				0
+			]
+		}
+	],
+	"connections": {
+		"Sign-up form": {
+			"main": [
+				[
+					{
+						"node": "Save the contact",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Save the contact": {
+			"main": [
+				[
+					{
+						"node": "Send the welcome message",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
