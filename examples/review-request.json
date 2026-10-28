@@ -1,0 +1,457 @@
+{
+	"name": "Bi-Way: review request with routing",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Review request with routing\nThe day after a visit, asks for a rating from 1 to 5. Happy customers (4 or 5) get the link to your Google reviews; unhappy ones (1 or 2) are reported to your team by email, and get an answer saying you will contact them.\n\n### Setup\n1. **Bi-Way API** credential; RCS agent launched (buttons), SMS for the other phones.\n2. Google Sheet with a tab **Visits** and the columns `Date` (YYYY-MM-DD), `First name`, `Phone`. Replace `YOUR_SHEET_ID`.\n3. Replace `https://g.page/r/YOUR_PLACE_ID/review` by the review link of your Google Business Profile.\n4. SMTP credential for the alert; replace `team@example.com`. Publish the workflow.",
+				"height": 340,
+				"width": 520,
+				"color": 4
+			},
+			"id": "642767a4-ccc8-4fb3-ac01-8e8ce505490b",
+			"name": "Sticky Note setup",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-80,
+				-420
+			]
+		},
+		{
+			"parameters": {
+				"content": "### Two entry points\nThe top branch sends the request. The bottom branch starts on every received message and only keeps ratings: a tapped button (`RATE_1` … `RATE_5`) or a figure typed in an SMS.",
+				"height": 160,
+				"width": 380
+			},
+			"id": "8d69de5a-237f-4dd6-af44-2dd0e9960954",
+			"name": "Sticky Note rating",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				700,
+				-360
+			]
+		},
+		{
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "days",
+							"triggerAtHour": 10
+						}
+					]
+				}
+			},
+			"id": "3779bd8b-fb84-4d6e-a331-ef0231394214",
+			"name": "Every day at 10 am",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [
+				0,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Visits",
+					"mode": "name"
+				},
+				"filtersUI": {
+					"values": [
+						{
+							"lookupColumn": "Date",
+							"lookupValue": "={{ $now.minus({ days: 1 }).toFormat('yyyy-MM-dd') }}"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "ec850e4a-e26a-43d5-adb8-9f1c38a48183",
+			"name": "Get yesterday's visits",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				220,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "=Hello {{ $json['First name'] }}, how was your visit yesterday? Tap a rating.",
+				"receiver": "={{ $json.Phone }}",
+				"options": {},
+				"rcsButtons": {
+					"reply": [
+						{
+							"keyword": "RATE_5",
+							"text": "★★★★★"
+						},
+						{
+							"keyword": "RATE_4",
+							"text": "★★★★"
+						},
+						{
+							"keyword": "RATE_3",
+							"text": "★★★"
+						},
+						{
+							"keyword": "RATE_2",
+							"text": "★★"
+						},
+						{
+							"keyword": "RATE_1",
+							"text": "★"
+						}
+					]
+				},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "=How was your visit yesterday? Reply with a mark from 1 (bad) to 5 (excellent)."
+			},
+			"id": "a3aa133d-fbff-4473-a220-feb009a6226c",
+			"name": "Ask for a rating",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				460,
+				0
+			]
+		},
+		{
+			"parameters": {
+				"events": [
+					"MESSENGER_DELIVERY"
+				]
+			},
+			"id": "e6f1a718-4aeb-4816-a518-7749c01ec442",
+			"name": "Message received",
+			"type": "n8n-nodes-biway-messenger.biwayTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				360
+			],
+			"webhookId": "ce135d84-20bf-43d0-a701-4e66052bf779"
+		},
+		{
+			"parameters": {
+				"assignments": {
+					"assignments": [
+						{
+							"id": "4abd3e14-8d0a-4c8e-a98e-db7332ff961c",
+							"name": "rating",
+							"value": "={{ Number((String($json.keyword || '').match(/^RATE_([1-5])$/) || String($json.message || '').trim().match(/^([1-5])$/) || [])[1] || 0) }}",
+							"type": "number"
+						},
+						{
+							"id": "d33f1cf7-a05c-44a9-a5a9-eff525ac88b7",
+							"name": "phone",
+							"value": "={{ $json.address }}",
+							"type": "string"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "adeccdbb-39ec-443f-a433-a7c05300706e",
+			"name": "Read the rating",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [
+				220,
+				360
+			]
+		},
+		{
+			"parameters": {
+				"rules": {
+					"values": [
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "9aa7cc03-0278-4453-a4a1-b42dcb246c01",
+										"leftValue": "={{ $json.rating }}",
+										"rightValue": 4,
+										"operator": {
+											"type": "number",
+											"operation": "gte"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Happy (4-5)"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "64bcccc9-1cee-48d8-a684-c4d153e75d1a",
+										"leftValue": "={{ $json.rating }}",
+										"rightValue": 1,
+										"operator": {
+											"type": "number",
+											"operation": "gte"
+										}
+									},
+									{
+										"id": "4332496d-ade9-4701-a665-575870a09c8b",
+										"leftValue": "={{ $json.rating }}",
+										"rightValue": 2,
+										"operator": {
+											"type": "number",
+											"operation": "lte"
+										}
+									}
+								],
+								"combinator": "and"
+							},
+							"renameOutput": true,
+							"outputKey": "Unhappy (1-2)"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "5f50b542-b3e8-4cd5-ad11-acdcd5b11143",
+										"leftValue": "={{ $json.rating }}",
+										"rightValue": 3,
+										"operator": {
+											"type": "number",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Neutral (3)"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "cca51c5d-fd72-46ee-a4a0-23cf5d25403c",
+			"name": "Route by rating",
+			"type": "n8n-nodes-base.switch",
+			"typeVersion": 3.2,
+			"position": [
+				440,
+				360
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Thank you! Would you share your opinion on Google? It helps us a lot.",
+				"receiver": "={{ $json.phone }}",
+				"options": {},
+				"rcsButtons": {
+					"openUrl": [
+						{
+							"text": "Leave a review",
+							"url": "https://g.page/r/YOUR_PLACE_ID/review"
+						}
+					]
+				},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Thank you! Would you share your opinion on Google? https://g.page/r/YOUR_PLACE_ID/review"
+			},
+			"id": "fbaf7a2b-d0f0-4b8f-aaf0-2576dfa4b926",
+			"name": "Invite to a Google review",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				700,
+				200
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "team@example.com",
+				"subject": "=Unhappy customer: {{ $json.rating }}/5",
+				"emailFormat": "text",
+				"text": "=The customer {{ $json.phone }} rated their visit {{ $json.rating }}/5. Please contact them.",
+				"options": {}
+			},
+			"id": "de1a0e6d-5d5f-4410-adcf-66cf71bdf91f",
+			"name": "Alert the team",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				400
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "We are sorry your visit did not go well. Someone from our team will contact you.",
+				"receiver": "={{ $('Route by rating').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "We are sorry your visit did not go well. Someone from our team will contact you."
+			},
+			"id": "c9d697ba-748c-4113-adad-ae0c9fc5ab76",
+			"name": "Answer the unhappy customer",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				400
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Thank you for your feedback!",
+				"receiver": "={{ $json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Thank you for your feedback!"
+			},
+			"id": "a712e14e-cafd-42a7-a23a-da4dff4cd74c",
+			"name": "Thank for the feedback",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				700,
+				600
+			]
+		}
+	],
+	"connections": {
+		"Every day at 10 am": {
+			"main": [
+				[
+					{
+						"node": "Get yesterday's visits",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Get yesterday's visits": {
+			"main": [
+				[
+					{
+						"node": "Ask for a rating",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Message received": {
+			"main": [
+				[
+					{
+						"node": "Read the rating",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Read the rating": {
+			"main": [
+				[
+					{
+						"node": "Route by rating",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Route by rating": {
+			"main": [
+				[
+					{
+						"node": "Invite to a Google review",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Alert the team",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Thank for the feedback",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Alert the team": {
+			"main": [
+				[
+					{
+						"node": "Answer the unhappy customer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"pinData": {},
+	"settings": {
+		"executionOrder": "v1"
+	},
+	"meta": {
+		"templateCredsSetupCompleted": false
+	}
+}
