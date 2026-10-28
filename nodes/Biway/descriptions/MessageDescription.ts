@@ -1,6 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 
-import { EMAIL_CHANNELS, RCS_CHANNELS, RICH_CHANNELS } from './Channels';
+import { CHANNEL_EXPRESSION, EMAIL_CHANNELS, RCS_CHANNELS, RICH_CHANNELS } from './Channels';
 import {
 	attachmentsField,
 	contentField,
@@ -51,9 +51,13 @@ const contentFields: INodeProperties[] = [
 		displayOptions: showFor(['send', 'broadcast']),
 	},
 	// RCS and email channels show cards and carousels; the other channels (SMS) only take a text.
+	// The channel comes last in every `show` (see CHANNEL_EXPRESSION).
 	contentField({ show: { ...showFor(['send', 'broadcast']).show, channel: RICH_CHANNELS } }),
 	contentField(
-		{ show: showFor(['send', 'broadcast']).show, hide: { channel: RICH_CHANNELS } },
+		{
+			show: showFor(['send', 'broadcast']).show,
+			hide: { channel: [...RICH_CHANNELS, ...CHANNEL_EXPRESSION] },
+		},
 		true,
 	),
 	{
@@ -83,23 +87,23 @@ const contentFields: INodeProperties[] = [
 			show: { ...showFor(['send', 'broadcast']).show, source: ['template'] },
 		},
 	}),
-	// Every email written in the node has a subject; a template brings its own.
+	// Every email written in the node has a subject; a template brings its own. Checked when
+	// sending rather than required here: a channel given as an expression shows this field too.
 	{
 		displayName: 'Subject',
 		name: 'subject',
 		type: 'string',
-		required: true,
 		default: '',
-		description: 'Subject of the email',
+		description: 'Subject of the email. Required by email channels.',
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				channel: EMAIL_CHANNELS,
 				source: ['raw'],
+				channel: EMAIL_CHANNELS,
 			},
 		},
 	},
-	// Text by email: body and attachments.
+	// A text: body on every channel, attachments by email, buttons on RCS.
 	{
 		displayName: 'Body',
 		name: 'body',
@@ -108,60 +112,42 @@ const contentFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description:
-			'Text of the email, in HTML: write line breaks and paragraphs as HTML tags. Personalization tags of Bi-Way work for contacts and contact groups.',
+			'Text of the message. By email it is HTML: write line breaks and paragraphs as HTML tags. Personalization tags of Bi-Way work for contacts and contact groups.',
 		displayOptions: {
-			show: {
-				...showFor(['send', 'broadcast']).show,
-				channel: EMAIL_CHANNELS,
-				source: ['raw'],
-				content: ['text'],
-			},
+			show: { ...showFor(['send', 'broadcast']).show, source: ['raw'], content: ['text'] },
 		},
 	},
 	attachmentsField({
 		...showFor(['send', 'broadcast']).show,
-		channel: EMAIL_CHANNELS,
 		source: ['raw'],
 		content: ['text'],
+		channel: EMAIL_CHANNELS,
 	}),
-	// Text on the other channels: body, and buttons on RCS.
-	{
-		displayName: 'Body',
-		name: 'body',
-		type: 'string',
-		typeOptions: { rows: 4 },
-		required: true,
-		default: '',
-		description:
-			'Text of the message. Personalization tags of Bi-Way work for contacts and contact groups.',
-		displayOptions: {
-			show: { ...showFor(['send', 'broadcast']).show, source: ['raw'], content: ['text'] },
-			hide: { channel: EMAIL_CHANNELS },
-		},
-	},
 	...rcsCardFields({
 		...showFor(['send', 'broadcast']).show,
-		channel: RICH_CHANNELS,
 		source: ['raw'],
 		content: ['card'],
+		channel: RICH_CHANNELS,
 	}),
 	rcsCarouselField({
 		...showFor(['send', 'broadcast']).show,
-		channel: RICH_CHANNELS,
 		source: ['raw'],
 		content: ['carousel'],
+		channel: RICH_CHANNELS,
 	}),
 	rcsButtonsField({
 		...showFor(['send', 'broadcast']).show,
-		channel: RCS_CHANNELS,
 		source: ['raw'],
 		content: ['text', 'card'],
+		channel: RCS_CHANNELS,
 	}),
+	// By email, buttons go on cards only. With a channel given as an expression, a card shows both
+	// fields: they hold the same value.
 	rcsButtonsField({
 		...showFor(['send', 'broadcast']).show,
-		channel: EMAIL_CHANNELS,
 		source: ['raw'],
 		content: ['card'],
+		channel: EMAIL_CHANNELS,
 	}),
 	// Also offered with templates: Bi-Way keeps the request's "alternate" on top of the template's RCS content.
 	{
@@ -208,8 +194,8 @@ const contentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				channel: RCS_CHANNELS,
 				rcsFallback: ['custom'],
+				channel: RCS_CHANNELS,
 			},
 		},
 	},
@@ -222,8 +208,8 @@ const contentFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
-				channel: RCS_CHANNELS,
 				rcsFallback: ['custom'],
+				channel: RCS_CHANNELS,
 			},
 		},
 		options: [
@@ -270,7 +256,7 @@ const sharedOptions: INodeProperties[] = [
 		type: 'json',
 		default: '{}',
 		description:
-			'Advanced: channel-specific content keyed by the channel name, for example {"rcs": {"alternate": {...}}}. The RCS Card content and the RCS Buttons field fill the "rcs" entry for you. See https://services.bi-way.fr/openapi/.',
+			'Advanced: channel-specific content keyed by the channel name, for example {"rcs": {"alternate": {...}}}. The card, carousel and buttons fields fill the entry of the channel for you. See https://services.bi-way.fr/openapi/.',
 	},
 	{
 		displayName: 'Send At',
@@ -332,18 +318,9 @@ export const messageFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		placeholder: 'e.g. +33612345678',
-		description: 'Phone number of the recipient, in international format',
-		displayOptions: { show: showFor(['send']).show, hide: { channel: EMAIL_CHANNELS } },
-	},
-	{
-		displayName: 'Recipient',
-		name: 'receiver',
-		type: 'string',
-		required: true,
-		default: '',
-		placeholder: 'e.g. name@example.com',
-		description: 'Email address of the recipient',
-		displayOptions: { show: { ...showFor(['send']).show, channel: EMAIL_CHANNELS } },
+		description:
+			'Phone number of the recipient in international format, or email address on an email channel',
+		displayOptions: showFor(['send']),
 	},
 	{
 		displayName: 'Recipients',

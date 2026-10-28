@@ -234,7 +234,14 @@ async function messageContent(
 	}
 	// Every email written in the node has a subject. With a template, Bi-Way takes the template's.
 	if (email && source !== 'template') {
-		body.subject = this.getNodeParameter('subject', i) as string;
+		const subject = String(this.getNodeParameter('subject', i, '') ?? '').trim();
+		if (subject === '') {
+			throw new NodeOperationError(this.getNode(), 'The email has no subject', {
+				itemIndex: i,
+				description: "Fill in the 'Subject' field: email channels need one.",
+			});
+		}
+		body.subject = subject;
 	}
 
 	// Fallback SMS of an RCS message. With a template, only `alternate` is sent: Bi-Way takes the

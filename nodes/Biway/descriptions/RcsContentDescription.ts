@@ -50,6 +50,9 @@ export function contentField(displayOptions: IDisplayOptions, textOnly = false):
  */
 export function rcsCardFields(show: Show): INodeProperties[] {
 	const displayOptions = { show };
+	// The channel stays the last condition (see CHANNEL_EXPRESSION in Channels.ts).
+	const { channel, ...rest } = show;
+	const at = (extra: Show): Show => ({ ...rest, ...extra, ...(channel ? { channel } : {}) });
 	return [
 		{
 			displayName: 'Image',
@@ -74,7 +77,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 		galleryImageLocator({
 			required: true,
 			hint: "To use a file uploaded earlier in the workflow, pick 'By ID' and map the 'id' returned by Asset › Upload. The file must be public in the gallery.",
-			displayOptions: { show: { ...show, cardImage: ['gallery'] } },
+			displayOptions: { show: at({ cardImage: ['gallery'] }) },
 		}),
 		{
 			displayName: 'Image URL',
@@ -84,7 +87,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			default: '',
 			placeholder: 'e.g. https://example.com/image.jpg',
 			description: 'Public HTTPS address of the image or video',
-			displayOptions: { show: { ...show, cardImage: ['url'] } },
+			displayOptions: { show: at({ cardImage: ['url'] }) },
 		},
 		{
 			displayName: 'Image MIME Type',
@@ -93,7 +96,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			default: 'image/jpeg',
 			placeholder: 'e.g. image/png',
 			description: 'Type of the file found at the image URL',
-			displayOptions: { show: { ...show, cardImage: ['url'] } },
+			displayOptions: { show: at({ cardImage: ['url'] }) },
 		},
 		{
 			displayName: 'Image Height',
@@ -106,7 +109,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			],
 			default: 'MEDIUM',
 			description: 'Height of the image in a vertical card',
-			displayOptions: { show: { ...show, cardImage: ['gallery', 'url'] } },
+			displayOptions: { show: at({ cardImage: ['gallery', 'url'] }) },
 		},
 		{
 			displayName: 'Card Orientation',
@@ -117,7 +120,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 				{ name: 'Vertical', value: 'VERTICAL', description: 'Image above the text' },
 			],
 			default: 'VERTICAL',
-			displayOptions: { show: { ...show, cardImage: ['gallery', 'url'] } },
+			displayOptions: { show: at({ cardImage: ['gallery', 'url'] }) },
 		},
 		{
 			displayName: 'Image Alignment',
@@ -130,7 +133,7 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 			default: 'LEFT',
 			description: 'Side of the image in a horizontal card',
 			displayOptions: {
-				show: { ...show, cardImage: ['gallery', 'url'], cardOrientation: ['HORIZONTAL'] },
+				show: at({ cardImage: ['gallery', 'url'], cardOrientation: ['HORIZONTAL'] }),
 			},
 		},
 		{
