@@ -246,6 +246,8 @@ Ready-to-import workflows are in [`examples/`](examples/README.md), with how to 
 placeholders to replace. They use n8n's own nodes and the Bi-Way nodes, and send by RCS: without an
 RCS agent, switch their Bi-Way nodes to an SMS channel (Content Text instead of Card).
 
+![The Appointment reply example in the n8n editor: the Bi-Way Trigger receives the answer and a Switch routes it](examples/images/appointment-reply.png)
+
 | Workflow | What it does |
 |---|---|
 | [Appointment reminder](examples/appointment-reminder.json) | Reminds customers of tomorrow's appointments with quick-reply buttons. |

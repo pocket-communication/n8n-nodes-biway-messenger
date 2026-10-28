@@ -43,4 +43,32 @@ own, and use the **Button Keywords** option of the trigger to start a workflow o
 
 ## Screenshots
 
-TODO: canvas screenshots, taken while validating the workflows in n8n (phase 4 of the release).
+The workflows as they open in the n8n editor.
+
+### Appointment reminder
+
+![Appointment reminder: schedule, Google Sheets, then the Bi-Way node sends the reminder](images/appointment-reminder.png)
+
+### Appointment reply
+
+![Appointment reply: the Bi-Way Trigger receives the answer, a Switch routes it to the sheet, the customer and the team](images/appointment-reply.png)
+
+### Review request
+
+![Review request: a daily request for a rating, and the answers routed by rating](images/review-request.png)
+
+### Order notifications
+
+![Order notifications: WooCommerce trigger, completed orders only, tracking link, then the Bi-Way card](images/order-notifications.png)
+
+### Inbound reply to team inbox
+
+![Inbound reply to team inbox: the Bi-Way Trigger, typed messages only, then an email per team](images/inbound-to-team-inbox.png)
+
+### Form to welcome message
+
+![Form to welcome message: an n8n form, the contact saved in Bi-Way, then the welcome message](images/form-welcome-message.png)
+
+### Weezevent ticket holders
+
+![Weezevent ticket holders: the Weezevent API calls, the contact saved in Bi-Way, then an RCS card or an email](images/weezevent-ticket-holders.png)
