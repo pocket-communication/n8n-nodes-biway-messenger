@@ -82,7 +82,7 @@ export class BiwayTrigger implements INodeType {
 		version: 1,
 		subtitle: '={{$parameter["events"].join(", ")}}',
 		description:
-			'Starts the workflow on Bi-Way events: message status updates, received messages, replies and button taps, contact imports, RCS agent state',
+			'Starts the workflow on Bi-Way events: message status updates, received messages, replies and button taps, share link requests (bookings, forms…), contact imports, RCS agent state',
 		defaults: { name: 'Bi-Way Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
@@ -141,8 +141,51 @@ export class BiwayTrigger implements INodeType {
 						value: 'CHATBOT_CAPABILITIES_CHECK',
 						description: 'Bi-Way finished checking which phone numbers can receive RCS',
 					},
+					{
+						name: 'Share Request Received',
+						value: 'EDAPPS_REQUEST',
+						description:
+							'A visitor of one of your share links booked, cancelled a booking, sent a form, answered a questionnaire or updated their details',
+					},
 				],
 				description: 'Bi-Way events that start the workflow',
+			},
+			{
+				displayName:
+					'A share request carries an <code>entry</code> object, with the type and ID of its record: read the booking, the record sent or the contact with Bi-Way › Entry › Get.',
+				name: 'shareRequestNotice',
+				type: 'notice',
+				default: '',
+				displayOptions: { show: { events: ['EDAPPS_REQUEST'] } },
+			},
+			{
+				displayName: 'Share Actions',
+				name: 'shareActions',
+				type: 'multiOptions',
+				default: [],
+				options: [
+					{ name: 'Booking Cancelled', value: 'cancel_done' },
+					{ name: 'Booking Made', value: 'booking_done' },
+					{ name: 'Contact Details Updated', value: 'update' },
+					{ name: 'Contact Subscribed', value: 'subscribe' },
+					{ name: 'Contact Unsubscribed', value: 'unsubscribe' },
+					{ name: 'Form Sent', value: 'input_done' },
+					{ name: 'Item of a List Chosen', value: 'interested' },
+					{ name: 'Questionnaire Answered', value: 'answer' },
+				],
+				description:
+					'Only start the workflow for these visitor actions. Leave empty to get every action, including ones added later.',
+				displayOptions: { show: { events: ['EDAPPS_REQUEST'] } },
+			},
+			{
+				displayName: 'Share IDs',
+				name: 'shareIds',
+				type: 'string',
+				default: '',
+				placeholder: 'e.g. 12, 15',
+				description:
+					'Only start the workflow for requests received on these share links (comma-separated IDs). Leave empty for all your share links.',
+				displayOptions: { show: { events: ['EDAPPS_REQUEST'] } },
 			},
 			{
 				displayName: 'Button Keywords',
@@ -278,6 +321,11 @@ export class BiwayTrigger implements INodeType {
 			.split(',')
 			.map((keyword) => normalizeKeyword(keyword))
 			.filter(Boolean);
+		const shareActions = this.getNodeParameter('shareActions', []) as string[];
+		const shareIds = String(this.getNodeParameter('shareIds', '') ?? '')
+			.split(',')
+			.map((id) => id.trim())
+			.filter(Boolean);
 
 		const events: IDataObject[] = [];
 		for (const raw of Array.isArray(body.events) ? (body.events as unknown[]) : []) {
@@ -297,6 +345,15 @@ export class BiwayTrigger implements INodeType {
 				}
 				events.push({ ...event, keyword });
 				continue;
+			}
+			if (event.event === 'EDAPPS_REQUEST') {
+				const share = (event.share ?? {}) as IDataObject;
+				if (shareActions.length && !shareActions.includes(String(event.action))) {
+					continue;
+				}
+				if (shareIds.length && !shareIds.includes(String(share.id))) {
+					continue;
+				}
 			}
 			events.push(event);
 		}

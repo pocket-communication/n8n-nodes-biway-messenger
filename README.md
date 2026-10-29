@@ -112,7 +112,7 @@ carry: an SMS channel only takes a text.
 | Message › Send, Message › Broadcast | A Bi-Way plan with API access. Channels that need a sender use the default sender of your account unless you pick one. |
 | RCS: channel, cards, carousels, buttons, keyword replies, scenarios | Recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/); a declaration fee applies. The node's **RCS Agent › Get Status** tells you where it stands. |
 | Email channels | The email option of your account, set up by Bi-Way: Mailjet for `email`, SMTP for `email_smtp`. |
-| Template, Asset and Contact operations | The matching permissions on your Bi-Way user profile. |
+| Template, Asset, Contact and Entry operations | The matching permissions on your Bi-Way user profile. |
 | Bi-Way Trigger | An n8n instance reachable from the internet over HTTPS. |
 
 When something is missing, the node stops with a message that says what to do.
@@ -128,6 +128,7 @@ When something is missing, the node stops with a message that says what to do.
 | Contact | Create | Creates a contact from the columns of your account. Recognizes an existing contact by the column you pick in **Match On Column** (the phone number by default, or the email address, a customer number…) and, by default, returns it instead of creating a duplicate (or updates it, or stops). |
 | Contact | Create Group | Creates a contact group. Reuses the group with the same name by default. |
 | Contact | Import File | Imports contacts from a file into a group, in one of the import formats of your account (XLS by default; the CSV format of Bi-Way is tab-separated). The import runs in the background: the node returns the ID of the import task. |
+| Entry | Get | Returns a record of your account from its type and ID (`booking`, `contact`…), such as the `entry` of a share request received by the Bi-Way Trigger. |
 | RCS Agent | Create Keyword Reply | Replies with a template when a customer taps a Suggested Reply button that carries the keyword. A keyword typed in the conversation does not trigger it: catch typed messages with the Bi-Way Trigger. Reuses the reply to the same keyword by default. |
 | RCS Agent | Get Status | Returns the state of your RCS declaration and of your RCS agent at each operator, and the next step to take. |
 | RCS Scenario | Create, Get, Get Many, Activate, Deactivate, Delete | Manages the scenarios of your RCS agent (see [RCS scenarios](#rcs-scenarios)). Create, Get and Get Many return a simplified output unless you turn **Simplify** off. Delete removes the scenario only, not its templates nor its keyword replies. |
@@ -179,8 +180,18 @@ computer, use a tunnel and set `WEBHOOK_URL`).
 | RCS Agent State Changed | Your RCS agent changed state at a mobile operator. |
 | RCS Capability Check Completed | Bi-Way finished checking which phone numbers can receive RCS. |
 | Account State Changed | Your Bi-Way account was enabled or disabled. |
+| Share Request Received | A visitor of one of your share links booked, cancelled a booking, sent a form, chose an item of a list, answered a questionnaire or updated their details. |
 
 Each event becomes one item.
+
+**Share Request Received** items carry the `action` (`booking_done`, `cancel_done`, `input_done`,
+`interested`, `answer`, `subscribe`, `update`, `unsubscribe`) and its `action_name`, the `share` and
+the `function` of the share link (`id`, `name`), the `visitor` when known (`type`, `id`, `name`), the
+values the visitor left (`data`: the booked resource, the begin date and duration of a booking, the
+answers…), and `entry`: the `type` and `id` of the record of the request — the booking, the record
+sent through a form, the item chosen in a list, or the contact. Read it with **Entry › Get**. With the
+**Share Actions** and **Share IDs** options, the workflow only starts for the actions and share links
+you list.
 
 **Message Received** items carry the customer's phone number (`address`), the name of the contact
 when Bi-Way knows it, otherwise the phone number (`sender`), the text (`message`), the `channel`, the

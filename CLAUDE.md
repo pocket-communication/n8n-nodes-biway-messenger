@@ -158,6 +158,10 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Server fix deployed, acceptance test fully passed on the local build; tag `0.1.2` pushed by the
       maintainer, published with provenance (a few minutes before the registry showed it); official
       scanner passes (2026-10-29)
+- [x] 0.2.0 prepared (2026-10-29): Bi-Way Trigger › Share Request Received (`EDAPPS_REQUEST`, filters
+      Share Actions and Share IDs) and Entry › Get (`GET /file/entry/{type}:{id}`), so that a booking
+      or a form sent on a share link can start a workflow and be read back
+- [ ] Tag `0.2.0` (maintainer), once the Bi-Way server declares `EDAPPS_REQUEST` and emits it
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.0
+
+### Added
+
+- **Bi-Way Trigger › Share Request Received**: starts the workflow when a visitor of one of your share
+  links books, cancels a booking, sends a form, chooses an item of a list, answers a questionnaire or
+  updates their details. The item carries the action, the share link, the visitor, the values left,
+  and `entry`, the record of the request. **Share Actions** and **Share IDs** options narrow it down.
+- **Entry › Get**: returns a record of your account from its type and ID, such as the `entry` of a
+  share request (a booking, a contact…).
+
 ## 0.1.2
 
 ### Fixed

@@ -10,6 +10,7 @@ import { NodeApiError, NodeConnectionTypes, NodeOperationError } from 'n8n-workf
 
 import { assetFields, assetOperations } from './descriptions/AssetDescription';
 import { contactFields, contactOperations } from './descriptions/ContactDescription';
+import { entryFields, entryOperations } from './descriptions/EntryDescription';
 import { messageFields, messageOperations } from './descriptions/MessageDescription';
 import { rcsFields, rcsOperations } from './descriptions/RcsDescription';
 import { scenarioFields, scenarioOperations } from './descriptions/ScenarioDescription';
@@ -1004,6 +1005,45 @@ const startScenario: Handler = async function (i) {
 	};
 };
 
+// ── Entry ────────────────────────────────────────────────────────────────────────────────────────
+
+const getEntry: Handler = async function (i) {
+	const type = String(this.getNodeParameter('entryType', i) ?? '').trim();
+	const id = String(this.getNodeParameter('entryId', i) ?? '').trim();
+	if (!/^[A-Za-z0-9_-]+$/.test(type) || !/^\d+$/.test(id)) {
+		throw new NodeOperationError(this.getNode(), `'${type}:${id}' is not a Bi-Way entry`, {
+			itemIndex: i,
+			description: "Give the type of the record (e.g. 'booking') and its numeric ID.",
+		});
+	}
+	const response = await biwayApiCall.call(
+		this,
+		'GET',
+		`/file/entry/${type}:${id}`,
+		undefined,
+		undefined,
+		i,
+	);
+	// Answered here rather than by the error map: there, these codes speak of contacts.
+	if (response.errorCode === 'entry_not_found') {
+		throw new NodeOperationError(this.getNode(), `The ${type} ${id} was not found`, {
+			itemIndex: i,
+			description:
+				'The record does not exist, was deleted, or is outside what your Bi-Way account can access.',
+		});
+	}
+	if (response.errorCode === 'entry_type_not_found' || response.errorCode === 'entry_type_not_exposed') {
+		throw new NodeOperationError(this.getNode(), `Bi-Way has no '${type}' records to read`, {
+			itemIndex: i,
+			description: "Check the type: 'booking', 'contact'… as given by the Bi-Way Trigger in entry.type.",
+		});
+	}
+	if (response.errorCode) {
+		throw toBiwayError.call(this, response, i);
+	}
+	return normalizeResponse(response.body);
+};
+
 const HANDLERS: Record<string, Record<string, Handler>> = {
 	asset: { upload: uploadAsset },
 	contact: {
@@ -1011,6 +1051,7 @@ const HANDLERS: Record<string, Record<string, Handler>> = {
 		createGroup: createContactGroup,
 		importFile: importContactFile,
 	},
+	entry: { get: getEntry },
 	message: { send: sendMessage, broadcast: broadcastMessage },
 	rcs: { createKeywordReply, getStatus: getRcsStatus },
 	scenario: {
@@ -1049,6 +1090,7 @@ export class Biway implements INodeType {
 				options: [
 					{ name: 'Asset', value: 'asset' },
 					{ name: 'Contact', value: 'contact' },
+					{ name: 'Entry', value: 'entry' },
 					{ name: 'Message', value: 'message' },
 					{ name: 'RCS Agent', value: 'rcs' },
 					{ name: 'RCS Scenario', value: 'scenario' },
@@ -1060,6 +1102,8 @@ export class Biway implements INodeType {
 			...assetFields,
 			...contactOperations,
 			...contactFields,
+			...entryOperations,
+			...entryFields,
 			...messageOperations,
 			...messageFields,
 			...rcsOperations,
