@@ -203,13 +203,14 @@ async function messageContent(
 	} else if (content === 'card') {
 		requireRichChannel.call(this, i, channel, 'Cards');
 		const card = await buildRcsCard.call(this, i);
-		// Kept as the message text in the history and for the fallback SMS.
-		body.body = String(card.text ?? card.title ?? '');
+		// No body, as in the Bi-Way app: Bi-Way sends a message with a body as plain text, without
+		// its cards. The fallback SMS comes from 'alternate'.
+		body.body = '';
 		channelExtra = { format: 'card', cards: [card] };
 	} else if (content === 'carousel') {
 		requireRichChannel.call(this, i, channel, 'Carousels');
 		const cards = await buildRcsCarousel.call(this, i);
-		body.body = String(cards[0].text ?? cards[0].title ?? '');
+		body.body = '';
 		// "cards": Bi-Way checks every card, and sends several cards as a carousel.
 		channelExtra = { format: 'cards', cards };
 	} else if (email) {

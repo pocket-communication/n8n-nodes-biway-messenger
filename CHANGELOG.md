@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.1
+
+### Fixed
+
+- **Message › Send and Broadcast**: a card or a carousel written in the node reached the phone as a
+  plain text message (the body of the first card), without its title, image or buttons. It is now
+  sent without a message body, as the Bi-Way app sends it. Templates were not affected.
+
 ## 0.1.0
 
 First public release.
