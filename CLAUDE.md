@@ -143,6 +143,13 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
       from GitHub at `893e9f3`, analysis. On Windows, put the system `tar` first in `PATH`: the Git
       Bash one reads `C:` as a remote host
 - [x] Submitted on the n8n Creator Portal (2026-10-29, as author and official representative); review pending
+- [x] Automated pre-checks of n8n passed (2026-10-29); next: a demo video (5 minutes at most, no cuts:
+      install from npm, credential test, common actions, the node as an AI agent tool)
+- [x] 0.1.1 prepared: Send and Broadcast sent cards and carousels as plain text (Bi-Way sends a
+      message with a body as text only); found while rehearsing the video, checked on a phone
+- [ ] Tag `0.1.1` pushed by the maintainer (first publish through the trusted publisher), approved if
+      npm stages it
+- [ ] Demo video recorded with 0.1.1 and uploaded on the Creator Portal
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
