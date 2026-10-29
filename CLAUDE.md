@@ -147,9 +147,9 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
       install from npm, credential test, common actions, the node as an AI agent tool)
 - [x] 0.1.1 prepared: Send and Broadcast sent cards and carousels as plain text (Bi-Way sends a
       message with a body as text only); found while rehearsing the video, checked on a phone
-- [ ] Tag `0.1.1` pushed by the maintainer (first publish through the trusted publisher), approved if
-      npm stages it
-- [ ] Demo video recorded with 0.1.1 and uploaded on the Creator Portal
+- [x] Tag `0.1.1` pushed by the maintainer (first publish through the trusted publisher, not staged),
+      published with provenance; official scanner passes (2026-10-29)
+- [x] Demo video recorded with 0.1.1 (3 min 30, one take) and submitted for manual review (2026-10-29)
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
