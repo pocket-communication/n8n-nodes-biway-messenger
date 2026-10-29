@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.2
+
+### Fixed
+
+- **Message › Send**: an email with attachments from the gallery failed with "One of the attachments
+  was not found". Send now passes the asset IDs as Bi-Way reads them for a single message; Broadcast
+  was not affected.
+- **RCS Agent › Create Keyword Reply**: the description said that a customer could send the keyword.
+  The reply is triggered by a button that carries the keyword (Suggested Reply); a keyword typed in
+  the conversation does not trigger it.
+
 ## 0.1.1
 
 ### Fixed

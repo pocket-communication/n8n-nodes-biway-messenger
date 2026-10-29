@@ -15,7 +15,7 @@ export const rcsOperations: INodeProperties[] = [
 			{
 				name: 'Create Keyword Reply',
 				value: 'createKeywordReply',
-				description: 'Reply automatically when a customer sends a keyword to your RCS agent',
+				description: 'Reply automatically when a customer taps an RCS button that carries a keyword',
 				action: 'Create RCS keyword reply',
 			},
 			{
@@ -57,7 +57,7 @@ export const rcsFields: INodeProperties[] = [
 		default: '',
 		placeholder: 'e.g. PROMO',
 		description:
-			'Word a customer sends to get the reply. Bi-Way converts it to upper case and replaces spaces and special characters with underscores. It must be unique on your account.',
+			'Keyword of the Suggested Reply buttons that trigger the reply: give the buttons this same keyword. A word typed by the customer does not trigger it. Bi-Way converts the keyword to upper case and replaces spaces and special characters with underscores. It must be unique on your account.',
 		displayOptions: showFor(['createKeywordReply']),
 	},
 	templateLocator('Reply Template', {

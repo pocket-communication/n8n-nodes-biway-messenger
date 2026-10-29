@@ -150,6 +150,13 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Tag `0.1.1` pushed by the maintainer (first publish through the trusted publisher, not staged),
       published with provenance; official scanner passes (2026-10-29)
 - [x] Demo video recorded with 0.1.1 (3 min 30, one take) and submitted for manual review (2026-10-29)
+- [x] First run of the internal acceptance test (real sendings checked on a phone, 2026-10-29): Send
+      with gallery attachments failed (`asset:<id>` is Broadcast's format, messenger/submit reads bare
+      IDs), and Create Keyword Reply promised that a typed keyword triggers the reply (only a button
+      that carries it does); both fixed in 0.1.2. A keyword reply whose template has no extra crashed
+      on the Bi-Way server; fixed there
+- [ ] Tag `0.1.2` (maintainer), once the server fix is deployed and the acceptance test passes on the
+      local build
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository

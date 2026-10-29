@@ -185,6 +185,9 @@ const CONTENT_NAMES: Record<MessageContent, string> = {
  * Cards and buttons of a direct sending go under the channel name: {"rcs": {"format", "cards" or
  * "suggestions"}}, {"email": {"format", "cards"}}. Bi-Way only files them there itself for
  * templates.
+ *
+ * Attachments come out as bare asset IDs, as messenger/submit reads them; Broadcast turns them
+ * into "asset:<id>".
  */
 async function messageContent(
 	this: IExecuteFunctions,
@@ -220,8 +223,7 @@ async function messageContent(
 		};
 		const parts = (attachments.attachment ?? [])
 			.map((attachment) => Number(locatorValue(attachment.assetId)))
-			.filter((id) => id > 0)
-			.map((id) => `asset:${id}`);
+			.filter((id) => id > 0);
 		if (parts.length) {
 			body.parts = parts;
 		}
@@ -350,6 +352,10 @@ const broadcastMessage: Handler = async function (i) {
 		simulation: options.simulation === true,
 		...(await messageContent.call(this, i, channel)),
 	};
+	// messenger/broadcast reads an asset of the gallery as "asset:<id>", not as a bare ID.
+	if (Array.isArray(body.parts)) {
+		body.parts = (body.parts as number[]).map((id) => `asset:${id}`);
+	}
 	if (receivers.length) {
 		body.receivers = receivers as IDataObject[];
 	}
