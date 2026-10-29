@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-biway-messenger",
-	"version": "0.1.0",
+	"version": "0.1.1",
 	"description": "Bi-Way for n8n: send SMS, RCS and email messages (rich cards, carousels, buttons, scenarios), manage templates, gallery files and contacts, and receive Bi-Way events. RCS is currently available on French mobile operators only.",
 	"license": "MIT",
 	"homepage": "https://github.com/pocket-communication/n8n-nodes-biway-messenger#readme",
