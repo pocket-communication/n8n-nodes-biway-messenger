@@ -142,7 +142,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] `@n8n/scan-community-package` 0.41.1 passes on 0.1.0 (2026-10-29): provenance, source fetched
       from GitHub at `893e9f3`, analysis. On Windows, put the system `tar` first in `PATH`: the Git
       Bash one reads `C:` as a remote host
-- [ ] Submitted on the n8n Creator Portal
+- [x] Submitted on the n8n Creator Portal (2026-10-29, as author and official representative); review pending
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
