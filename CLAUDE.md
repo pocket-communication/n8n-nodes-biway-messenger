@@ -138,7 +138,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Trusted Publisher configured on npmjs.com (GitHub Actions, `publish.yml`, no environment,
       `npm publish` allowed: `n8n-node release` runs `npm publish`, not `npm stage publish`) and
       `NPM_TOKEN` secret deleted (2026-10-29); the next release is the first one through OIDC
-- [ ] First-publish token revoked on npmjs.com (it expires around 2026-11-03 anyway)
+- [x] First-publish token revoked on npmjs.com (2026-10-29)
 - [x] `@n8n/scan-community-package` 0.41.1 passes on 0.1.0 (2026-10-29): provenance, source fetched
       from GitHub at `893e9f3`, analysis. On Windows, put the system `tar` first in `PATH`: the Git
       Bash one reads `C:` as a remote host
