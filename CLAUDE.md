@@ -127,11 +127,18 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] `{{TRIAL_SIGNUP_URL}}` replaced by https://v3.bi-way.fr/signup (2026-10-28)
 - [x] bi-way-services `tools/messenger/class/Template.class.php` deployed on 2026-10-28 (template
       subject for every format, card templates listed for email channels)
-- [ ] Phases merged into `main`, CI green
-- [ ] `NPM_TOKEN` still valid (expires around 2026-11-03), or replaced
-- [ ] Tag `0.1.0` pushed: `git tag 0.1.0 && git push origin 0.1.0`
+- [x] Phases merged into `main`, CI green (2026-10-28)
+- [x] `NPM_TOKEN` still valid (expires around 2026-11-03), or replaced
+- [x] Tag `0.1.0` pushed (2026-10-29). The first run failed, nothing published: npm only generates
+      provenance for a new package whose access is explicitly public → `publishConfig.access`, tag
+      moved to that commit
+- [x] 0.1.0 approved in **Staged Packages** on npmjs.com (2026-10-29): npm staged the first publish
+      behind a `0.0.0-stage` placeholder until a maintainer approved it with 2FA; a later publish
+      from CI may land there too
 - [ ] Trusted Publisher configured on npmjs.com, `NPM_TOKEN` secret deleted and token revoked
-- [ ] `npx @n8n/scan-community-package n8n-nodes-biway-messenger` passes
+- [x] `@n8n/scan-community-package` 0.41.1 passes on 0.1.0 (2026-10-29): provenance, source fetched
+      from GitHub at `893e9f3`, analysis. On Windows, put the system `tar` first in `PATH`: the Git
+      Bash one reads `C:` as a remote host
 - [ ] Submitted on the n8n Creator Portal
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
