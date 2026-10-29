@@ -155,8 +155,9 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
       IDs), and Create Keyword Reply promised that a typed keyword triggers the reply (only a button
       that carries it does); both fixed in 0.1.2. A keyword reply whose template has no extra crashed
       on the Bi-Way server; fixed there
-- [ ] Tag `0.1.2` (maintainer), once the server fix is deployed and the acceptance test passes on the
-      local build
+- [x] Server fix deployed, acceptance test fully passed on the local build; tag `0.1.2` pushed by the
+      maintainer, published with provenance (a few minutes before the registry showed it); official
+      scanner passes (2026-10-29)
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
