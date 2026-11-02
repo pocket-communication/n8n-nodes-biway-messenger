@@ -5,7 +5,8 @@ tableurs, CRM, agenda… Avec les nœuds Bi-way, chacune de ces automatisations 
 message RCS enrichi (carte ou carrousel avec images, boutons de réponse, votre marque comme
 expéditeur) ou un e-mail, puis réagir aux réponses de vos clients.
 
-Les nœuds sont gratuits et publiés en open source : paquet `n8n-nodes-biway-messenger`.
+Les nœuds sont gratuits, publiés en open source et vérifiés par n8n : paquet
+`n8n-nodes-biway-messenger`.
 
 ## Pour qui ?
 
@@ -61,20 +62,19 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
    n'est disponible aujourd'hui que vers les numéros des opérateurs mobiles français.
 4. **Pour l'e-mail**, l'option e-mail de votre compte, mise en place par Bi-way : Mailjet (canal
    `email`) ou SMTP (canal `email_smtp`).
-5. **Un n8n** :
-   - auto-hébergé : le paquet s'installe en quelques clics ;
-   - n8n Cloud : seuls les nœuds vérifiés par n8n s'y installent ; le nôtre y sera disponible dès que
-     n8n l'aura vérifié.
-
-   Pour le déclencheur, votre n8n doit être joignable depuis internet en HTTPS.
+5. **Un n8n**, Cloud ou auto-hébergé. Pour le déclencheur, votre n8n doit être joignable depuis
+   internet en HTTPS : c'est le cas de n8n Cloud ; en auto-hébergé, c'est à vous de l'exposer.
 
 ## Installer en cinq minutes
 
-1. Dans n8n, en tant que propriétaire ou administrateur : **Settings › Community Nodes › Install**,
-   saisissez `n8n-nodes-biway-messenger` et validez.
+1. Dans l'éditeur n8n, en tant que propriétaire ou administrateur : ouvrez le panneau des nœuds (+),
+   cherchez **Bi-way**, ouvrez le nœud qui porte le badge vérifié et cliquez sur **Install node**.
+   L'installation vaut pour toute l'instance. Sur une instance auto-hébergée qui n'affiche pas les
+   nœuds vérifiés : **Settings › Community Nodes › Install**, puis saisissez
+   `n8n-nodes-biway-messenger`.
 2. Ajoutez le nœud **Bi-way** à un workflow (cherchez « Bi-way », « SMS », « RCS » ou « e-mail »).
-3. Créez l'identifiant **Bi-Way API** : collez le jeton et le secret de votre clé. n8n vérifie la clé
-   à l'enregistrement.
+3. Créez l'identifiant de connexion à Bi-way (**Bi-Way API** dans n8n) : collez le jeton et le secret
+   de votre clé. n8n vérifie la clé à l'enregistrement.
 4. Choisissez **Message › Send**, le canal, le numéro du destinataire au format international
    (`+33612345678`) et le texte. Exécutez : le message part.
 

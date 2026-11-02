@@ -12,7 +12,8 @@ Programmatic style, built on the `npm create @n8n/node` template.
   or an endpoint that the services do not read or return.
 - Do not change the Bi-Way API contract from this repository.
 - English only in the node, the credential, the README and the docs in this repository, except
-  `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly.
+  `docs/integration-n8n-fr.md` and `docs/landing-n8n-updates.md` (French texts for bi-way.fr). Say
+  "RCS" explicitly. This repository is public: no contract code nor internal detail in those texts.
 - The brand is written "Bi-way" in every label, since 2026-11-02. Two exceptions, forced by the
   official scanner, which requires title case and ignores `eslint-disable`: the credential stays
   named "Bi-Way API" (`cred-class-field-display-name-miscased`), and an option or field name must
@@ -186,7 +187,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
       far)
 - [ ] 0.2.0 propagated by n8n to its verified list (0.1.2 on 2026-11-02, right after publishing)
 - [ ] Add the share links to the Creator Portal description once 0.2.0 is propagated
-- [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
+- [x] Published 2026-10-31: page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
 
@@ -194,7 +195,11 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Brand written "Bi-way" in the labels, identifiers unchanged, compared before and after (2026-11-02)
 - [x] Links: `homepage` and notices to https://www.bi-way.fr/n8n/ (2026-11-02); the website field of the
       Creator Portal is the maintainer's
-- [ ] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`)
+- [x] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`, 2026-11-02); the choice of
+      the access path and the publication are the maintainer's
+- [x] Install from the nodes panel followed on a fresh n8n 2.45.4, self-hosted (2026-11-02): the verified
+      node shows with its badge, **Install node**, "Package installed". It installed 0.2.0, the latest on
+      npm, while the verified list still said 0.1.2: a new tag can reach these users before n8n's check
 - [ ] RCS without a launched agent: clear errors, a hint when the API accepts the sending
 - [ ] Example workflows up to n8n's template rules (`docs/templates-submission.md`)
 - [ ] README and version 0.2.1
