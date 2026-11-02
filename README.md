@@ -182,16 +182,21 @@ computer, use a tunnel and set `WEBHOOK_URL`).
 | Account State Changed | Your Bi-Way account was enabled or disabled. |
 | Share Request Received | A visitor of one of your share links booked, cancelled a booking, sent a form, chose an item of a list, answered a questionnaire or updated their details. |
 
-Each event becomes one item.
+Each event becomes one item. Bi-Way calls the webhook once and does not send an event again, whatever
+the answer: events sent while your n8n cannot be reached are lost.
 
 **Share Request Received** items carry the `action` (`booking_done`, `cancel_done`, `input_done`,
 `interested`, `answer`, `subscribe`, `update`, `unsubscribe`) and its `action_name`, the `share` and
 the `function` of the share link (`id`, `name`), the `visitor` when known (`type`, `id`, `name`), the
-values the visitor left (`data`: the booked resource, the begin date and duration of a booking, the
-answers…), and `entry`: the `type` and `id` of the record of the request — the booking, the record
-sent through a form, the item chosen in a list, or the contact. Read it with **Entry › Get**. With the
+details the share link attached for its notifications (`data`: the booked resource, the begin date and
+duration of a booking, the answers…), and `entry`: the `type` and `id` of the record of the request —
+the booking, the record sent through a form, the item chosen in a list, or the contact. With the
 **Share Actions** and **Share IDs** options, the workflow only starts for the actions and share links
 you list.
+
+Do not rely on `data`: its fields and formats change from one action to another, and a value can differ
+from the record (the duration of a booking, for example). For reliable values, read `entry` with
+**Entry › Get**.
 
 **Message Received** items carry the customer's phone number (`address`), the name of the contact
 when Bi-Way knows it, otherwise the phone number (`sender`), the text (`message`), the `channel`, the

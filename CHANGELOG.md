@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+### Documentation
+
+- **README**: events of the Bi-Way Trigger are not sent again if your n8n cannot be reached; the `data`
+  of a share request is not a reference, read its `entry` with **Entry › Get**.
+
 ## 0.2.0
 
 ### Added
