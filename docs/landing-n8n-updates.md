@@ -13,8 +13,9 @@ supprimé une fois la page à jour.
 | 5. Parcours d'accès | Après l'essai avec un compte neuf : inscription, clé, puis un SMS |
 | 6. Graphie du nœud | Quand n8n affichera le nœud « Bi-way », sinon la page et l'écran diffèrent |
 | 7. Liens vers la documentation | Après le tag 0.2.1 |
+| 8. Demandes d'avis | Dès maintenant |
 
-Ne changent pas : les cas d'usage, les frais de déclaration RCS, le public visé, le programme partenaire.
+Ne changent pas : les autres cas d'usage, les frais de déclaration RCS, le public visé, le programme partenaire.
 
 ---
 
@@ -145,3 +146,21 @@ sur n8n Cloud ». À changer après le tag 0.2.1.
 | « voir les exemples » | `.../tree/0.1.2/examples` | `.../tree/0.2.1/examples` |
 
 Début commun des adresses : `https://github.com/pocket-communication/n8n-nodes-biway-messenger`.
+
+---
+
+## 8. Demandes d'avis
+
+Dans les cas d'usage. Google interdit de solliciter sélectivement les avis positifs
+([règles de contenu](https://support.google.com/contributionpolicy/answer/7400114)), et l'exemple du dépôt envoie désormais
+le lien à tous ceux qui répondent.
+
+**Texte actuel**
+
+> Demandes d'avis : les clients satisfaits reçoivent le lien vers vos avis Google, votre équipe est prévenue des clients
+> mécontents.
+
+**Texte proposé**
+
+> Demandes d'avis : vos clients notent leur visite et tous reçoivent le lien vers vos avis Google ; votre équipe est prévenue
+> des notes basses.

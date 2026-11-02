@@ -45,6 +45,8 @@ Programmatic style, built on the `npm create @n8n/node` template.
   HTTP Request 4.2, Form 2.2, Google Sheets 4.5), English names, placeholders and sticky notes.
 - Single items are picked with resource locators ("From List" / "By ID",
   `descriptions/ResourceLocators.ts`); inside a collection, read them with `locatorValue()`.
+  `getNodeParameter(..., { extractValue: true })` throws *Could not find property* when the field is
+  hidden by `displayOptions`, even with a fallback: read it only in the case that shows it.
 - No runtime dependency, no `process.env`, no file system access (verification rules).
 - Never publish to npm, push a tag or submit to the Creator Portal: the maintainer does it.
 
@@ -99,8 +101,8 @@ Audit details: [docs/verification-checklist.md](docs/verification-checklist.md).
       offer Text only
 
 ### Phase 3 — Example workflows (`examples/`)
-File names already linked from the README: `appointment-reminder.json`, `appointment-reply.json`,
-`review-request.json`, `order-notifications.json`, `inbound-to-team-inbox.json`,
+File names already linked from the README: `appointment-reminder.json` (reminder and reply, merged
+for n8n's template library), `review-request.json`, `order-notifications.json`, `inbound-to-team-inbox.json`,
 `form-welcome-message.json`, `weezevent-ticket-holders.json`.
 - [x] Appointment reminder with quick replies, and the reply workflow (no online rebooking)
 - [x] Review request with routing
@@ -203,5 +205,7 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] RCS without a launched agent: clear errors, a hint when the API accepts the sending (2026-11-02),
       from the `rcs_agent_missing` code and the `warnings` of the send answer. Needs the server that
       returns them in production before the tag
-- [ ] Example workflows up to n8n's template rules (`docs/templates-submission.md`)
+- [x] Example workflows up to n8n's template rules (`docs/templates-submission.md`); review link for
+      everyone who answers (Google forbids asking only happy customers); medical rule: the reminder
+      confirms, never present online booking or rebooking by the patient
 - [ ] README and version 0.2.1

@@ -25,7 +25,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 | Workflow | Ce qu'il fait |
 |---|---|
 | Rappel de rendez-vous | La veille, rappelle le rendez-vous avec des boutons de réponse rapide (confirmer, être rappelé…), puis traite la réponse. |
-| Demande d'avis | Demande une note : les clients satisfaits reçoivent le lien vers vos avis Google, l'équipe est prévenue des clients mécontents. |
+| Demande d'avis | Demande une note : tous ceux qui répondent reçoivent le lien vers vos avis Google, l'équipe est prévenue des notes basses. |
 | Suivi de commande | À l'expédition d'une commande WooCommerce, envoie une carte RCS avec un bouton de suivi, ou un SMS si le téléphone ne lit pas le RCS. |
 | Réponses vers l'équipe | Oriente les réponses de vos clients vers le bon service selon leurs mots-clés. |
 | Bienvenue après formulaire | Crée ou met à jour le contact à partir d'un formulaire, puis lui envoie un message de bienvenue. |

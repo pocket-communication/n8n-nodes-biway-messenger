@@ -3,32 +3,65 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Appointment reminder with quick replies\nEvery evening, reminds the customers of tomorrow's appointments by RCS, with three buttons: **Confirm**, **Cancel**, **Call me**. Phones that cannot receive RCS get an SMS instead.\n\n### Setup\n1. Create a **Bi-Way API** credential with an API key made in the Bi-way app (Settings › Security › API keys).\n2. Make a Google Sheet with a tab **Appointments** and the columns `Date` (YYYY-MM-DD), `Time`, `First name`, `Phone` (international format, e.g. +33612345678) and `Status`. Format these columns as **Plain text** in Google Sheets, so that it keeps the `+` of the phone numbers and the dates as written. Replace `YOUR_SHEET_ID`.\n3. An RCS agent launched by the French operators (check it with the Bi-way node: RCS Agent › Get Status). Without one, set the channel of the Bi-way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n4. Import **Appointment reply** too: it handles the buttons. Then publish both workflows.",
-				"height": 420,
-				"width": 520
+				"content": "### How it works\nHelps practices, garages and other businesses that work by appointment reduce no-shows. Every evening, the workflow reads tomorrow's appointments from a Google Sheet and sends a reminder by RCS with **Confirm**, **Cancel** and **Call me** buttons, or an SMS asking for YES or NO. A second entry point handles each answer: it updates `Status`, answers the customer, and emails your team for a cancellation or a call back.\n\nThe reminder only confirms: no online rebooking, your team calls back to find another time.\n\n**Limits:** RCS only reaches French mobile operators. The sheet is matched on `Phone`: keep one appointment per number. A refused number does not stop the others. Running the reminder twice sends it twice.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Create a Google Sheet with a tab **Appointments** and the columns `Date` (YYYY-MM-DD), `Time`, `First name`, `Phone` (e.g. +33612345678) and `Status`, as **Plain text**. Add your Google Sheets credential and replace `YOUR_SHEET_ID` in the three sheet nodes.\n4. Add an SMTP credential and replace `team@example.com`.\n5. RCS needs an agent launched by the French operators (check with RCS Agent › Get Status). Without one, set the Bi-way nodes to your SMS channel; buttons are left out.\n6. Your n8n must be reachable over HTTPS. Publish the workflow: the trigger registers its webhook by itself.\n\n### Customization\nChange the time in **Every day at 6 pm** and the wording in **Send the reminder**. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
+				"height": 640,
+				"width": 620
 			},
-			"id": "81e06477-a0da-44f9-a353-c9e884a00166",
-			"name": "Sticky Note setup",
+			"id": "a7e118d4-47c8-500e-a192-0bb19885a691",
+			"name": "Overview",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				-80,
-				-460
+				-710,
+				-130
 			]
 		},
 		{
 			"parameters": {
-				"content": "### Buttons and fallback\nEach button sends its keyword (`CONFIRM`, `CANCEL`, `CALL_ME`) to the **Appointment reply** workflow. Without RCS, the SMS asks for **YES** or **NO**, which the same workflow understands. No online rebooking: a cancellation is followed by a call from your team.",
-				"height": 200,
-				"width": 380
+				"content": "## Remind tomorrow's appointments\nRuns every evening. Customers get three buttons by RCS, or an SMS asking for YES or NO.",
+				"height": 296,
+				"width": 656,
+				"color": 7
 			},
-			"id": "ab002007-c39c-4efb-ac95-b359a2704532",
-			"name": "Sticky Note buttons",
+			"id": "466bf65d-cdb0-514e-be04-24235a98fb41",
+			"name": "Section 1",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				700,
-				-300
+				-50,
+				-130
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Read the customer's answer\nA tapped button or a typed YES / NO goes to its branch. Any other message stops here, left to your other workflows.",
+				"height": 356,
+				"width": 686,
+				"color": 7
+			},
+			"id": "6aab70a4-53aa-541b-a019-e627f1c0dfad",
+			"name": "Section 2",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-50,
+				330
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Act on the answer\nUpdates the sheet and answers the customer. A cancellation or a call back also emails your team, who call back: no online rebooking.",
+				"height": 696,
+				"width": 636,
+				"color": 7
+			},
+			"id": "7530d5f0-6dda-5a58-a10b-922d718ce360",
+			"name": "Section 3",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				650,
+				130
 			]
 		},
 		{
@@ -118,6 +151,373 @@
 			"position": [
 				460,
 				0
+			],
+			"onError": "continueRegularOutput"
+		},
+		{
+			"parameters": {
+				"events": [
+					"MESSENGER_DELIVERY"
+				]
+			},
+			"id": "32562d09-f8cf-4ee6-a1fe-9bccbaf19c55",
+			"name": "Reply received",
+			"type": "n8n-nodes-biway-messenger.biwayTrigger",
+			"typeVersion": 1,
+			"position": [
+				0,
+				460
+			],
+			"webhookId": "285ce3eb-431c-4a7f-ae03-09e0c7e12842"
+		},
+		{
+			"parameters": {
+				"assignments": {
+					"assignments": [
+						{
+							"id": "b52cab4b-7e46-46eb-aa78-a01c9205465e",
+							"name": "answer",
+							"value": "={{ String($json.keyword || $json.message || '').trim().toUpperCase() }}",
+							"type": "string"
+						},
+						{
+							"id": "9e212b4f-1d44-416f-ade3-58c66b76695a",
+							"name": "phone",
+							"value": "={{ $json.address }}",
+							"type": "string"
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "85349440-5501-4bd3-a83c-a061577c615c",
+			"name": "Read the answer",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [
+				220,
+				460
+			]
+		},
+		{
+			"parameters": {
+				"rules": {
+					"values": [
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "d1682cb9-b934-43de-a690-273cecae9dc0",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CONFIRM",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									},
+									{
+										"id": "29de5c4c-4297-4d82-a665-fde4e97fa34e",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "YES",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Confirmed"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "6f6a6436-cabc-47c4-acd7-c3f64f80b347",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CANCEL",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									},
+									{
+										"id": "82c2a713-00df-4aae-a237-0f69f82aaaa2",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "NO",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Cancelled"
+						},
+						{
+							"conditions": {
+								"options": {
+									"caseSensitive": false,
+									"leftValue": "",
+									"typeValidation": "loose",
+									"version": 2
+								},
+								"conditions": [
+									{
+										"id": "2698c994-89af-494a-a1b9-fe13763dbb64",
+										"leftValue": "={{ $json.answer }}",
+										"rightValue": "CALL_ME",
+										"operator": {
+											"type": "string",
+											"operation": "equals"
+										}
+									}
+								],
+								"combinator": "or"
+							},
+							"renameOutput": true,
+							"outputKey": "Call back"
+						}
+					]
+				},
+				"options": {
+					"fallbackOutput": "extra",
+					"renameFallbackOutput": "Other message"
+				}
+			},
+			"id": "0259cfbe-54e1-4df6-add4-86d5b7f8b849",
+			"name": "Route by answer",
+			"type": "n8n-nodes-base.switch",
+			"typeVersion": 3.2,
+			"position": [
+				440,
+				460
+			]
+		},
+		{
+			"parameters": {
+				"operation": "update",
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Appointments",
+					"mode": "name"
+				},
+				"columns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"Phone": "={{ $json.phone }}",
+						"Status": "Confirmed"
+					},
+					"matchingColumns": [
+						"Phone"
+					],
+					"schema": [
+						{
+							"id": "Phone",
+							"displayName": "Phone",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						},
+						{
+							"id": "Status",
+							"displayName": "Status",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "eec4eec5-5b52-48b5-a990-87cb315c29b6",
+			"name": "Mark as confirmed",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				700,
+				260
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Thank you, your appointment is confirmed. See you tomorrow!",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Thank you, your appointment is confirmed. See you tomorrow!"
+			},
+			"id": "e76c0bc0-01ec-4891-a143-fb6bbcfe6a00",
+			"name": "Thank the customer",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				260
+			]
+		},
+		{
+			"parameters": {
+				"operation": "update",
+				"documentId": {
+					"__rl": true,
+					"value": "YOUR_SHEET_ID",
+					"mode": "id"
+				},
+				"sheetName": {
+					"__rl": true,
+					"value": "Appointments",
+					"mode": "name"
+				},
+				"columns": {
+					"mappingMode": "defineBelow",
+					"value": {
+						"Phone": "={{ $json.phone }}",
+						"Status": "Cancelled"
+					},
+					"matchingColumns": [
+						"Phone"
+					],
+					"schema": [
+						{
+							"id": "Phone",
+							"displayName": "Phone",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						},
+						{
+							"id": "Status",
+							"displayName": "Status",
+							"required": false,
+							"defaultMatch": false,
+							"display": true,
+							"type": "string",
+							"canBeUsedToMatch": true
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "cafdf26d-2a77-4571-ab5a-38906d92b59f",
+			"name": "Mark as cancelled",
+			"type": "n8n-nodes-base.googleSheets",
+			"typeVersion": 4.5,
+			"position": [
+				700,
+				460
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Your appointment is cancelled. Our team will call you to find another time.",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Your appointment is cancelled. Our team will call you to find another time."
+			},
+			"id": "f74f0f82-cf51-4b93-ad5c-47627e09be2c",
+			"name": "Acknowledge the cancellation",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				460
+			],
+			"onError": "continueRegularOutput"
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "team@example.com",
+				"subject": "=Appointment cancelled by {{ $('Read the answer').item.json.phone }}",
+				"emailFormat": "text",
+				"text": "=The customer {{ $('Read the answer').item.json.phone }} cancelled tomorrow's appointment. Please call them to find another time.",
+				"options": {}
+			},
+			"id": "e759c2e9-c87f-4249-a572-36eaab684e6c",
+			"name": "Tell the team: cancelled",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				1140,
+				460
+			]
+		},
+		{
+			"parameters": {
+				"fromEmail": "n8n@example.com",
+				"toEmail": "team@example.com",
+				"subject": "=Call back {{ $json.phone }}",
+				"emailFormat": "text",
+				"text": "=The customer {{ $json.phone }} asked to be called about tomorrow's appointment.",
+				"options": {}
+			},
+			"id": "b8273f94-0318-45d5-a7bd-fd52dc18b24d",
+			"name": "Tell the team: call back",
+			"type": "n8n-nodes-base.emailSend",
+			"typeVersion": 2.1,
+			"position": [
+				700,
+				660
+			]
+		},
+		{
+			"parameters": {
+				"resource": "message",
+				"operation": "send",
+				"channel": "rcs",
+				"content": "text",
+				"source": "raw",
+				"body": "Noted, our team will call you back shortly.",
+				"receiver": "={{ $('Read the answer').item.json.phone }}",
+				"options": {},
+				"rcsFallback": "custom",
+				"rcsFallbackText": "Noted, our team will call you back shortly."
+			},
+			"id": "ed8fbb1d-a6ed-4f56-adfc-e856eb230c63",
+			"name": "Confirm the call back",
+			"type": "n8n-nodes-biway-messenger.biway",
+			"typeVersion": 1,
+			"position": [
+				920,
+				660
 			]
 		}
 	],
@@ -138,6 +538,97 @@
 				[
 					{
 						"node": "Send the reminder",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Reply received": {
+			"main": [
+				[
+					{
+						"node": "Read the answer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Read the answer": {
+			"main": [
+				[
+					{
+						"node": "Route by answer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Route by answer": {
+			"main": [
+				[
+					{
+						"node": "Mark as confirmed",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Mark as cancelled",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Tell the team: call back",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Mark as confirmed": {
+			"main": [
+				[
+					{
+						"node": "Thank the customer",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Mark as cancelled": {
+			"main": [
+				[
+					{
+						"node": "Acknowledge the cancellation",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Acknowledge the cancellation": {
+			"main": [
+				[
+					{
+						"node": "Tell the team: cancelled",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Tell the team: call back": {
+			"main": [
+				[
+					{
+						"node": "Confirm the call back",
 						"type": "main",
 						"index": 0
 					}

@@ -3,17 +3,17 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Form to welcome message\nAn n8n form collects the contact details, creates the contact in Bi-way (or updates it if the phone number is already known) and sends a welcome message by RCS, or by SMS on phones without RCS.\n\n### Setup\n1. **Bi-Way API** credential. The welcome message goes by RCS, which needs an RCS agent launched by the French operators (check it with the Bi-way node: RCS Agent › Get Status). Without one, set the channel of the Bi-way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. Optional: pick a contact group in **Save the contact** › Options; without it, Bi-way uses your default group.\n3. Add a consent field to the form if your privacy policy asks for one. Publish the workflow and share the form URL.",
-				"height": 340,
-				"width": 500
+				"content": "### How it works\nHelps newsletters, loyalty programs and events grow a contact list from a simple form. An n8n form collects the first name, last name, phone number and email address. The workflow creates the contact in Bi-way, or updates it when the phone number is already known so that no duplicate appears, then sends a welcome message by RCS with a button. Phones that cannot receive RCS get the fallback SMS of your account.\n\n**Limits:** RCS only reaches French mobile operators. The phone number must be in international format, e.g. +33612345678: the form does not check it, and Bi-way refuses another format. Someone who sends the form again gets the welcome message again.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. RCS needs an agent launched by the French operators (check with RCS Agent › Get Status). Without one, set the Bi-way nodes to your SMS channel; buttons are left out.\n4. Optional: pick a contact group in **Save the contact** › Options; without it, Bi-way uses your default group.\n5. Add a consent field to the form if your privacy policy asks for one, and replace `https://www.example.com`.\n6. Publish the workflow, then send the form with your own number.\n\n### Customization\nChange the fields in **Sign-up form**, the columns in **Save the contact** and the wording in **Send the welcome message**.",
+				"height": 570,
+				"width": 620
 			},
-			"id": "8197beca-048b-4635-a75d-a3b2bed54e07",
-			"name": "Sticky Note setup",
+			"id": "724b10df-c144-50c3-9aa5-611a035ea7c8",
+			"name": "Overview",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				-80,
-				-440
+				-710,
+				-130
 			]
 		},
 		{

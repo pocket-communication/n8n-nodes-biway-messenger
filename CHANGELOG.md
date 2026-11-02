@@ -29,6 +29,9 @@
 
 ### Fixed
 
+- **Cards without a gallery image**: a card with no image, or with an image from a URL, stopped with
+  *Could not find property*, on Message › Send, Message › Broadcast and Template › Create. Cards with
+  an image from the gallery were not affected.
 - **Fallback SMS written in the node**: a text that fit in 160 characters but not once the STOP mention
   and the chat link were added was accepted, then the SMS was not sent. The node now refuses it, with
   the room left for the text.
@@ -41,8 +44,21 @@
   the [Bi-way page for n8n](https://www.bi-way.fr/n8n/), in French. The documentation links of the
   nodes and of the credential still lead to the README, in English.
 
+### Examples
+
+- **Appointment reminder** and **Appointment reply** are now one workflow with two entry points:
+  `appointment-reply.json` is gone. Nothing changes in the nodes.
+- **Review request**: everyone who answers now gets the link to your Google reviews, a 1 or 2 also gets
+  an apology and your team an email. Google does not allow asking only happy customers for a review. If
+  you imported this example, send the link on every branch too.
+- **Daily sends** (reminder, review request, Weezevent card and email): a refused number no longer stops
+  the numbers after it.
+- **Notes** follow n8n's template rules: how it works, limits, setup, customization; white notes over the
+  nodes. Screenshots taken again.
+
 ### Documentation
 
+- **Templates**: `docs/templates-submission.md` prepares the submission to the n8n template library.
 - **README**: events of the Bi-way Trigger are not sent again if your n8n cannot be reached; the `data`
   of a share request is not a reference, read its `entry` with **Entry › Get**.
 

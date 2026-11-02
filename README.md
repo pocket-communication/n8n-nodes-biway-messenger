@@ -270,13 +270,12 @@ Ready-to-import workflows are in [`examples/`](examples/README.md), with how to 
 placeholders to replace. They use n8n's own nodes and the Bi-way nodes, and send by RCS: without an
 RCS agent, switch their Bi-way nodes to an SMS channel (Content Text instead of Card).
 
-![The Appointment reply example in the n8n editor: the Bi-way Trigger receives the answer and a Switch routes it](examples/images/appointment-reply.png)
+![The Appointment reminder example in the n8n editor: the daily reminder, then the Bi-way Trigger receives the answer and a Switch routes it](examples/images/appointment-reminder.png)
 
 | Workflow | What it does |
 |---|---|
-| [Appointment reminder](examples/appointment-reminder.json) | Reminds customers of tomorrow's appointments with quick-reply buttons. |
-| [Appointment reply](examples/appointment-reply.json) | Handles the buttons tapped on the reminder. |
-| [Review request](examples/review-request.json) | Asks for a rating, sends happy customers to your Google reviews and alerts your team about unhappy ones. |
+| [Appointment reminder](examples/appointment-reminder.json) | Reminds customers of tomorrow's appointments with quick-reply buttons, then handles their answers. |
+| [Review request](examples/review-request.json) | Asks for a rating, shares your Google review link with everyone who answers and alerts your team about low ratings. |
 | [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order is completed, with a fallback SMS. |
 | [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
 | [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |

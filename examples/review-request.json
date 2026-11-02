@@ -3,32 +3,65 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Review request with routing\nThe day after a visit, asks for a rating from 1 to 5. Happy customers (4 or 5) get the link to your Google reviews; unhappy ones (1 or 2) are reported to your team by email, and get an answer saying you will contact them.\n\n### Setup\n1. **Bi-Way API** credential. An RCS agent launched by the French operators (check it with the Bi-way node: RCS Agent › Get Status). Without one, set the channel of the Bi-way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n2. Google Sheet with a tab **Visits** and the columns `Date` (YYYY-MM-DD), `First name`, `Phone` (international format). Format these columns as **Plain text** in Google Sheets, so that it keeps the `+` of the phone numbers and the dates as written. Replace `YOUR_SHEET_ID`.\n3. Replace `https://g.page/r/YOUR_PLACE_ID/review` by the review link of your Google Business Profile.\n4. SMTP credential for the alert; replace `team@example.com`. Publish the workflow.",
-				"height": 400,
-				"width": 520
+				"content": "### How it works\nHelps shops, restaurants and service businesses collect reviews and hear about problems first. Every morning, the workflow reads yesterday's visits from a Google Sheet and asks each customer for a rating from 1 to 5, with RCS buttons or by SMS. A second entry point keeps only the ratings. Everyone who answers gets the link to your Google reviews; a 1 or 2 also gets an apology, and your team an email.\n\nKeep the link on both branches: Google does not allow asking only happy customers.\n\n**Limits:** RCS only reaches French mobile operators. Any lone figure from 1 to 5 counts as a rating, even without a recent request. A refused number does not stop the others. Running the request twice sends it twice.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Create a Google Sheet with a tab **Visits** and the columns `Date` (YYYY-MM-DD), `First name` and `Phone` (e.g. +33612345678), as **Plain text**. Add your Google Sheets credential and replace `YOUR_SHEET_ID`.\n4. Replace `https://g.page/r/YOUR_PLACE_ID/review` (four times) with your Google review link.\n5. Add an SMTP credential and replace `team@example.com`.\n6. RCS needs an agent launched by the French operators (check with RCS Agent › Get Status). Without one, set the Bi-way nodes to your SMS channel; buttons are left out.\n7. Your n8n must be reachable over HTTPS. Publish the workflow: the trigger registers its webhook by itself.\n\n### Customization\nChange the threshold in **Route by rating**. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
+				"height": 680,
+				"width": 620
 			},
-			"id": "642767a4-ccc8-4fb3-ac01-8e8ce505490b",
-			"name": "Sticky Note setup",
+			"id": "d6b95cd1-4d11-5817-94be-cf6365a6c6a8",
+			"name": "Overview",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				-80,
-				-480
+				-710,
+				-130
 			]
 		},
 		{
 			"parameters": {
-				"content": "### Two entry points\nThe top branch sends the request. The bottom branch starts on every received message and only keeps ratings: a tapped button (`RATE_1` … `RATE_5`) or a figure typed in an SMS.",
-				"height": 160,
-				"width": 380
+				"content": "## Ask for a rating\nRuns every morning for yesterday's visits. Five buttons by RCS, or an SMS asking for a figure from 1 to 5.",
+				"height": 296,
+				"width": 656,
+				"color": 7
 			},
-			"id": "8d69de5a-237f-4dd6-af44-2dd0e9960954",
-			"name": "Sticky Note rating",
+			"id": "41640203-0bbc-5d07-8c0f-4623aa8cff0f",
+			"name": "Section 1",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				700,
-				-360
+				-50,
+				-130
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Keep only the ratings\nStarts on every received message. A tapped button or a single figure becomes a rating; anything else stops here.",
+				"height": 296,
+				"width": 686,
+				"color": 7
+			},
+			"id": "f1cfae8b-42c8-5496-a5e0-e4271e47d1e6",
+			"name": "Section 2",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				-50,
+				230
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Answer every rating\nEveryone gets the review link. A 1 or 2 also gets an apology, and your team an email to contact them.",
+				"height": 496,
+				"width": 416,
+				"color": 7
+			},
+			"id": "187ec012-dfa5-56d2-9946-3410f2ed13ce",
+			"name": "Section 3",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				650,
+				70
 			]
 		},
 		{
@@ -126,7 +159,8 @@
 			"position": [
 				460,
 				0
-			]
+			],
+			"onError": "continueRegularOutput"
 		},
 		{
 			"parameters": {
@@ -189,7 +223,7 @@
 									{
 										"id": "9aa7cc03-0278-4453-a4a1-b42dcb246c01",
 										"leftValue": "={{ $json.rating }}",
-										"rightValue": 4,
+										"rightValue": 3,
 										"operator": {
 											"type": "number",
 											"operation": "gte"
@@ -199,7 +233,7 @@
 								"combinator": "or"
 							},
 							"renameOutput": true,
-							"outputKey": "Happy (4-5)"
+							"outputKey": "Rated 3 to 5"
 						},
 						{
 							"conditions": {
@@ -233,30 +267,6 @@
 							},
 							"renameOutput": true,
 							"outputKey": "Unhappy (1-2)"
-						},
-						{
-							"conditions": {
-								"options": {
-									"caseSensitive": false,
-									"leftValue": "",
-									"typeValidation": "loose",
-									"version": 2
-								},
-								"conditions": [
-									{
-										"id": "5f50b542-b3e8-4cd5-ad11-acdcd5b11143",
-										"leftValue": "={{ $json.rating }}",
-										"rightValue": 3,
-										"operator": {
-											"type": "number",
-											"operation": "equals"
-										}
-									}
-								],
-								"combinator": "or"
-							},
-							"renameOutput": true,
-							"outputKey": "Neutral (3)"
 						}
 					]
 				},
@@ -326,11 +336,19 @@
 				"channel": "rcs",
 				"content": "text",
 				"source": "raw",
-				"body": "We are sorry your visit did not go well. Someone from our team will contact you.",
+				"body": "We are sorry your visit did not go well. Someone from our team will contact you. You can also share your opinion on Google.",
 				"receiver": "={{ $('Route by rating').item.json.phone }}",
 				"options": {},
 				"rcsFallback": "custom",
-				"rcsFallbackText": "We are sorry your visit did not go well. Someone from our team will contact you."
+				"rcsFallbackText": "Sorry about your visit, we will call you. Your opinion on Google: https://g.page/r/YOUR_PLACE_ID/review",
+				"rcsButtons": {
+					"openUrl": [
+						{
+							"text": "Leave a review",
+							"url": "https://g.page/r/YOUR_PLACE_ID/review"
+						}
+					]
+				}
 			},
 			"id": "c9d697ba-748c-4113-adad-ae0c9fc5ab76",
 			"name": "Answer the unhappy customer",
@@ -339,28 +357,6 @@
 			"position": [
 				920,
 				400
-			]
-		},
-		{
-			"parameters": {
-				"resource": "message",
-				"operation": "send",
-				"channel": "rcs",
-				"content": "text",
-				"source": "raw",
-				"body": "Thank you for your feedback!",
-				"receiver": "={{ $json.phone }}",
-				"options": {},
-				"rcsFallback": "custom",
-				"rcsFallbackText": "Thank you for your feedback!"
-			},
-			"id": "a712e14e-cafd-42a7-a23a-da4dff4cd74c",
-			"name": "Thank for the feedback",
-			"type": "n8n-nodes-biway-messenger.biway",
-			"typeVersion": 1,
-			"position": [
-				700,
-				600
 			]
 		}
 	],
@@ -421,13 +417,6 @@
 				[
 					{
 						"node": "Alert the team",
-						"type": "main",
-						"index": 0
-					}
-				],
-				[
-					{
-						"node": "Thank for the feedback",
 						"type": "main",
 						"index": 0
 					}

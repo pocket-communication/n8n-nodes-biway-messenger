@@ -39,7 +39,7 @@ States: **OK**, **Fixed** (during this audit, with the commit), **To do**, **N/A
 | npm repository URL matches the GitHub repository | OK | `repository.url` = `github.com/pocket-communication/n8n-nodes-biway-messenger`; to look at again on the npm page after publication |
 | Same author/maintainer on npm and on the repository | To do | Author is "Pocket Communication <tech@pocketcommunication.com>"; the npm account that publishes must be the Pocket Communication one |
 | Git link works, repository public | OK | Public repository on GitHub |
-| Proper documentation (README, usage examples) | OK | README (phase 2) and seven example workflows in `examples/` (phase 3) |
+| Proper documentation (README, usage examples) | OK | README (phase 2) and six example workflows in `examples/` (phase 3) |
 | MIT license | OK | `LICENSE.md`, `package.json` › `license` |
 | Published from a GitHub action with provenance | To do | First publication |
 | No external dependencies | OK | No `dependencies`; `n8n-workflow` as peer; the code uses only `n8n-workflow`, Node's `crypto` (webhook token) and the global `FormData` and `Blob` |

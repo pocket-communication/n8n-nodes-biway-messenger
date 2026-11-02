@@ -3,32 +3,49 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## WooCommerce order notifications\nWhen an order is completed in WooCommerce, sends an RCS card with a **Track my parcel** button. Phones that cannot receive RCS get an SMS with the tracking link.\n\n### Setup\n1. **WooCommerce** credential; the trigger creates the webhook in your shop when the workflow is published. WooCommerce reports every change of an order: a completed order changed again sends a new message.\n2. **Bi-Way API** credential. An RCS agent launched by the French operators (check it with the Bi-way node: RCS Agent › Get Status). Without one, set the channel of the Bi-way nodes to your SMS channel, and Content to Text where they send a card: the buttons are then left out.\n3. In **Build the tracking link**, replace `https://tracking.example.com/` by the tracking page of your carrier, or read the link your shipping plugin stores in the order.",
-				"height": 360,
-				"width": 520
+				"content": "### How it works\nHelps WooCommerce shops answer \"where is my parcel?\" before customers ask. When an order changes to completed, the workflow puts the customer's phone number in international format, builds the tracking link and sends an RCS card with a **Track my parcel** button. Phones that cannot receive RCS get an SMS with the tracking link.\n\n**Limits:** RCS only reaches French mobile operators. The phone number conversion only knows French numbers. WooCommerce reports every change of an order, so a completed order changed again sends a new message.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Add a WooCommerce credential: the trigger creates the webhook in your shop when the workflow is published.\n4. In **Build the tracking link**, replace `https://tracking.example.com/` with the tracking page of your carrier, or read the link your shipping plugin stores in the order.\n5. RCS needs an agent launched by the French operators (check with RCS Agent › Get Status). Without one, set the Bi-way node to your SMS channel and Content to Text.\n6. Complete a test order with your own number.\n\n### Customization\nChange the wording in **Send the shipping card**, and the country code in **Build the tracking link**. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
+				"height": 570,
+				"width": 620
 			},
-			"id": "10cec411-d1ba-48cd-a771-90478202a012",
-			"name": "Sticky Note setup",
+			"id": "625d32ef-ec5d-504d-a801-35e05756c7f8",
+			"name": "Overview",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				-80,
-				-460
+				-710,
+				-130
 			]
 		},
 		{
 			"parameters": {
-				"content": "### Phone numbers\nWooCommerce stores the number as the customer typed it: this node turns a French number such as 06 12 34 56 78 into +33612345678. Adapt it for other countries.",
-				"height": 170,
-				"width": 340
+				"content": "## Keep completed orders\nWooCommerce reports every change of an order: only completed ones go on.",
+				"height": 296,
+				"width": 416,
+				"color": 7
 			},
-			"id": "84ec2af2-4cab-4f8d-a59a-1922abb99766",
-			"name": "Sticky Note phone",
+			"id": "9a87099a-ad83-5be8-862e-6e9bbe788062",
+			"name": "Section 1",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				480,
-				-300
+				-50,
+				-130
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Build and send\nFrench numbers such as 06 12 34 56 78 become +33612345678. The card goes by RCS, or an SMS on phones without RCS.",
+				"height": 296,
+				"width": 436,
+				"color": 7
+			},
+			"id": "a107e5d3-f5e2-599b-b772-0b5118d51118",
+			"name": "Section 2",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				390,
+				-130
 			]
 		},
 		{

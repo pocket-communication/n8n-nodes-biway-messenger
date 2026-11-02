@@ -1,7 +1,7 @@
 # Example workflows
 
 Ready-to-import n8n workflows built with the Bi-way nodes and n8n's own nodes only. Each one opens
-with a yellow note that lists its setup, and smaller notes explain the key steps.
+with a yellow note: how it works, its limits, its setup. White notes explain the main steps.
 
 ## Import a workflow
 
@@ -25,9 +25,8 @@ Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` a
 
 | Workflow | What it does | For |
 |---|---|---|
-| [Appointment reminder](appointment-reminder.json) | Every evening, reminds tomorrow's appointments from a Google Sheet by RCS with **Confirm**, **Cancel** and **Call me** buttons, or by SMS asking for YES or NO. | Practices, salons, garages, any business working by appointment |
-| [Appointment reply](appointment-reply.json) | Handles the buttons and the YES / NO answers of the reminder: updates the sheet, answers the customer, emails the team for a cancellation or a call back. No online rebooking. | Same, with **Appointment reminder** |
-| [Review request](review-request.json) | The day after a visit, asks for a rating from 1 to 5. 4 or 5: link to your Google reviews; 1 or 2: email to your team and an apology to the customer. | Shops, restaurants, services that live on their Google rating |
+| [Appointment reminder](appointment-reminder.json) | Every evening, reminds tomorrow's appointments from a Google Sheet by RCS with **Confirm**, **Cancel** and **Call me** buttons, or by SMS asking for YES or NO. A second entry point handles the answers: updates the sheet, answers the customer, emails the team for a cancellation or a call back. No online rebooking. | Practices, salons, garages, any business working by appointment |
+| [Review request](review-request.json) | The day after a visit, asks for a rating from 1 to 5. Everyone who answers gets the link to your Google reviews; a 1 or 2 also gets an apology, and your team an email. Google does not allow asking only happy customers. | Shops, restaurants, services that live on their Google rating |
 | [Order notifications](order-notifications.json) | When a WooCommerce order is completed, sends an RCS card with a **Track my parcel** button, or an SMS with the tracking link. | Online shops on WooCommerce |
 | [Inbound reply to team inbox](inbound-to-team-inbox.json) | Emails every typed customer message to the billing, delivery or customer service inbox, chosen by keywords. | Teams answering customers from their usual inbox |
 | [Form to welcome message](form-welcome-message.json) | An n8n form creates or updates the contact in Bi-way, recognized by phone number, and sends a welcome message. | Newsletters, loyalty programs, events |
@@ -35,7 +34,7 @@ Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` a
 
 ## Using several workflows together
 
-Bi-way sends every received message to every workflow that listens to it. **Appointment reply** and
+Bi-way sends every received message to every workflow that listens to it. **Appointment reminder** and
 **Review request** each keep only their own answers; **Inbound reply to team inbox** skips button
 taps, but it does email typed answers such as YES or a rating: extend its **Only typed messages**
 filter if your team should not get them. If you add your own buttons, give them keywords of their
@@ -47,15 +46,11 @@ The workflows as they open in the n8n editor.
 
 ### Appointment reminder
 
-![Appointment reminder: schedule, Google Sheets, then the Bi-way node sends the reminder](images/appointment-reminder.png)
-
-### Appointment reply
-
-![Appointment reply: the Bi-way Trigger receives the answer, a Switch routes it to the sheet, the customer and the team](images/appointment-reply.png)
+![Appointment reminder: the daily reminder from Google Sheets, then the Bi-way Trigger receives the answer and a Switch routes it to the sheet, the customer and the team](images/appointment-reminder.png)
 
 ### Review request
 
-![Review request: a daily request for a rating, and the answers routed by rating](images/review-request.png)
+![Review request: a daily request for a rating, then every rating gets the review link, and low ratings also alert the team](images/review-request.png)
 
 ### Order notifications
 

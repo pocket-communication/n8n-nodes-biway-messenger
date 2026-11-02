@@ -354,14 +354,19 @@ async function rcsCard(
  */
 export async function buildRcsCard(this: IExecuteFunctions, i: number): Promise<IDataObject> {
 	const orientation = this.getNodeParameter('cardOrientation', i, 'VERTICAL') as string;
+	const image = this.getNodeParameter('cardImage', i, 'none') as string;
 	const card = await rcsCard.call(
 		this,
 		i,
 		{
 			title: this.getNodeParameter('cardTitle', i, '') as string,
 			text: this.getNodeParameter('cardText', i, '') as string,
-			image: this.getNodeParameter('cardImage', i, 'none') as string,
-			cardImageId: this.getNodeParameter('cardImageId', i, '', { extractValue: true }),
+			image,
+			// n8n refuses to extract the value of a hidden field: this one only shows for the gallery.
+			cardImageId:
+				image === 'gallery'
+					? this.getNodeParameter('cardImageId', i, '', { extractValue: true })
+					: '',
 			imageUrl: this.getNodeParameter('cardImageUrl', i, '') as string,
 			imageMimeType: this.getNodeParameter('cardImageMimeType', i, 'image/jpeg') as string,
 			imageHeight: this.getNodeParameter('cardImageHeight', i, 'MEDIUM') as string,

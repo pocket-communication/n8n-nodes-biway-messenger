@@ -3,47 +3,65 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Weezevent ticket holders\nEvery 15 minutes, fetches the new participants of a Weezevent event, saves them as Bi-way contacts and sends them their practical information: an RCS card when the registration form asks for a phone number, an email otherwise.\n\n### Setup\n1. Weezevent API access (granted to Weezevent partners): replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n2. **Bi-Way API** credential; an RCS agent launched by the French operators for the card, and the email option of your account for the email.\n3. Adapt the card (event name, address, coordinates, practical information URL) and the email. Publish the workflow.",
-				"height": 340,
-				"width": 560
+				"content": "### How it works\nHelps event organizers who sell on Weezevent send practical information without exporting lists. Every 15 minutes, the workflow fetches the participants changed since the last run, saves them as Bi-way contacts, and sends them an RCS card when the registration form asks for a phone number, or an email otherwise.\n\n**Limits:** The Weezevent API is reserved to its partners. The memory of the last run only works in published runs, not in manual tests. A participant changed again gets the message again. RCS only reaches French mobile operators, and the email needs the email option of your account.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n4. Check the RCS agent with the Bi-way node: RCS Agent › Get Status.\n5. Adapt the card and the email: `YOUR EVENT`, `YOUR VENUE`, coordinates and practical information link. Publish the workflow.\n\n### Customization\nChange the frequency in **Every 15 minutes**, and the labels **Find the phone number** looks for if your form names the phone field differently. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
+				"height": 590,
+				"width": 620
 			},
-			"id": "12b42fcc-d931-42d9-a705-cfe7801539d4",
-			"name": "Sticky Note setup",
+			"id": "d0fc6ae7-9aa2-556c-8c69-ad8e055044f1",
+			"name": "Overview",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				-80,
-				-460
+				-710,
+				-250
 			]
 		},
 		{
 			"parameters": {
-				"content": "### Only new participants\nThe workflow remembers the `server_time` of the last Weezevent answer and asks for the participants changed since then. This memory only works in published runs, not in manual tests.",
-				"height": 170,
-				"width": 360
+				"content": "## Fetch new participants\nAsks Weezevent for the participants changed since the time of its last answer.",
+				"height": 296,
+				"width": 1076,
+				"color": 7
 			},
-			"id": "bf5129d2-099e-4378-aba6-d0a8ebef9989",
-			"name": "Sticky Note since",
+			"id": "21957414-54df-5429-8834-f71966cb68a3",
+			"name": "Section 1",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				540,
-				-260
+				-50,
+				-130
 			]
 		},
 		{
 			"parameters": {
-				"content": "### Phone number\nWeezevent gives a participant's name and email; a phone number only exists if your registration form asks for it. This node looks for an answer whose label speaks of a phone.",
-				"height": 170,
-				"width": 360
+				"content": "## Save the contact\nA phone number only exists if your registration form asks for it. Contacts are recognized by email address.",
+				"height": 296,
+				"width": 636,
+				"color": 7
 			},
-			"id": "f498350f-4a9e-4497-a931-0d43d26ae038",
-			"name": "Sticky Note phone",
+			"id": "98d42abe-188d-5e66-ae80-95caf49f2ef9",
+			"name": "Section 2",
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				1360,
-				-260
+				1050,
+				-130
+			]
+		},
+		{
+			"parameters": {
+				"content": "## Send the information\nAn RCS card with a phone number, the same card by email without one.",
+				"height": 536,
+				"width": 436,
+				"color": 7
+			},
+			"id": "0ec5f809-b328-5f0d-9a21-a246c532c7df",
+			"name": "Section 3",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [
+				1710,
+				-250
 			]
 		},
 		{
@@ -338,7 +356,8 @@
 			"position": [
 				2000,
 				-120
-			]
+			],
+			"onError": "continueRegularOutput"
 		},
 		{
 			"parameters": {
@@ -377,7 +396,8 @@
 			"position": [
 				2000,
 				120
-			]
+			],
+			"onError": "continueRegularOutput"
 		}
 	],
 	"connections": {
