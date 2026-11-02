@@ -47,7 +47,7 @@ const contentFields: INodeProperties[] = [
 		default: '',
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-		hint: 'Only the channels enabled on your Bi-Way account are listed',
+		hint: 'Only the channels enabled on your Bi-way account are listed',
 		displayOptions: showFor(['send', 'broadcast']),
 	},
 	// RCS and email channels show cards and carousels; the other channels (SMS) only take a text.
@@ -73,7 +73,7 @@ const contentFields: INodeProperties[] = [
 			{
 				name: 'Template',
 				value: 'template',
-				description: 'Use a message template of your Bi-Way account',
+				description: 'Use a message template of your Bi-way account',
 			},
 		],
 		default: 'raw',
@@ -112,7 +112,7 @@ const contentFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description:
-			'Text of the message. By email it is HTML: write line breaks and paragraphs as HTML tags. Personalization tags of Bi-Way work for contacts and contact groups.',
+			'Text of the message. By email it is HTML: write line breaks and paragraphs as HTML tags. Personalization tags of Bi-way work for contacts and contact groups.',
 		displayOptions: {
 			show: { ...showFor(['send', 'broadcast']).show, source: ['raw'], content: ['text'] },
 		},
@@ -158,7 +158,7 @@ const contentFields: INodeProperties[] = [
 			{
 				name: "Send the Account's Fallback SMS",
 				value: 'account',
-				description: 'The fallback SMS set in your Bi-Way account',
+				description: 'The fallback SMS set in your Bi-way account',
 			},
 			{
 				name: 'Send Nothing',
@@ -174,7 +174,7 @@ const contentFields: INodeProperties[] = [
 		],
 		default: 'account',
 		description:
-			'What Bi-Way does when the phone cannot receive RCS (not RCS-capable, or not on a French mobile operator)',
+			'What Bi-way does when the phone cannot receive RCS (not RCS-capable, or not on a French mobile operator)',
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
@@ -218,7 +218,7 @@ const contentFields: INodeProperties[] = [
 				name: 'chatUrl',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to add a link to continue the conversation in the Bi-Way web chat',
+				description: 'Whether to add a link to continue the conversation in the Bi-way web chat',
 			},
 			{
 				displayName: 'Add STOP Mention',
@@ -264,7 +264,7 @@ const sharedOptions: INodeProperties[] = [
 		type: 'dateTime',
 		default: '',
 		description:
-			'Date and time to send the message. Leave empty to send it now. Bi-Way schedules to the minute, in the Europe/Paris time zone.',
+			'Date and time to send the message. Leave empty to send it now. Bi-way schedules to the minute, in the Europe/Paris time zone.',
 	},
 	{
 		displayName: 'Sender Name or ID',
@@ -288,7 +288,7 @@ const sharedOptions: INodeProperties[] = [
 		name: 'title',
 		type: 'string',
 		default: '',
-		description: 'Title of the sending in the Bi-Way message history',
+		description: 'Title of the sending in the Bi-way message history',
 	},
 ];
 
@@ -296,7 +296,7 @@ export const messageFields: INodeProperties[] = [
 	// ── Send ─────────────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'Sending needs a Bi-Way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only. Email needs the email option of your account (Mailjet for the email channel, SMTP for email_smtp).',
+			'Sending needs a Bi-way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only. Email needs the email option of your account (Mailjet for the email channel, SMTP for email_smtp).',
 		name: 'sendNotice',
 		type: 'notice',
 		default: '',
@@ -355,7 +355,7 @@ export const messageFields: INodeProperties[] = [
 						name: 'contactId',
 						type: 'number',
 						default: 0,
-						description: 'ID of a contact of your Bi-Way account',
+						description: 'ID of a contact of your Bi-way account',
 					},
 				],
 			},
@@ -433,7 +433,7 @@ export const messageFields: INodeProperties[] = [
 				type: 'boolean',
 				default: false,
 				description:
-					'Whether to only simulate the sending: Bi-Way counts the recipients without sending anything',
+					'Whether to only simulate the sending: Bi-way counts the recipients without sending anything',
 			},
 			sharedOptions[3],
 			{
@@ -448,7 +448,7 @@ export const messageFields: INodeProperties[] = [
 				],
 				default: 'all',
 				description:
-					"Status reports to collect. They are sent to the Bi-Way Trigger node ('Message Status Updated' event).",
+					"Status reports to collect. They are sent to the Bi-way Trigger node ('Message Status Updated' event).",
 			},
 			sharedOptions[4],
 		],

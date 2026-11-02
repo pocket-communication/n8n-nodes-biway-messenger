@@ -41,7 +41,7 @@ export async function getContactColumnList(
 	const byType = (response.body ?? {}) as IDataObject;
 	const contact = byType.contact;
 	if (response.errorCode || typeof contact !== 'object' || contact === null) {
-		this.logger.warn('Bi-Way: the contact columns of the account could not be listed', {
+		this.logger.warn('Bi-way: the contact columns of the account could not be listed', {
 			code: response.errorCode,
 		});
 		return DEFAULT_COLUMNS;

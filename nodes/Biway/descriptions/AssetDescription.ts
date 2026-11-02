@@ -13,7 +13,7 @@ export const assetOperations: INodeProperties[] = [
 			{
 				name: 'Upload',
 				value: 'upload',
-				description: 'Upload a file to your Bi-Way gallery',
+				description: 'Upload a file to your Bi-way gallery',
 				action: 'Upload asset',
 			},
 		],
@@ -24,7 +24,7 @@ export const assetOperations: INodeProperties[] = [
 export const assetFields: INodeProperties[] = [
 	{
 		displayName:
-			'Uploads a file to your Bi-Way gallery, to attach it to messages and templates. Maximum 2 MB for images and documents, 30 MB for videos. Executable files are refused.',
+			'Uploads a file to your Bi-way gallery, to attach it to messages and templates. Maximum 2 MB for images and documents, 30 MB for videos. Executable files are refused.',
 		name: 'assetNotice',
 		type: 'notice',
 		default: '',
@@ -61,7 +61,7 @@ export const assetFields: INodeProperties[] = [
 				default: '',
 				placeholder: 'e.g. summer-offer.jpg',
 				description:
-					'Name of the file in the gallery. Defaults to the name of the binary file. Bi-Way replaces characters other than letters, digits, dots, dashes and underscores.',
+					'Name of the file in the gallery. Defaults to the name of the binary file. Bi-way replaces characters other than letters, digits, dots, dashes and underscores.',
 			},
 			{
 				displayName: 'Gallery ID',
@@ -75,7 +75,7 @@ export const assetFields: INodeProperties[] = [
 				name: 'private',
 				type: 'boolean',
 				default: false,
-				description: 'Whether to mark the file as private in your Bi-Way gallery',
+				description: 'Whether to mark the file as private in your Bi-way gallery',
 			},
 		],
 	},

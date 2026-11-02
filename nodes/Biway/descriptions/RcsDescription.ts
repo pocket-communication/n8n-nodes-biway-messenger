@@ -32,7 +32,7 @@ export const rcsOperations: INodeProperties[] = [
 export const rcsFields: INodeProperties[] = [
 	{
 		displayName:
-			'RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-Way RCS settings</a> (a declaration fee applies). RCS is currently available on French mobile operators only.',
+			'RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-way RCS settings</a> (a declaration fee applies). RCS is currently available on French mobile operators only.',
 		name: 'rcsNotice',
 		type: 'notice',
 		default: '',
@@ -46,7 +46,7 @@ export const rcsFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Name of the keyword reply in your Bi-Way account',
+		description: 'Name of the keyword reply in your Bi-way account',
 		displayOptions: showFor(['createKeywordReply']),
 	},
 	{
@@ -57,7 +57,7 @@ export const rcsFields: INodeProperties[] = [
 		default: '',
 		placeholder: 'e.g. PROMO',
 		description:
-			'Keyword of the Suggested Reply buttons that trigger the reply: give the buttons this same keyword. A word typed by the customer does not trigger it. Bi-Way converts the keyword to upper case and replaces spaces and special characters with underscores. It must be unique on your account.',
+			'Keyword of the Suggested Reply buttons that trigger the reply: give the buttons this same keyword. A word typed by the customer does not trigger it. Bi-way converts the keyword to upper case and replaces spaces and special characters with underscores. It must be unique on your account.',
 		displayOptions: showFor(['createKeywordReply']),
 	},
 	templateLocator('Reply Template', {
@@ -84,7 +84,7 @@ export const rcsFields: INodeProperties[] = [
 		],
 		default: 'useExisting',
 		description:
-			'What to do when your account already has a keyword reply with this keyword. Bi-Way allows one reply per keyword.',
+			'What to do when your account already has a keyword reply with this keyword. Bi-way allows one reply per keyword.',
 		displayOptions: showFor(['createKeywordReply']),
 	},
 	{

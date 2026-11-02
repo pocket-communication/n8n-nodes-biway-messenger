@@ -197,7 +197,7 @@ export function buildRcsFallback(
 			this,
 			i,
 			'The fallback SMS is too long',
-			`Bi-Way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included.`,
+			`Bi-way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included.`,
 		);
 	}
 

@@ -1,7 +1,7 @@
 # n8n-nodes-biway-messenger
 
-n8n community package of Bi-Way (Pocket Communication): the "Bi-Way" node, the
-"Bi-Way Trigger" node and the "Bi-Way API" credential (API key: token + secret, HTTP Basic).
+n8n community package of Bi-way (Pocket Communication): the "Bi-way" node, the
+"Bi-way Trigger" node and the "Bi-Way API" credential (API key: token + secret, HTTP Basic).
 Programmatic style, built on the `npm create @n8n/node` template.
 
 ## Rules
@@ -12,8 +12,13 @@ Programmatic style, built on the `npm create @n8n/node` template.
   or an endpoint that the services do not read or return.
 - Do not change the Bi-Way API contract from this repository.
 - English only in the node, the credential, the README and the docs in this repository, except
-  `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly; the brand is
-  written "Bi-Way".
+  `docs/integration-n8n-fr.md` (French page for bi-way.fr). Say "RCS" explicitly.
+- The brand is written "Bi-way" in every label, since 2026-11-02. Two exceptions, forced by the
+  official scanner, which requires title case and ignores `eslint-disable`: the credential stays
+  named "Bi-Way API" (`cred-class-field-display-name-miscased`), and an option or field name must
+  not contain the brand ("From the Gallery"). Quote "Bi-Way API" only where a reader has to
+  recognize it on screen. Never rename the technical identifiers (`name` of nodes and credential,
+  package name, parameter keys and values): existing workflows depend on them.
 - Channels: SMS (text only), RCS and email (`email` needs the account option `mailjet_api`,
   `email_smtp` the option `smtp`). No MMS (no longer supported). Channel conditions live in
   `descriptions/Channels.ts`.
@@ -179,3 +184,11 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
+
+### Post-verification finishing (one commit per item, no tag before the last one)
+- [x] Brand written "Bi-way" in the labels, identifiers unchanged, compared before and after (2026-11-02)
+- [ ] Links: Creator Portal website and `homepage` to https://www.bi-way.fr/n8n/
+- [ ] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`)
+- [ ] RCS without a launched agent: clear errors, a hint when the API accepts the sending
+- [ ] Example workflows up to n8n's template rules (`docs/templates-submission.md`)
+- [ ] README and version 0.2.1

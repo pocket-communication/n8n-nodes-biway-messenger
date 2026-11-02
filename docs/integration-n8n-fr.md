@@ -1,7 +1,7 @@
-# Bi-Way dans n8n : vos SMS, messages RCS et e-mails au cœur de vos automatisations
+# Bi-way dans n8n : vos SMS, messages RCS et e-mails au cœur de vos automatisations
 
 [n8n](https://n8n.io/) relie vos outils entre eux : boutique en ligne, billetterie, formulaires,
-tableurs, CRM, agenda… Avec les nœuds Bi-Way, chacune de ces automatisations peut envoyer un SMS, un
+tableurs, CRM, agenda… Avec les nœuds Bi-way, chacune de ces automatisations peut envoyer un SMS, un
 message RCS enrichi (carte ou carrousel avec images, boutons de réponse, votre marque comme
 expéditeur) ou un e-mail, puis réagir aux réponses de vos clients.
 
@@ -12,7 +12,7 @@ Les nœuds sont gratuits et publiés en open source : paquet `n8n-nodes-biway-me
 - **PME et commerces** : rappels de rendez-vous, suivi de commande, demande d'avis, message de
   bienvenue… sans développement, à partir des outils que vous utilisez déjà.
 - **Agences** : un même workflow sert à plusieurs clients, chacun avec la clé d'API de son propre
-  compte Bi-Way.
+  compte Bi-way.
 - **Freelances en automatisation** : un connecteur SMS, RCS et e-mail français, prêt à l'emploi, avec
   déclencheur sur les réponses et les clics de boutons.
 
@@ -30,36 +30,36 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 | Bienvenue après formulaire | Crée ou met à jour le contact à partir d'un formulaire, puis lui envoie un message de bienvenue. |
 | Billetterie Weezevent | Récupère les nouveaux participants d'un évènement Weezevent, les range dans un groupe de contacts et leur envoie un message RCS, ou un e-mail si votre formulaire d'inscription ne demande pas leur téléphone. L'API Weezevent est réservée à ses partenaires : demandez-leur votre clé. |
 
-## Pourquoi Bi-Way plutôt qu'un simple envoi de SMS ?
+## Pourquoi Bi-way plutôt qu'un simple envoi de SMS ?
 
-- **Une vraie conversation.** Le déclencheur Bi-Way démarre un workflow dès qu'un client répond ou
+- **Une vraie conversation.** Le déclencheur Bi-way démarre un workflow dès qu'un client répond ou
   touche un bouton, et vous dit lequel. Les accusés de réception et de lecture arrivent de la même
   façon : relancez ceux qui n'ont pas lu.
-- **Le RCS sans prendre de risque.** Si le téléphone ne lit pas le RCS, Bi-Way envoie à la place le
+- **Le RCS sans prendre de risque.** Si le téléphone ne lit pas le RCS, Bi-way envoie à la place le
   SMS de repli de votre compte, un SMS rédigé dans le workflow, ou rien du tout pour laisser votre
   workflow décider.
 - **Les mêmes cartes par e-mail.** Une carte ou un carrousel part aussi par e-mail, mis en page par
-  Bi-Way avec ses boutons : ils mènent au chat web de Bi-Way si nécessaire, où les réponses
+  Bi-way avec ses boutons : ils mènent au chat web de Bi-way si nécessaire, où les réponses
   automatiques et le déclencheur prennent le relais.
 - **Un expéditeur de confiance.** Vos messages RCS arrivent sous le nom et le logo de votre marque,
   vérifiés par Google et validés par les opérateurs mobiles.
-- **Vos données restent en France.** Bi-Way est un service de Pocket Communication, entreprise
+- **Vos données restent en France.** Bi-way est un service de Pocket Communication, entreprise
   française soumise au RGPD, hébergé en France. Avec un n8n auto-hébergé, numéros de téléphone et
-  messages ne circulent qu'entre vos serveurs et Bi-Way : aucun service d'automatisation tiers ne les
+  messages ne circulent qu'entre vos serveurs et Bi-way : aucun service d'automatisation tiers ne les
   voit passer.
 
 ## Ce qu'il vous faut
 
-1. **Un compte Bi-Way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'envoi depuis n8n
+1. **Un compte Bi-way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'envoi depuis n8n
    demande une offre avec accès API.
-2. **Une clé d'API** : dans Bi-Way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
+2. **Une clé d'API** : dans Bi-way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
    Notez le jeton et le secret : le secret ne s'affiche qu'une fois. Vous pouvez révoquer une clé à
    tout moment.
 3. **Pour le RCS**, un service de chat RCS déclaré par votre entreprise et lancé par les opérateurs :
    déclarez-le sur le [formulaire de déclaration RCS](https://app.bi-way.fr/rcs-registration/) ou dans
-   les paramètres de votre service de chat dans Bi-Way (des frais de déclaration s'appliquent). Le RCS
+   les paramètres de votre service de chat dans Bi-way (des frais de déclaration s'appliquent). Le RCS
    n'est disponible aujourd'hui que vers les numéros des opérateurs mobiles français.
-4. **Pour l'e-mail**, l'option e-mail de votre compte, mise en place par Bi-Way : Mailjet (canal
+4. **Pour l'e-mail**, l'option e-mail de votre compte, mise en place par Bi-way : Mailjet (canal
    `email`) ou SMTP (canal `email_smtp`).
 5. **Un n8n** :
    - auto-hébergé : le paquet s'installe en quelques clics ;
@@ -72,7 +72,7 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 
 1. Dans n8n, en tant que propriétaire ou administrateur : **Settings › Community Nodes › Install**,
    saisissez `n8n-nodes-biway-messenger` et validez.
-2. Ajoutez le nœud **Bi-Way** à un workflow (cherchez « Bi-Way », « SMS », « RCS » ou « e-mail »).
+2. Ajoutez le nœud **Bi-way** à un workflow (cherchez « Bi-way », « SMS », « RCS » ou « e-mail »).
 3. Créez l'identifiant **Bi-Way API** : collez le jeton et le secret de votre clé. n8n vérifie la clé
    à l'enregistrement.
 4. Choisissez **Message › Send**, le canal, le numéro du destinataire au format international
@@ -88,7 +88,7 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
   boutons : réponse suggérée, ouverture d'un lien, appel, lieu affiché sur une carte. En SMS, le
   texte seul ; par e-mail, un objet puis un texte avec pièces jointes, une carte ou un carrousel.
 - **Template** : créer un modèle de message (texte, carte, carrousel).
-- **Asset** : déposer un fichier dans votre galerie Bi-Way, pour l'afficher dans une carte ou le
+- **Asset** : déposer un fichier dans votre galerie Bi-way, pour l'afficher dans une carte ou le
   joindre à un e-mail.
 - **Contact** : créer un contact (reconnu par la colonne de votre choix, le téléphone par défaut,
   pour éviter les doublons),
@@ -97,7 +97,7 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
   chat RCS chez chaque opérateur.
 - **RCS Scenario** : créer, consulter, activer, désactiver, supprimer et démarrer des scénarios de
   conversation RCS guidés par boutons.
-- **Bi-Way Trigger** : démarrer un workflow sur un accusé de réception ou de lecture, un
+- **Bi-way Trigger** : démarrer un workflow sur un accusé de réception ou de lecture, un
   message reçu ou un bouton touché, la fin d'un import de contacts, un changement d'état de votre
   service de chat RCS.
 
@@ -108,5 +108,5 @@ existants sont réutilisés par défaut.
 
 - [Documentation technique du paquet](https://github.com/pocket-communication/n8n-nodes-biway-messenger#readme)
   (en anglais) : toutes les opérations, les évènements du déclencheur et leurs champs.
-- [Documentation de l'API Bi-Way](https://services.bi-way.fr/openapi/)
+- [Documentation de l'API Bi-way](https://services.bi-way.fr/openapi/)
 - Une question, un projet d'intégration : [tech@pocketcommunication.com](mailto:tech@pocketcommunication.com)

@@ -1,6 +1,6 @@
 # Example workflows
 
-Ready-to-import n8n workflows built with the Bi-Way nodes and n8n's own nodes only. Each one opens
+Ready-to-import n8n workflows built with the Bi-way nodes and n8n's own nodes only. Each one opens
 with a yellow note that lists its setup, and smaller notes explain the key steps.
 
 ## Import a workflow
@@ -13,8 +13,8 @@ with a yellow note that lists its setup, and smaller notes explain the key steps
 4. Replace the placeholders, then publish the workflow.
 
 Before you start: the workflows send by RCS, which needs an RCS agent launched by the French
-operators (check it with the Bi-Way node: **RCS Agent › Get Status**). Without one, set the channel
-of their Bi-Way nodes to your SMS channel, and Content to Text where they send a card; the buttons
+operators (check it with the Bi-way node: **RCS Agent › Get Status**). Without one, set the channel
+of their Bi-way nodes to your SMS channel, and Content to Text where they send a card; the buttons
 are then left out.
 
 Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` addresses,
@@ -30,12 +30,12 @@ Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` a
 | [Review request](review-request.json) | The day after a visit, asks for a rating from 1 to 5. 4 or 5: link to your Google reviews; 1 or 2: email to your team and an apology to the customer. | Shops, restaurants, services that live on their Google rating |
 | [Order notifications](order-notifications.json) | When a WooCommerce order is completed, sends an RCS card with a **Track my parcel** button, or an SMS with the tracking link. | Online shops on WooCommerce |
 | [Inbound reply to team inbox](inbound-to-team-inbox.json) | Emails every typed customer message to the billing, delivery or customer service inbox, chosen by keywords. | Teams answering customers from their usual inbox |
-| [Form to welcome message](form-welcome-message.json) | An n8n form creates or updates the contact in Bi-Way, recognized by phone number, and sends a welcome message. | Newsletters, loyalty programs, events |
+| [Form to welcome message](form-welcome-message.json) | An n8n form creates or updates the contact in Bi-way, recognized by phone number, and sends a welcome message. | Newsletters, loyalty programs, events |
 | [Weezevent ticket holders](weezevent-ticket-holders.json) | Every 15 minutes, saves the new participants of a Weezevent event as contacts and sends them their practical information: an RCS card, or an email when the registration form does not ask for a phone number. | Event organizers selling on Weezevent (Weezevent API access needed) |
 
 ## Using several workflows together
 
-Bi-Way sends every received message to every workflow that listens to it. **Appointment reply** and
+Bi-way sends every received message to every workflow that listens to it. **Appointment reply** and
 **Review request** each keep only their own answers; **Inbound reply to team inbox** skips button
 taps, but it does email typed answers such as YES or a rating: extend its **Only typed messages**
 filter if your team should not get them. If you add your own buttons, give them keywords of their
@@ -47,11 +47,11 @@ The workflows as they open in the n8n editor.
 
 ### Appointment reminder
 
-![Appointment reminder: schedule, Google Sheets, then the Bi-Way node sends the reminder](images/appointment-reminder.png)
+![Appointment reminder: schedule, Google Sheets, then the Bi-way node sends the reminder](images/appointment-reminder.png)
 
 ### Appointment reply
 
-![Appointment reply: the Bi-Way Trigger receives the answer, a Switch routes it to the sheet, the customer and the team](images/appointment-reply.png)
+![Appointment reply: the Bi-way Trigger receives the answer, a Switch routes it to the sheet, the customer and the team](images/appointment-reply.png)
 
 ### Review request
 
@@ -59,16 +59,16 @@ The workflows as they open in the n8n editor.
 
 ### Order notifications
 
-![Order notifications: WooCommerce trigger, completed orders only, tracking link, then the Bi-Way card](images/order-notifications.png)
+![Order notifications: WooCommerce trigger, completed orders only, tracking link, then the Bi-way card](images/order-notifications.png)
 
 ### Inbound reply to team inbox
 
-![Inbound reply to team inbox: the Bi-Way Trigger, typed messages only, then an email per team](images/inbound-to-team-inbox.png)
+![Inbound reply to team inbox: the Bi-way Trigger, typed messages only, then an email per team](images/inbound-to-team-inbox.png)
 
 ### Form to welcome message
 
-![Form to welcome message: an n8n form, the contact saved in Bi-Way, then the welcome message](images/form-welcome-message.png)
+![Form to welcome message: an n8n form, the contact saved in Bi-way, then the welcome message](images/form-welcome-message.png)
 
 ### Weezevent ticket holders
 
-![Weezevent ticket holders: the Weezevent API calls, the contact saved in Bi-Way, then an RCS card or an email](images/weezevent-ticket-holders.png)
+![Weezevent ticket holders: the Weezevent API calls, the contact saved in Bi-way, then an RCS card or an email](images/weezevent-ticket-holders.png)

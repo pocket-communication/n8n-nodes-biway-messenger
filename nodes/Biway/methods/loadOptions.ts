@@ -27,7 +27,7 @@ function byName(a: INodePropertyOptions, b: INodePropertyOptions): number {
 export async function getChannels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
 	const response = await biwayApiCall.call(this, 'COLLECTION', '/messenger/channel');
 	if (response.errorCode) {
-		this.logger.warn('Bi-Way: the channels of the account could not be listed', {
+		this.logger.warn('Bi-way: the channels of the account could not be listed', {
 			code: response.errorCode,
 		});
 		return DEFAULT_CHANNELS;
@@ -72,7 +72,7 @@ function chosenValue(this: ILoadOptionsFunctions, name: string): string {
 		value = this.getCurrentNodeParameter(name);
 	} catch (error) {
 		// Fields that list templates without a channel or a content (scenarios, keyword replies).
-		this.logger.debug(`Bi-Way: no '${name}' to filter the templates`, { error });
+		this.logger.debug(`Bi-way: no '${name}' to filter the templates`, { error });
 		return '';
 	}
 	return typeof value === 'string' && value !== '' && !value.startsWith('=') ? value : '';
@@ -88,7 +88,7 @@ export async function getTemplates(this: ILoadOptionsFunctions): Promise<INodePr
 		...(channel ? { channel } : {}),
 	});
 	if (response.errorCode && channel) {
-		this.logger.warn('Bi-Way: the templates could not be filtered by channel', {
+		this.logger.warn('Bi-way: the templates could not be filtered by channel', {
 			channel,
 			code: response.errorCode,
 		});
@@ -167,13 +167,13 @@ export async function getImportFormats(
 	const automatic: INodePropertyOptions = {
 		name: 'Automatic',
 		value: '',
-		description: 'Bi-Way picks the import format of your account matching the file',
+		description: 'Bi-way picks the import format of your account matching the file',
 	};
 	const response = await biwayApiCall.call(this, 'COLLECTION', '/file/software-file', undefined, {
 		'entry-type': 'contact',
 	});
 	if (response.errorCode) {
-		this.logger.warn('Bi-Way: the import formats of the account could not be listed', {
+		this.logger.warn('Bi-way: the import formats of the account could not be listed', {
 			code: response.errorCode,
 		});
 		return [automatic, ...DEFAULT_IMPORT_FORMATS];

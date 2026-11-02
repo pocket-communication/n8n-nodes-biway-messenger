@@ -1,9 +1,9 @@
 {
-	"name": "Bi-Way: route customer replies to the team inbox",
+	"name": "Bi-way: route customer replies to the team inbox",
 	"nodes": [
 		{
 			"parameters": {
-				"content": "## Route customer replies to the team inbox\nEvery message a customer sends to your Bi-Way numbers or RCS agent is emailed to the right team, chosen by keywords: billing, delivery, or customer service for the rest.\n\n### Setup\n1. **Bi-Way API** credential; your n8n reachable over HTTPS.\n2. SMTP credential; replace the `@example.com` addresses by your team inboxes.\n3. Adapt the keywords in **Route by keywords**. Publish the workflow.",
+				"content": "## Route customer replies to the team inbox\nEvery message a customer sends to your Bi-way numbers or RCS agent is emailed to the right team, chosen by keywords: billing, delivery, or customer service for the rest.\n\n### Setup\n1. **Bi-Way API** credential; your n8n reachable over HTTPS.\n2. SMTP credential; replace the `@example.com` addresses by your team inboxes.\n3. Adapt the keywords in **Route by keywords**. Publish the workflow.",
 				"height": 280,
 				"width": 500
 			},
@@ -18,7 +18,7 @@
 		},
 		{
 			"parameters": {
-				"content": "### With other workflows\nBi-Way sends each received message to every workflow listening. Button taps (`keyword` set) are skipped here: the workflow that sent the buttons handles them.",
+				"content": "### With other workflows\nBi-way sends each received message to every workflow listening. Button taps (`keyword` set) are skipped here: the workflow that sent the buttons handles them.",
 				"height": 160,
 				"width": 380
 			},

@@ -57,14 +57,14 @@ async function removeCallback(
 		if (!response.errorCode || GONE_CODES.includes(response.errorCode)) {
 			return true;
 		}
-		this.logger.error('Bi-Way Trigger: the webhook could not be removed from Bi-Way', {
+		this.logger.error('Bi-way Trigger: the webhook could not be removed from Bi-way', {
 			callbackId: callback.id,
 			event: callback.event,
 			code: response.errorCode,
 		});
 		return false;
 	} catch (error) {
-		this.logger.error('Bi-Way Trigger: the webhook could not be removed from Bi-Way', {
+		this.logger.error('Bi-way Trigger: the webhook could not be removed from Bi-way', {
 			callbackId: callback.id,
 			event: callback.event,
 			error: (error as Error).message,
@@ -75,15 +75,15 @@ async function removeCallback(
 
 export class BiwayTrigger implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Bi-Way Trigger',
+		displayName: 'Bi-way Trigger',
 		name: 'biwayTrigger',
 		icon: { light: 'file:../../icons/biway.png', dark: 'file:../../icons/biway.png' },
 		group: ['trigger'],
 		version: 1,
 		subtitle: '={{$parameter["events"].join(", ")}}',
 		description:
-			'Starts the workflow on Bi-Way events: message status updates, received messages, replies and button taps, share link requests (bookings, forms…), contact imports, RCS agent state',
-		defaults: { name: 'Bi-Way Trigger' },
+			'Starts the workflow on Bi-way events: message status updates, received messages, replies and button taps, share link requests (bookings, forms…), contact imports, RCS agent state',
+		defaults: { name: 'Bi-way Trigger' },
 		inputs: [],
 		outputs: [NodeConnectionTypes.Main],
 		credentials: [{ name: 'biwayApi', required: true }],
@@ -98,7 +98,7 @@ export class BiwayTrigger implements INodeType {
 		properties: [
 			{
 				displayName:
-					'Bi-Way sends the events of your whole account, including messages not sent from n8n. The webhook URL must be reachable from the internet over HTTPS. If you change the secret of the credential, unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it).',
+					'Bi-way sends the events of your whole account, including messages not sent from n8n. The webhook URL must be reachable from the internet over HTTPS. If you change the secret of the credential, unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it).',
 				name: 'triggerNotice',
 				type: 'notice',
 				default: '',
@@ -113,7 +113,7 @@ export class BiwayTrigger implements INodeType {
 					{
 						name: 'Account State Changed',
 						value: 'ACCOUNT_STATE',
-						description: 'Your Bi-Way account was enabled or disabled',
+						description: 'Your Bi-way account was enabled or disabled',
 					},
 					{
 						name: 'Contact Import State Changed',
@@ -139,7 +139,7 @@ export class BiwayTrigger implements INodeType {
 					{
 						name: 'RCS Capability Check Completed',
 						value: 'CHATBOT_CAPABILITIES_CHECK',
-						description: 'Bi-Way finished checking which phone numbers can receive RCS',
+						description: 'Bi-way finished checking which phone numbers can receive RCS',
 					},
 					{
 						name: 'Share Request Received',
@@ -148,11 +148,11 @@ export class BiwayTrigger implements INodeType {
 							'A visitor of one of your share links booked, cancelled a booking, sent a form, answered a questionnaire or updated their details',
 					},
 				],
-				description: 'Bi-Way events that start the workflow',
+				description: 'Bi-way events that start the workflow',
 			},
 			{
 				displayName:
-					'A share request carries an <code>entry</code> object, with the type and ID of its record: read the booking, the record sent or the contact with Bi-Way › Entry › Get.',
+					'A share request carries an <code>entry</code> object, with the type and ID of its record: read the booking, the record sent or the contact with Bi-way › Entry › Get.',
 				name: 'shareRequestNotice',
 				type: 'notice',
 				default: '',
@@ -194,7 +194,7 @@ export class BiwayTrigger implements INodeType {
 				default: '',
 				placeholder: 'e.g. YES, CALL_ME',
 				description:
-					'Only start the workflow for received messages sent by tapping an RCS button with one of these keywords (comma-separated). Leave empty to get every received message. Use it to take over the conversation at the end of a Bi-Way scenario.',
+					'Only start the workflow for received messages sent by tapping an RCS button with one of these keywords (comma-separated). Leave empty to get every received message. Use it to take over the conversation at the end of a Bi-way scenario.',
 				displayOptions: { show: { events: ['MESSENGER_DELIVERY'] } },
 			},
 		],
@@ -254,7 +254,7 @@ export class BiwayTrigger implements INodeType {
 				if (!Array.isArray(response)) {
 					throw new NodeOperationError(
 						this.getNode(),
-						'Bi-Way gave an unexpected answer when registering the webhook',
+						'Bi-way gave an unexpected answer when registering the webhook',
 						{ description: `Answer: ${JSON.stringify(response)}` },
 					);
 				}

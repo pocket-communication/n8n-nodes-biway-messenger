@@ -26,35 +26,35 @@ const fixed =
 const ERRORS: Record<string, ErrorBuilder> = {
 	// Authentication and account
 	unknow_user: fixed(
-		'Invalid Bi-Way API key',
-		`Check the token and the secret of the credential. Create a new API key in Bi-Way › Settings › Security (${API_KEYS_URL}).`,
+		'Invalid Bi-way API key',
+		`Check the token and the secret of the credential. Create a new API key in Bi-way › Settings › Security (${API_KEYS_URL}).`,
 	),
 	account_disabled: fixed(
-		'Your Bi-Way account is disabled',
-		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Your Bi-way account is disabled',
+		`Contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 	no_permission: fixed(
-		'Your Bi-Way account is not allowed to use this operation',
-		'Ask the administrator of your Bi-Way account to grant this permission to your profile.',
+		'Your Bi-way account is not allowed to use this operation',
+		'Ask the administrator of your Bi-way account to grant this permission to your profile.',
 	),
 	forbidden_action: fixed(
-		'You are not allowed to perform this action on Bi-Way',
-		'The resource probably belongs to another Bi-Way account.',
+		'You are not allowed to perform this action on Bi-way',
+		'The resource probably belongs to another Bi-way account.',
 	),
 	invalid_contract: fixed(
-		'No active Bi-Way plan allows sending through the API',
-		`Subscribe to a plan (${SIGNUP_URL}) or contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'No active Bi-way plan allows sending through the API',
+		`Subscribe to a plan (${SIGNUP_URL}) or contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 	services_forbidden: fixed(
-		'API access is not enabled on your Bi-Way plan',
-		`Contact Bi-Way support (${SUPPORT_EMAIL}) to enable web services on your plan.`,
+		'API access is not enabled on your Bi-way plan',
+		`Contact Bi-way support (${SUPPORT_EMAIL}) to enable web services on your plan.`,
 	),
 
 	// Sending
 	no_valid_sender: (channel) => ({
 		message: `The channel ${channel || 'you selected'} needs a sender`,
 		description:
-			"Pick a sender in the 'Sender Name or ID' option, or set a default sender for this channel in your Bi-Way account.",
+			"Pick a sender in the 'Sender Name or ID' option, or set a default sender for this channel in your Bi-way account.",
 	}),
 	no_channel: fixed('No channel selected', 'Select the channel used to send the message.'),
 	no_valid_channel: (channel) => ({
@@ -63,7 +63,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	}),
 	no_valid_gateway_for_channel: (channel) => ({
 		message: `The channel ${channel || 'you selected'} is not available on your account`,
-		description: `Pick another channel or contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		description: `Pick another channel or contact Bi-way support (${SUPPORT_EMAIL}).`,
 	}),
 	receiver_missing: fixed('The recipient is missing', "Fill in the 'Recipient' field."),
 	receivers_missing: fixed('The recipients are missing', 'Add at least one recipient.'),
@@ -82,19 +82,19 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	}),
 	no_valid_date: fixed(
 		'The send date is not valid',
-		'The date must be in the future. Bi-Way schedules messages in the Europe/Paris time zone, to the minute.',
+		'The date must be in the future. Bi-way schedules messages in the Europe/Paris time zone, to the minute.',
 	),
 	message_not_created_for_channel: (channel, serverMessage) => ({
-		message: `Bi-Way refused the message for ${channel || 'this channel'}`,
+		message: `Bi-way refused the message for ${channel || 'this channel'}`,
 		description: /missing property receivers/i.test(serverMessage)
 			? 'None of the recipients can receive it on this channel: the contacts need a phone number (an email address on an email channel), and unsubscribed or duplicate recipients are skipped.'
 			: /rcs/i.test(channel)
-				? `Your RCS agent must be declared and launched: check it with RCS Agent › Get Status, or declare it at ${RCS_DECLARATION_URL}. Bi-Way answered (in French): ${serverMessage}`
-				: `Bi-Way answered (in French): ${serverMessage}`,
+				? `Your RCS agent must be declared and launched: check it with RCS Agent › Get Status, or declare it at ${RCS_DECLARATION_URL}. Bi-way answered (in French): ${serverMessage}`
+				: `Bi-way answered (in French): ${serverMessage}`,
 	}),
 	asset_not_found: fixed(
 		'One of the attachments was not found',
-		'Check the asset IDs: they must belong to your Bi-Way gallery (see Asset › Upload).',
+		'Check the asset IDs: they must belong to your Bi-way gallery (see Asset › Upload).',
 	),
 	template_not_found: fixed(
 		'The message template was not found',
@@ -106,20 +106,20 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	),
 	template_asset_id_not_found: fixed(
 		'One of the template attachments was not found',
-		'Check the asset IDs: they must belong to your Bi-Way gallery.',
+		'Check the asset IDs: they must belong to your Bi-way gallery.',
 	),
 
 	// RCS
 	agent_not_found: fixed(
-		'Your Bi-Way account has no RCS agent',
+		'Your Bi-way account has no RCS agent',
 		`Declare your RCS agent at ${RCS_DECLARATION_URL} or in your RCS settings (${RCS_SETTINGS_URL}), then check its state with RCS Agent › Get Status.`,
 	),
 	chat_service_not_allowed: fixed(
-		'Your Bi-Way plan does not include RCS',
-		`Upgrade your plan (${SIGNUP_URL}) or contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Your Bi-way plan does not include RCS',
+		`Upgrade your plan (${SIGNUP_URL}) or contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 	chatbot_not_owned: fixed(
-		'This RCS agent belongs to another Bi-Way account',
+		'This RCS agent belongs to another Bi-way account',
 		'Use the API key of the account that owns the RCS agent.',
 	),
 	missing_trigger_attribute: (attribute) => ({
@@ -128,7 +128,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	}),
 	trigger_keyword_exists: fixed(
 		'This keyword is already used on your account',
-		'Choose another keyword. Bi-Way compares keywords in upper case, with spaces and special characters replaced by underscores.',
+		'Choose another keyword. Bi-way compares keywords in upper case, with spaces and special characters replaced by underscores.',
 	),
 	unknow_trigger_type: fixed('Unknown keyword reply type', NODE_BUG),
 	trigger_rule_invalid: fixed('A rule of the keyword reply is not valid', NODE_BUG),
@@ -139,13 +139,13 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	missing_template_body: fixed('The template body is missing', "Fill in the 'Body' field."),
 	wrong_template_extra: fixed(
 		'The RCS content of the template is not valid',
-		"Check the cards, the buttons and the 'Extra (JSON)' option. See the Bi-Way API documentation: https://services.bi-way.fr/openapi/.",
+		"Check the cards, the buttons and the 'Extra (JSON)' option. See the Bi-way API documentation: https://services.bi-way.fr/openapi/.",
 	),
 
 	// Gallery
 	no_file: fixed('No file was sent', "Check the 'Input Binary Field' name."),
 	file_transfert_error: fixed(
-		'The file could not be transferred to Bi-Way',
+		'The file could not be transferred to Bi-way',
 		'Try again. If the file is still refused, check its size and its type.',
 	),
 	mime_type_missing: fixed(
@@ -153,7 +153,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'Make sure the binary data has a MIME type.',
 	),
 	unsupported_mime_type: fixed(
-		'This type of file is not supported by the Bi-Way gallery',
+		'This type of file is not supported by the Bi-way gallery',
 		'Upload an image, a video or a document.',
 	),
 	asset_type_forbidden: fixed('This type of file is not accepted', 'Executable files are refused.'),
@@ -162,15 +162,15 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'Maximum 2 MB for images and documents, 30 MB for videos.',
 	),
 	not_gallery_account: fixed(
-		'This gallery belongs to another Bi-Way account',
+		'This gallery belongs to another Bi-way account',
 		"Remove the 'Gallery ID' option to upload to your default gallery.",
 	),
 
 	// Contacts
 	no_software_file: fixed('The file format is missing', NODE_BUG),
 	unknow_software_file: fixed(
-		'Bi-Way could not read this file',
-		"Pick one of the import formats of your account instead of 'Automatic' (XLS by default), and check the columns of the file. The CSV format of Bi-Way is tab-separated.",
+		'Bi-way could not read this file',
+		"Pick one of the import formats of your account instead of 'Automatic' (XLS by default), and check the columns of the file. The CSV format of Bi-way is tab-separated.",
 	),
 	unknow_double_mode: fixed('Unknown duplicate handling mode', 'Pick a mode from the list.'),
 	double_mode_not_supported: fixed(
@@ -182,16 +182,16 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'Pick a contact group, or create one with Contact › Create Group.',
 	),
 	forbidden_entry_type: fixed(
-		'Contacts are not enabled on your Bi-Way account',
-		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Contacts are not enabled on your Bi-way account',
+		`Contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 	unknow_entry_type: fixed(
-		'Contacts are not enabled on your Bi-Way account',
-		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Contacts are not enabled on your Bi-way account',
+		`Contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 
 	entry_already_exists: fixed(
-		'This contact already exists in your Bi-Way account',
+		'This contact already exists in your Bi-way account',
 		"Choose 'Use Existing' or 'Update It' in the 'If Contact Already Exists' field.",
 	),
 	entry_control_wrong_value: (detail) => ({
@@ -204,10 +204,10 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		description: 'Map a value for this column.',
 	}),
 	entry_type_not_found: fixed(
-		'Contacts are not available on your Bi-Way account',
-		`Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Contacts are not available on your Bi-way account',
+		`Contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
-	filter_invalid: fixed('Bi-Way refused the contact search', NODE_BUG),
+	filter_invalid: fixed('Bi-way refused the contact search', NODE_BUG),
 	group_not_found: fixed(
 		'The contact group was not found',
 		'Pick a contact group of your account from the list.',
@@ -223,46 +223,46 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'The keyword reply was not found',
 		'Create it with RCS Agent › Create Keyword Reply.',
 	),
-	property_name_missing: fixed('Bi-Way received an incomplete request', NODE_BUG),
-	property_value_missing: fixed('Bi-Way received an incomplete request', NODE_BUG),
+	property_name_missing: fixed('Bi-way received an incomplete request', NODE_BUG),
+	property_value_missing: fixed('Bi-way received an incomplete request', NODE_BUG),
 
 	// Gallery files used in cards
 	no_asset: fixed(
 		'The gallery file was not found',
-		"Pick an image of your Bi-Way gallery, or map the 'id' returned by Asset › Upload.",
+		"Pick an image of your Bi-way gallery, or map the 'id' returned by Asset › Upload.",
 	),
 	not_asset_owner: fixed(
-		'This gallery file belongs to another Bi-Way account',
+		'This gallery file belongs to another Bi-way account',
 		'Pick an image of your own gallery.',
 	),
 
 	// Callbacks (trigger)
 	no_url: fixed(
-		'Bi-Way refused the webhook URL',
+		'Bi-way refused the webhook URL',
 		'The URL must be public and use HTTPS. When n8n runs behind a proxy or a tunnel, set the WEBHOOK_URL environment variable of n8n.',
 	),
 	no_event: fixed(
-		'Bi-Way does not support this kind of webhook registration yet',
-		`Your Bi-Way server is not up to date. Contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'Bi-way does not support this kind of webhook registration yet',
+		`Your Bi-way server is not up to date. Contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
-	event_not_found: fixed('Unknown Bi-Way event', NODE_BUG),
+	event_not_found: fixed('Unknown Bi-way event', NODE_BUG),
 	callback_not_found: fixed(
-		'The webhook registration was not found on Bi-Way',
+		'The webhook registration was not found on Bi-way',
 		'Unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it) to register the webhook again.',
 	),
 	not_callback_owner: fixed(
-		'This webhook registration belongs to another Bi-Way account',
+		'This webhook registration belongs to another Bi-way account',
 		'Pick the right credential, then unpublish the workflow and publish it again (on n8n 1, deactivate and reactivate it).',
 	),
 
 	// Generic
 	missing_part_property: fixed('An attachment is not valid', NODE_BUG),
-	not_an_array: fixed('Bi-Way received a malformed request', NODE_BUG),
-	wrong_parameters_count: fixed('Bi-Way received a malformed request', NODE_BUG),
-	no_request: fixed('Bi-Way received an empty request', NODE_BUG),
+	not_an_array: fixed('Bi-way received a malformed request', NODE_BUG),
+	wrong_parameters_count: fixed('Bi-way received a malformed request', NODE_BUG),
+	no_request: fixed('Bi-way received an empty request', NODE_BUG),
 	server_error: fixed(
-		'The Bi-Way server is unavailable',
-		`Try again in a few minutes. If Bi-Way is still unavailable, contact Bi-Way support (${SUPPORT_EMAIL}).`,
+		'The Bi-way server is unavailable',
+		`Try again in a few minutes. If Bi-way is still unavailable, contact Bi-way support (${SUPPORT_EMAIL}).`,
 	),
 };
 
@@ -285,7 +285,7 @@ export function describeBiwayError(code: string, serverMessage: string): BiwayEr
 		return builder(quotedDetail(serverMessage), serverMessage);
 	}
 	return {
-		message: code ? `Bi-Way refused the request (${code})` : 'Bi-Way refused the request',
-		description: serverMessage ? `Bi-Way answered (in French): ${serverMessage}` : '',
+		message: code ? `Bi-way refused the request (${code})` : 'Bi-way refused the request',
+		description: serverMessage ? `Bi-way answered (in French): ${serverMessage}` : '',
 	};
 }

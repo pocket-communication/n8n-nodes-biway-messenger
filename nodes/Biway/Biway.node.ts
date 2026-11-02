@@ -156,7 +156,7 @@ async function requireCompatibleTemplate(
 			{
 				itemIndex: i,
 				description:
-					'Bi-Way checked the content of the template against the channel: cards and carousels only go through RCS and email, RCS buttons only through RCS. Choose another template, or another channel.',
+					'Bi-way checked the content of the template against the channel: cards and carousels only go through RCS and email, RCS buttons only through RCS. Choose another template, or another channel.',
 			},
 		);
 	}
@@ -610,7 +610,7 @@ const createContact: Handler = async function (i) {
 			throw new NodeOperationError(this.getNode(), `Unknown contact column '${column}'`, {
 				itemIndex: i,
 				description:
-					'Refresh the column list of the node: this column does not exist on your Bi-Way account.',
+					'Refresh the column list of the node: this column does not exist on your Bi-way account.',
 			});
 		}
 		values[column] = column === 'phone' ? String(value).replace(/\s+/g, '') : value;
@@ -638,7 +638,7 @@ const createContact: Handler = async function (i) {
 			throw new NodeOperationError(this.getNode(), `Unknown contact column '${matchOn}'`, {
 				itemIndex: i,
 				description:
-					"Pick the 'Match On Column' from the list: this column does not exist on your Bi-Way account.",
+					"Pick the 'Match On Column' from the list: this column does not exist on your Bi-way account.",
 			});
 		}
 		const matchValue = values[matchOn];
@@ -782,15 +782,15 @@ function rcsNextStep(
 		return `Declare your RCS agent: ${RCS_DECLARATION_URL}`;
 	}
 	if (declarationState === 'rejected') {
-		return `Your RCS declaration was rejected. Contact Bi-Way support (${SUPPORT_EMAIL}).`;
+		return `Your RCS declaration was rejected. Contact Bi-way support (${SUPPORT_EMAIL}).`;
 	}
 	if (!declarationComplete) {
-		return `Complete your RCS declaration in your Bi-Way RCS settings: ${RCS_SETTINGS_URL}`;
+		return `Complete your RCS declaration in your Bi-way RCS settings: ${RCS_SETTINGS_URL}`;
 	}
 	if (declarationState === 'done') {
 		return 'Your RCS agent is created and awaits the approval of the mobile operators.';
 	}
-	return 'Bi-Way is processing your RCS declaration.';
+	return 'Bi-way is processing your RCS declaration.';
 }
 
 const getRcsStatus: Handler = async function (i) {
@@ -987,7 +987,7 @@ const startScenario: Handler = async function (i) {
 		throw new NodeOperationError(this.getNode(), `The scenario ${id} has no first message`, {
 			itemIndex: i,
 			description:
-				'Set its first template in Bi-Way, or create it again with RCS Scenario › Create.',
+				'Set its first template in Bi-way, or create it again with RCS Scenario › Create.',
 		});
 	}
 	const body: IDataObject = {
@@ -1011,7 +1011,7 @@ const getEntry: Handler = async function (i) {
 	const type = String(this.getNodeParameter('entryType', i) ?? '').trim();
 	const id = String(this.getNodeParameter('entryId', i) ?? '').trim();
 	if (!/^[A-Za-z0-9_-]+$/.test(type) || !/^\d+$/.test(id)) {
-		throw new NodeOperationError(this.getNode(), `'${type}:${id}' is not a Bi-Way entry`, {
+		throw new NodeOperationError(this.getNode(), `'${type}:${id}' is not a Bi-way entry`, {
 			itemIndex: i,
 			description: "Give the type of the record (e.g. 'booking') and its numeric ID.",
 		});
@@ -1029,13 +1029,13 @@ const getEntry: Handler = async function (i) {
 		throw new NodeOperationError(this.getNode(), `The ${type} ${id} was not found`, {
 			itemIndex: i,
 			description:
-				'The record does not exist, was deleted, or is outside what your Bi-Way account can access.',
+				'The record does not exist, was deleted, or is outside what your Bi-way account can access.',
 		});
 	}
 	if (response.errorCode === 'entry_type_not_found' || response.errorCode === 'entry_type_not_exposed') {
-		throw new NodeOperationError(this.getNode(), `Bi-Way has no '${type}' records to read`, {
+		throw new NodeOperationError(this.getNode(), `Bi-way has no '${type}' records to read`, {
 			itemIndex: i,
-			description: "Check the type: 'booking', 'contact'… as given by the Bi-Way Trigger in entry.type.",
+			description: "Check the type: 'booking', 'contact'… as given by the Bi-way Trigger in entry.type.",
 		});
 	}
 	if (response.errorCode) {
@@ -1068,15 +1068,15 @@ const HANDLERS: Record<string, Record<string, Handler>> = {
 
 export class Biway implements INodeType {
 	description: INodeTypeDescription = {
-		displayName: 'Bi-Way',
+		displayName: 'Bi-way',
 		name: 'biway',
 		icon: { light: 'file:../../icons/biway.png', dark: 'file:../../icons/biway.png' },
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
 		description:
-			'Send SMS, RCS and email messages (cards, carousels, buttons) with Bi-Way. RCS is currently available on French mobile operators only.',
-		defaults: { name: 'Bi-Way' },
+			'Send SMS, RCS and email messages (cards, carousels, buttons) with Bi-way. RCS is currently available on French mobile operators only.',
+		defaults: { name: 'Bi-way' },
 		inputs: [NodeConnectionTypes.Main],
 		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,

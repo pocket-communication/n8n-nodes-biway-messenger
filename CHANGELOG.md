@@ -2,9 +2,16 @@
 
 ## Unreleased
 
+### Changed
+
+- **Brand**: the nodes, notices, messages and documentation now write **Bi-way**. Existing workflows
+  are not affected: node types, parameter names and values stay the same. The credential keeps the
+  name **Bi-Way API**, as n8n requires title case for credential names.
+- **Image of a card**: the option *From the Bi-Way Gallery* is now *From the Gallery*.
+
 ### Documentation
 
-- **README**: events of the Bi-Way Trigger are not sent again if your n8n cannot be reached; the `data`
+- **README**: events of the Bi-way Trigger are not sent again if your n8n cannot be reached; the `data`
   of a share request is not a reference, read its `entry` with **Entry › Get**.
 
 ## 0.2.0

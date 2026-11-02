@@ -19,7 +19,7 @@ export class BiwayApi implements ICredentialType {
 	properties: INodeProperties[] = [
 		{
 			displayName:
-				'Create an API key in Bi-Way: <a href="https://v3.bi-way.fr/settings/security" target="_blank">Settings › Security › API keys</a>. Copy the token and the secret: the secret is shown only once.',
+				'Create an API key in Bi-way: <a href="https://v3.bi-way.fr/settings/security" target="_blank">Settings › Security › API keys</a>. Copy the token and the secret: the secret is shown only once.',
 			name: 'notice',
 			type: 'notice',
 			default: '',
@@ -45,7 +45,7 @@ export class BiwayApi implements ICredentialType {
 			name: 'baseUrl',
 			type: 'string',
 			default: 'https://services.bi-way.fr',
-			description: 'Address of the Bi-Way API. Change it only if Bi-Way support asks you to.',
+			description: 'Address of the Bi-way API. Change it only if Bi-way support asks you to.',
 		},
 	];
 

@@ -14,7 +14,7 @@ export const entryOperations: INodeProperties[] = [
 				name: 'Get',
 				value: 'get',
 				description:
-					'Get a record of your Bi-Way account by its type and ID: a booking, a contact, a form entry…',
+					'Get a record of your Bi-way account by its type and ID: a booking, a contact, a form entry…',
 				action: 'Get an entry',
 			},
 		],
@@ -25,7 +25,7 @@ export const entryOperations: INodeProperties[] = [
 export const entryFields: INodeProperties[] = [
 	{
 		displayName:
-			'For a share request received by the Bi-Way Trigger, use the type and ID of its <code>entry</code> object: the booking, the record sent through a form, the item chosen in a list or the contact.',
+			'For a share request received by the Bi-way Trigger, use the type and ID of its <code>entry</code> object: the booking, the record sent through a form, the item chosen in a list or the contact.',
 		name: 'entryNotice',
 		type: 'notice',
 		default: '',
@@ -38,7 +38,7 @@ export const entryFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		placeholder: 'e.g. booking',
-		description: "Type of the record, as Bi-Way names it: 'booking', 'contact'…",
+		description: "Type of the record, as Bi-way names it: 'booking', 'contact'…",
 		displayOptions: showForGet,
 	},
 	{

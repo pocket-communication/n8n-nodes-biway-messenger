@@ -65,9 +65,9 @@ export function rcsCardFields(show: Show): INodeProperties[] {
 					description: 'Public HTTPS address of an image or a video',
 				},
 				{
-					name: 'From the Bi-Way Gallery',
+					name: 'From the Gallery',
 					value: 'gallery',
-					description: 'Image or video of your Bi-Way gallery',
+					description: 'Image or video of your Bi-way gallery',
 				},
 				{ name: 'None', value: 'none' },
 			],
@@ -212,7 +212,7 @@ const buttonOptions: INodeProperties['options'] = [
 				default: '',
 				placeholder: 'e.g. YES',
 				description:
-					'Keyword sent back when the button is tapped. Leave empty to derive it from the text. Bi-Way writes it in upper case, with underscores instead of spaces and special characters.',
+					'Keyword sent back when the button is tapped. Leave empty to derive it from the text. Bi-way writes it in upper case, with underscores instead of spaces and special characters.',
 			},
 			buttonText,
 		],
@@ -258,7 +258,7 @@ export function rcsButtonsField(show: Show): INodeProperties {
 		placeholder: 'Add Button',
 		default: {},
 		description:
-			'Buttons of the message: 4 at most on a card, 11 at most on an RCS text, suggested replies first, then the actions. A suggested reply sends its keyword back to Bi-Way: answer it with an RCS Agent › Create Keyword Reply using the same keyword, or catch it with the Bi-Way Trigger (Button Keywords option). By email, the buttons lead to the Bi-Way web chat when needed.',
+			'Buttons of the message: 4 at most on a card, 11 at most on an RCS text, suggested replies first, then the actions. A suggested reply sends its keyword back to Bi-way: answer it with an RCS Agent › Create Keyword Reply using the same keyword, or catch it with the Bi-way Trigger (Button Keywords option). By email, the buttons lead to the Bi-way web chat when needed.',
 		displayOptions: { show },
 		options: buttonOptions,
 	};
@@ -305,7 +305,7 @@ export function rcsCarouselField(show: Show): INodeProperties {
 						placeholder: 'Add Button',
 						default: {},
 						description:
-							'Buttons of the card, 4 at most, suggested replies first, then the actions. By email, they lead to the Bi-Way web chat when needed.',
+							'Buttons of the card, 4 at most, suggested replies first, then the actions. By email, they lead to the Bi-way web chat when needed.',
 						options: buttonOptions,
 					},
 					{
@@ -319,9 +319,9 @@ export function rcsCarouselField(show: Show): INodeProperties {
 								description: 'Public HTTPS address of an image or a video',
 							},
 							{
-								name: 'From the Bi-Way Gallery',
+								name: 'From the Gallery',
 								value: 'gallery',
-								description: 'Image or video of your Bi-Way gallery',
+								description: 'Image or video of your Bi-way gallery',
 							},
 							{ name: 'None', value: 'none' },
 						],
@@ -384,7 +384,7 @@ export function attachmentsField(show: Show): INodeProperties {
 		placeholder: 'Add Attachment',
 		default: {},
 		description:
-			'Files of your Bi-Way gallery attached to the email. To attach a file of the workflow, upload it first with Asset › Upload and map the ID it returns.',
+			'Files of your Bi-way gallery attached to the email. To attach a file of the workflow, upload it first with Asset › Upload and map the ID it returns.',
 		displayOptions: { show },
 		options: [
 			{

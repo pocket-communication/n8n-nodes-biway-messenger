@@ -43,7 +43,7 @@ export const templateFields: INodeProperties[] = [
 		type: 'string',
 		required: true,
 		default: '',
-		description: 'Name of the template in your Bi-Way account',
+		description: 'Name of the template in your Bi-way account',
 		displayOptions: showForCreate,
 	},
 	{
@@ -64,7 +64,7 @@ export const templateFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description:
-			'Text of the message. Personalization tags of Bi-Way work for contacts and contact groups.',
+			'Text of the message. Personalization tags of Bi-way work for contacts and contact groups.',
 		displayOptions: { show: { ...showForCreate.show, content: ['text'] } },
 	},
 	...rcsCardFields({ ...showForCreate.show, content: ['card'] }),

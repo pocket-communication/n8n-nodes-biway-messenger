@@ -41,7 +41,7 @@ export const contactFields: INodeProperties[] = [
 	// ── Create ───────────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'The columns come from your Bi-Way account. Write phone numbers in international format (e.g. +33612345678). A contact belongs to one contact group.',
+			'The columns come from your Bi-way account. Write phone numbers in international format (e.g. +33612345678). A contact belongs to one contact group.',
 		name: 'createNotice',
 		type: 'notice',
 		default: '',
@@ -96,7 +96,7 @@ export const contactFields: INodeProperties[] = [
 		],
 		default: 'useExisting',
 		description:
-			"What to do when a contact of your account has the same value in the 'Match On Column'. Bi-Way compares the values exactly.",
+			"What to do when a contact of your account has the same value in the 'Match On Column'. Bi-way compares the values exactly.",
 		displayOptions: showFor(['create']),
 	},
 	{
@@ -184,7 +184,7 @@ export const contactFields: INodeProperties[] = [
 	// ── Import File ──────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			"The import runs in the background: this node returns the ID of the import task. Use the Bi-Way Trigger node with the 'Contact Import State Changed' event to know when it is finished.",
+			"The import runs in the background: this node returns the ID of the import task. Use the Bi-way Trigger node with the 'Contact Import State Changed' event to know when it is finished.",
 		name: 'importNotice',
 		type: 'notice',
 		default: '',
@@ -207,7 +207,7 @@ export const contactFields: INodeProperties[] = [
 		default: '',
 		description:
 			'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-		hint: 'The import formats of your Bi-Way account (XLS by default). The CSV format of Bi-Way is tab-separated.',
+		hint: 'The import formats of your Bi-way account (XLS by default). The CSV format of Bi-way is tab-separated.',
 		displayOptions: showFor(['importFile']),
 	},
 	{
