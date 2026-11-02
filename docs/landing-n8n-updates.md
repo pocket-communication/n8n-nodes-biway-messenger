@@ -10,7 +10,7 @@ supprimé une fois la page à jour.
 | 2. Prérequis n8n | Dès maintenant |
 | 3. Installation | Dès maintenant |
 | 4. Démonstration RCS | Dès maintenant |
-| 5. Parcours d'accès | Une fois l'option choisie |
+| 5. Parcours d'accès | Après l'essai avec un compte neuf : inscription, clé, puis un SMS |
 | 6. Graphie du nœud | Quand n8n affichera le nœud « Bi-way », sinon la page et l'écran diffèrent |
 | 7. Liens vers la documentation | Après le tag 0.2.1 |
 
@@ -96,15 +96,10 @@ Nouveau bloc, juste après les six cartes de « Pourquoi passer par Bi-way ».
 
 ---
 
-## 5. Parcours d'accès : à choisir
+## 5. Parcours d'accès
 
-Aujourd'hui, l'accroche propose « Créer un compte » alors que les prérequis disent « Contactez-nous ».
-
-### Option A : inscription, API incluse
-
-Le visiteur s'inscrit seul et crée sa clé d'API : les offres proposées à l'inscription donnent déjà accès à l'API (contrat
-et droits relevés le 2026-11-02). À éprouver avant de publier cette phrase, avec un compte neuf : inscription, clé, puis un
-SMS.
+Aujourd'hui, l'accroche propose « Créer un compte » alors que les prérequis disent « Contactez-nous ». Choix retenu le
+2026-11-02 : le visiteur s'inscrit seul et crée sa clé d'API.
 
 **Bouton de l'accroche** : inchangé, « Créer un compte » → https://v3.bi-way.fr/signup/
 
@@ -114,27 +109,8 @@ SMS.
 
 **Prérequis, texte proposé**
 
-> Un compte Bi-way : [créez-le en ligne](https://v3.bi-way.fr/signup/). L'accès à l'API est inclus.
-> [Contactez-nous](/contact) en cas de doute.
-
-**À côté** : rien à changer. Le README et les messages du nœud renvoient déjà à l'inscription.
-
-### Option B : contact direct
-
-Le visiteur demande son accès avant de créer quoi que ce soit. La plateforme ne l'impose pas : c'est un choix commercial.
-
-**Bouton de l'accroche** : « Demander un accès » → /contact, à la place de « Créer un compte »
-
-**Prérequis, texte actuel**
-
-> Un compte Bi-way, avec une offre qui donne accès à l'API. Contactez-nous en cas de doute.
-
-**Prérequis, texte proposé**
-
-> Un compte Bi-way avec accès à l'API : [contactez-nous](/contact) pour l'ouvrir.
-
-**À côté** : README (« Get an API key »), notice de Message › Send, deux messages d'erreur du nœud et
-`docs/integration-n8n-fr.md` renvoient à l'inscription et seraient à aligner avant le tag.
+> Un compte Bi-way : [créez-le en ligne](https://v3.bi-way.fr/signup/). L'accès à l'API est inclus. Le compte s'ouvre avec
+> le SMS et 20 crédits offerts ; le RCS et l'e-mail se mettent en place à part. [Contactez-nous](/contact) en cas de doute.
 
 ---
 

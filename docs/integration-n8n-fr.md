@@ -51,8 +51,9 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 
 ## Ce qu'il vous faut
 
-1. **Un compte Bi-way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'envoi depuis n8n
-   demande une offre avec accès API.
+1. **Un compte Bi-way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'accès à l'API est
+   inclus. Le compte s'ouvre avec le SMS et 20 crédits offerts ; le RCS et l'e-mail se mettent en
+   place à part (points 3 et 4).
 2. **Une clé d'API** : dans Bi-way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
    Notez le jeton et le secret : le secret ne s'affiche qu'une fois. Vous pouvez révoquer une clé à
    tout moment.

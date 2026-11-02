@@ -195,8 +195,8 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Brand written "Bi-way" in the labels, identifiers unchanged, compared before and after (2026-11-02)
 - [x] Links: `homepage` and notices to https://www.bi-way.fr/n8n/ (2026-11-02); the website field of the
       Creator Portal is the maintainer's
-- [x] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`, 2026-11-02); the choice of
-      the access path and the publication are the maintainer's
+- [x] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`, 2026-11-02); access path
+      chosen by the maintainer: sign-up, API included. The publication is the maintainer's
 - [x] Install from the nodes panel followed on a fresh n8n 2.45.4, self-hosted (2026-11-02): the verified
       node shows with its badge, **Install node**, "Package installed". It installed 0.2.0, the latest on
       npm, while the verified list still said 0.1.2: a new tag can reach these users before n8n's check
