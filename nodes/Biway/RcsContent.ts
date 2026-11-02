@@ -199,13 +199,13 @@ export function buildRcsFallback(
 	const textMax =
 		FALLBACK_TEXT_MAX -
 		(options.stop === false ? 0 : FALLBACK_STOP_LENGTH) -
-		(options.chatUrl === true ? FALLBACK_CHAT_LINK_LENGTH : 0);
+		(options.chatUrl === false ? 0 : FALLBACK_CHAT_LINK_LENGTH);
 	if ([...text].length > textMax) {
 		fail(
 			this,
 			i,
 			'The fallback SMS is too long',
-			`Bi-way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included: ${textMax} are left for this text, which has ${[...text].length}.`,
+			`Bi-way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included: ${textMax} are left for this text, which has ${[...text].length}. Shorten it, or turn off the chat link or the STOP mention in 'Fallback SMS Options'.`,
 		);
 	}
 
@@ -225,7 +225,7 @@ export function buildRcsFallback(
 		text,
 		sender,
 		stop: options.stop === false ? '0' : '1',
-		chat_url: options.chatUrl === true ? '1' : '0',
+		chat_url: options.chatUrl === false ? '0' : '1',
 		expire_time: String(Number.isFinite(hours) && hours >= 1 ? Math.round(hours) : 6),
 	};
 }

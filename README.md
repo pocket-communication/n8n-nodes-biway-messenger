@@ -236,8 +236,8 @@ Good to know:
 
 By default, when a phone cannot receive RCS, Bi-way sends the fallback SMS of your account, with the
 STOP mention and the link to the Bi-way web chat as your account sets them. With *Send This SMS*, you
-write the text in the node and choose them in **Fallback SMS Options**: they add 11 and 35 characters
-to an SMS limited to 160.
+write the text in the node and choose them in **Fallback SMS Options**. Both are on by default and add
+11 and 35 characters to an SMS limited to 160: 114 are left for your text.
 
 To decide in n8n instead:
 

@@ -10,10 +10,14 @@
   nothing is debited. The warning never stops the workflow.
 - **Bi-way Trigger › Message Status Updated**: `fallback_reason` tells why an RCS message was replaced
   or not sent: `agent_not_launched`, `not_rcs_capable` or `rcs_send_failed`.
-- **No credits left**: Bi-way now refuses a message when a prepaid account has no credits left, and the
-  error tells where to order some.
+- **Not enough credits**: Bi-way now refuses a sending when the credits of a prepaid account do not cover
+  it, and the error tells where to order some.
 
 ### Changed
+
+- **Fallback SMS written in the node**: **Add Chat Link** is now on by default, like the fallback SMS of
+  the account. With the STOP mention, 114 characters are left for the text: a longer text now stops with
+  an error telling what to do, so check your workflows that use *Send This SMS*.
 
 - **RCS without an RCS agent**: the error now says that the account has no RCS agent, with what to do:
   check it with RCS Agent › Get Status, send by SMS in the meantime, or read the requirements.

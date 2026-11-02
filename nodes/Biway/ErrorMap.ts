@@ -95,9 +95,9 @@ const ERRORS: Record<string, ErrorBuilder> = {
 			? 'None of the recipients can receive it on this channel: the contacts need a phone number (an email address on an email channel), and unsubscribed or duplicate recipients are skipped.'
 			: `Bi-way answered (in French): ${serverMessage}`,
 	}),
-	not_enougth_credits: (channel) => ({
-		message: `Your Bi-way account has no credits left for ${channel || 'this channel'}`,
-		description: `Order credits from the credits panel of your Bi-way home page (${HOME_URL}) or contact Bi-way (${SUPPORT_EMAIL}).`,
+	not_enougth_credits: (channel, serverMessage) => ({
+		message: `Your Bi-way credits do not cover this message on ${channel || 'this channel'}`,
+		description: `Order credits from the credits panel of your Bi-way home page (${HOME_URL}) or contact Bi-way (${SUPPORT_EMAIL}). Bi-way answered: ${serverMessage}`,
 	}),
 	asset_not_found: fixed(
 		'One of the attachments was not found',

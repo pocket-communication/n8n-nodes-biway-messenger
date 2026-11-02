@@ -191,7 +191,7 @@ const contentFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description:
-			'SMS sent instead of the RCS message: 160 characters at most, 149 with the STOP mention, 125 with the chat link, 114 with both',
+			'SMS sent instead of the RCS message: 114 characters at most with the STOP mention and the chat link, up to 160 when they are turned off in the options',
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,
@@ -218,7 +218,7 @@ const contentFields: INodeProperties[] = [
 				displayName: 'Add Chat Link',
 				name: 'chatUrl',
 				type: 'boolean',
-				default: false,
+				default: true,
 				description: 'Whether to add a link to continue the conversation in the Bi-way web chat',
 			},
 			{
