@@ -161,7 +161,21 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] 0.2.0 prepared (2026-10-29): Bi-Way Trigger › Share Request Received (`EDAPPS_REQUEST`, filters
       Share Actions and Share IDs) and Entry › Get (`GET /file/entry/{type}:{id}`), so that a booking
       or a form sent on a share link can start a workflow and be read back
-- [ ] Tag `0.2.0` (maintainer), once the Bi-Way server declares `EDAPPS_REQUEST` and emits it
+- [x] Approved for publish by n8n on the Creator Portal, on 0.1.x (2026-10-30)
+- [x] Node details saved on the Creator Portal (2026-10-30): logo, author, website, categories, description
+- [x] Listed as verified by n8n in 0.1.2, both nodes (public community nodes API, checked 2026-11-02).
+      Updates: n8n watches npm, runs a brief check and propagates them on its bi-weekly release cadence,
+      with no new submission
+- [x] End-to-end test of `EDAPPS_REQUEST` on production (2026-11-02): booking, cancellation, form,
+      subscription and list choice received through a tunnel, replayed in the compiled trigger, read back
+      with Entry › Get (a cancelled booking included)
+- [x] Tag `0.2.0` pushed by hand by the maintainer (`npm run release` would bump past the version
+      already in `package.json` and rewrite `CHANGELOG.md` with auto-changelog), published with
+      provenance; official scanner passes (2026-11-02)
+- [ ] GitHub Release for 0.2.0 with the CHANGELOG section as release notes (maintainer; none exist so
+      far)
+- [ ] 0.2.0 propagated by n8n to its verified list (0.1.2 on 2026-11-02, right after publishing)
+- [ ] Add the share links to the Creator Portal description once 0.2.0 is propagated
 - [ ] Page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
       the page itself is not in this repository
