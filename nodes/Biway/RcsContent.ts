@@ -161,6 +161,9 @@ export function buildRcsButtons(this: IExecuteFunctions, i: number, max: number)
 
 /** Longest fallback SMS Bi-Way sends: a longer one, once personalized, is not sent at all. */
 const FALLBACK_TEXT_MAX = 160;
+/** What the STOP mention and the link to the web chat take out of those 160 characters. */
+const FALLBACK_STOP_LENGTH = 11;
+const FALLBACK_CHAT_LINK_LENGTH = 35;
 const FALLBACK_SENDER_MAX = 11;
 
 /** Alias Bi-Way replaces with the default SMS sender of the account. */
@@ -192,16 +195,20 @@ export function buildRcsFallback(
 			"Fill in 'Fallback SMS Text', or pick another option.",
 		);
 	}
-	if ([...text].length > FALLBACK_TEXT_MAX) {
+	const options = this.getNodeParameter('rcsFallbackOptions', i, {}) as IDataObject;
+	const textMax =
+		FALLBACK_TEXT_MAX -
+		(options.stop === false ? 0 : FALLBACK_STOP_LENGTH) -
+		(options.chatUrl === true ? FALLBACK_CHAT_LINK_LENGTH : 0);
+	if ([...text].length > textMax) {
 		fail(
 			this,
 			i,
 			'The fallback SMS is too long',
-			`Bi-way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included.`,
+			`Bi-way sends no fallback SMS longer than ${FALLBACK_TEXT_MAX} characters, STOP mention and chat link included: ${textMax} are left for this text, which has ${[...text].length}.`,
 		);
 	}
 
-	const options = this.getNodeParameter('rcsFallbackOptions', i, {}) as IDataObject;
 	const sender = String(options.sender ?? '').trim() || DEFAULT_FALLBACK_SENDER;
 	if (sender.length > FALLBACK_SENDER_MAX) {
 		fail(

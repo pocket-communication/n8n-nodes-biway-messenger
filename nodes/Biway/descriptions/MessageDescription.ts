@@ -191,7 +191,7 @@ const contentFields: INodeProperties[] = [
 		required: true,
 		default: '',
 		description:
-			'SMS sent instead of the RCS message, 160 characters at most including the STOP mention and the chat link when they are added',
+			'SMS sent instead of the RCS message: 160 characters at most, 149 with the STOP mention, 125 with the chat link, 114 with both',
 		displayOptions: {
 			show: {
 				...showFor(['send', 'broadcast']).show,

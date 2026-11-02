@@ -200,8 +200,8 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 - [x] Install from the nodes panel followed on a fresh n8n 2.45.4, self-hosted (2026-11-02): the verified
       node shows with its badge, **Install node**, "Package installed". It installed 0.2.0, the latest on
       npm, while the verified list still said 0.1.2: a new tag can reach these users before n8n's check
-- [x] RCS without a launched agent: clear errors, a hint when the API accepts the sending (2026-11-02).
-      Bi-way has no error code of its own for it: `ErrorMap.ts` reads the server message, to be checked
-      if that message changes
+- [x] RCS without a launched agent: clear errors, a hint when the API accepts the sending (2026-11-02),
+      from the `rcs_agent_missing` code and the `warnings` of the send answer. Needs the server that
+      returns them in production before the tag
 - [ ] Example workflows up to n8n's template rules (`docs/templates-submission.md`)
 - [ ] README and version 0.2.1

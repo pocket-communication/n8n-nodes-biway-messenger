@@ -220,6 +220,10 @@ when no SMS was sent, `null` otherwise. When Bi-way falls back to SMS, an event 
 `status: "error"` and `fallback: "sms"` can arrive shortly before the `sent` of the SMS: do not treat
 it as final, wait for the delivery report.
 
+With `fallback` comes `fallback_reason`: `agent_not_launched` when your RCS agent is launched by no
+operator, `not_rcs_capable` when the phone is not known as RCS-capable, `rcs_send_failed` when it is but
+the sending failed, for example because your agent is not launched at the operator of this recipient.
+
 Good to know:
 
 - Bi-way sends the events of the **whole account**, including messages not sent from n8n.
@@ -230,8 +234,12 @@ Good to know:
 
 ## RCS with your own fallback
 
-By default, when a phone cannot receive RCS, Bi-way sends the fallback SMS of your account. To decide
-in n8n instead:
+By default, when a phone cannot receive RCS, Bi-way sends the fallback SMS of your account, with the
+STOP mention and the link to the Bi-way web chat as your account sets them. With *Send This SMS*, you
+write the text in the node and choose them in **Fallback SMS Options**: they add 11 and 35 characters
+to an SMS limited to 160.
+
+To decide in n8n instead:
 
 1. **Bi-way** node, **Message › Send** on the RCS channel, with **If the Phone Is Not RCS-Capable**
    set to *Send Nothing*.

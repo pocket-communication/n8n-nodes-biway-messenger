@@ -290,31 +290,30 @@ async function messageContent(
 
 // ── Message ──────────────────────────────────────────────────────────────────────────────────────
 
-/** Executions whose RCS agent was already read: one reading per execution. */
-const rcsAgentRead = new WeakSet<IExecuteFunctions>();
+/** Executions already warned about the RCS agent: one warning per execution. */
+const rcsAgentHinted = new WeakSet<IExecuteFunctions>();
 
 /**
- * Bi-Way accepts an RCS message even when the RCS agent is not launched: the message then follows
- * its fallback. This stays a hint and never fails: such a send is legitimate with a fallback SMS,
- * and the message has already been accepted when the reading happens.
+ * Bi-Way accepts an RCS message even when the RCS agent is not launched, and says so in its answer:
+ * the message then follows its fallback. This stays a hint: such a send is legitimate with a
+ * fallback SMS, so a workflow never stops on it.
  */
-async function hintRcsAgentNotLaunched(this: IExecuteFunctions, channel: string): Promise<void> {
-	if (!isRcsChannel(channel) || rcsAgentRead.has(this)) {
+function hintRcsAgentNotLaunched(this: IExecuteFunctions, response: IDataObject): void {
+	const warnings = Array.isArray(response.warnings) ? (response.warnings as IDataObject[]) : [];
+	const warning = warnings.find((entry) => entry.code === 'rcs_agent_not_launched');
+	if (!warning || rcsAgentHinted.has(this)) {
 		return;
 	}
-	rcsAgentRead.add(this);
-	try {
-		const response = await biwayApiCall.call(this, 'COLLECTION', '/chatbot/channel-operator');
-		if (!response.errorCode && (response.body as IDataObject | null)?.launched === false) {
-			this.addExecutionHints({
-				message: `Bi-way accepted this RCS message, but your RCS agent is not launched yet: it will not reach the phone as RCS. It goes out as the fallback SMS if there is one, otherwise it is not delivered. Check your RCS agent with RCS Agent › Get Status. Requirements on the Bi-way page for n8n (in French): ${N8N_PAGE_URL}`,
-				type: 'warning',
-				location: 'outputPane',
-			});
-		}
-	} catch {
-		this.logger.warn('Bi-way: the state of the RCS agent could not be read');
-	}
+	rcsAgentHinted.add(this);
+	const outcome =
+		warning.fallback === 'sms'
+			? 'It goes out as the fallback SMS.'
+			: 'It has no fallback SMS, so it is not delivered, and nothing is debited.';
+	this.addExecutionHints?.({
+		message: `Bi-way accepted this RCS message, but your RCS agent is not launched yet: it will not reach the phone as RCS. ${outcome} Check your RCS agent with RCS Agent › Get Status. Requirements on the Bi-way page for n8n (in French): ${N8N_PAGE_URL}`,
+		type: 'warning',
+		location: 'outputPane',
+	});
 }
 
 const sendMessage: Handler = async function (i) {
@@ -329,7 +328,7 @@ const sendMessage: Handler = async function (i) {
 	const response = normalizeResponse(
 		await biwayApiRequest.call(this, 'POST', '/messenger/submit', body, undefined, i),
 	);
-	await hintRcsAgentNotLaunched.call(this, channel);
+	hintRcsAgentNotLaunched.call(this, response);
 	return response;
 };
 
@@ -430,7 +429,7 @@ const broadcastMessage: Handler = async function (i) {
 	const response = normalizeResponse(
 		await biwayApiRequest.call(this, 'POST', '/messenger/broadcast', body, undefined, i),
 	);
-	await hintRcsAgentNotLaunched.call(this, channel);
+	hintRcsAgentNotLaunched.call(this, response);
 	return response;
 };
 
@@ -1022,9 +1021,8 @@ const startScenario: Handler = async function (i) {
 				'Set its first template in Bi-way, or create it again with RCS Scenario › Create.',
 		});
 	}
-	const channel = (this.getNodeParameter('channel', i, 'rcs') as string) || 'rcs';
 	const body: IDataObject = {
-		channel,
+		channel: (this.getNodeParameter('channel', i, 'rcs') as string) || 'rcs',
 		receiver: (this.getNodeParameter('receiver', i) as string).trim(),
 		template_id: templateId,
 		operation: 'notification',
@@ -1033,7 +1031,7 @@ const startScenario: Handler = async function (i) {
 	const response = normalizeResponse(
 		await biwayApiRequest.call(this, 'POST', '/messenger/submit', body, undefined, i),
 	);
-	await hintRcsAgentNotLaunched.call(this, channel);
+	hintRcsAgentNotLaunched.call(this, response);
 	return { scenarioId: id, ...response };
 };
 

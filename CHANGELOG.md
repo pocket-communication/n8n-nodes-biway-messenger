@@ -4,21 +4,30 @@
 
 ### Added
 
-- **RCS agent not launched**: after an RCS message, Message › Send, Message › Broadcast and
-  RCS Scenario › Start show a warning when your RCS agent is not launched yet. Bi-way accepts such a
-  message: it goes out as the fallback SMS if there is one, otherwise it is not delivered. The node
-  reads the state of the agent once per execution, and the warning never stops the workflow.
+- **RCS agent not launched**: Message › Send, Message › Broadcast and RCS Scenario › Start show a
+  warning when your RCS agent is not launched yet, and their output carries `warnings`. Bi-way accepts
+  such a message: it goes out as the fallback SMS if there is one, otherwise it is not delivered and
+  nothing is debited. The warning never stops the workflow.
+- **Bi-way Trigger › Message Status Updated**: `fallback_reason` tells why an RCS message was replaced
+  or not sent: `agent_not_launched`, `not_rcs_capable` or `rcs_send_failed`.
+- **No credits left**: Bi-way now refuses a message when a prepaid account has no credits left, and the
+  error tells where to order some.
 
 ### Changed
 
 - **RCS without an RCS agent**: the error now says that the account has no RCS agent, with what to do:
-  check it with RCS Agent › Get Status, send by SMS in the meantime, or read the requirements. When
-  Bi-way cannot tell the cause, the error gives both: no RCS agent, or no recipient able to receive it.
+  check it with RCS Agent › Get Status, send by SMS in the meantime, or read the requirements.
 - **RCS Agent › Get Status**: `nextStep` suggests sending by SMS while the RCS agent is not launched.
 - **Message › Send**: the notice says that sign-up includes API access, and the Channel field that RCS
   appears once your RCS agent is created.
 - **RCS not in your plan**: the error leads to Bi-way instead of the sign-up page, which would create
   a second account.
+
+### Fixed
+
+- **Fallback SMS written in the node**: a text that fit in 160 characters but not once the STOP mention
+  and the chat link were added was accepted, then the SMS was not sent. The node now refuses it, with
+  the room left for the text.
 
 - **Brand**: the nodes, notices, messages and documentation now write **Bi-way**. Existing workflows
   are not affected: node types, parameter names and values stay the same. The credential keeps the
