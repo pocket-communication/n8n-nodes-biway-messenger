@@ -1,5 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { N8N_PAGE_URL } from '../Links';
 import { CHANNEL_EXPRESSION, EMAIL_CHANNELS, RCS_CHANNELS, RICH_CHANNELS } from './Channels';
 import {
 	attachmentsField,
@@ -296,7 +297,7 @@ export const messageFields: INodeProperties[] = [
 	// ── Send ─────────────────────────────────────────────────────────────────────────────────────
 	{
 		displayName:
-			'Sending needs a Bi-way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only. Email needs the email option of your account (Mailjet for the email channel, SMTP for email_smtp).',
+			`Sending needs a Bi-way plan with API access (<a href="https://v3.bi-way.fr/signup" target="_blank">sign up</a>). Only the channels enabled on your account work. RCS also needs a launched RCS agent (check it with RCS Agent › Get Status) and is currently available on French mobile operators only. Email needs the email option of your account (Mailjet for the email channel, SMTP for email_smtp). Requirements: <a href="${N8N_PAGE_URL}" target="_blank">Bi-way page for n8n</a> (in French).`,
 		name: 'sendNotice',
 		type: 'notice',
 		default: '',

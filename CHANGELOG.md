@@ -8,6 +8,9 @@
   are not affected: node types, parameter names and values stay the same. The credential keeps the
   name **Bi-Way API**, as n8n requires title case for credential names.
 - **Image of a card**: the option *From the Bi-Way Gallery* is now *From the Gallery*.
+- **Links**: the npm page and the notices of Message › Send and of the RCS Agent operations lead to
+  the [Bi-way page for n8n](https://www.bi-way.fr/n8n/), in French. The documentation links of the
+  nodes and of the credential still lead to the README, in English.
 
 ### Documentation
 

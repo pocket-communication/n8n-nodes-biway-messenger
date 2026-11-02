@@ -19,6 +19,11 @@ Programmatic style, built on the `npm create @n8n/node` template.
   not contain the brand ("From the Gallery"). Quote "Bi-Way API" only where a reader has to
   recognize it on screen. Never rename the technical identifiers (`name` of nodes and credential,
   package name, parameter keys and values): existing workflows depend on them.
+- Links: the page presenting the nodes is `N8N_PAGE_URL` (`nodes/Biway/Links.ts`); `homepage` in
+  `package.json` repeats it, a JSON file cannot import it. The website shown on n8n.io comes from
+  the Creator Portal, not from this package. The codex and the `documentationUrl` of the credential
+  stay on the README: n8n requires documentation in English, the page is in French and does not
+  detail the operations.
 - Channels: SMS (text only), RCS and email (`email` needs the account option `mailjet_api`,
   `email_smtp` the option `smtp`). No MMS (no longer supported). Channel conditions live in
   `descriptions/Channels.ts`.
@@ -187,7 +192,8 @@ File names already linked from the README: `appointment-reminder.json`, `appoint
 
 ### Post-verification finishing (one commit per item, no tag before the last one)
 - [x] Brand written "Bi-way" in the labels, identifiers unchanged, compared before and after (2026-11-02)
-- [ ] Links: Creator Portal website and `homepage` to https://www.bi-way.fr/n8n/
+- [x] Links: `homepage` and notices to https://www.bi-way.fr/n8n/ (2026-11-02); the website field of the
+      Creator Portal is the maintainer's
 - [ ] Updates of the /n8n/ page, ready to copy (`docs/landing-n8n-updates.md`)
 - [ ] RCS without a launched agent: clear errors, a hint when the API accepts the sending
 - [ ] Example workflows up to n8n's template rules (`docs/templates-submission.md`)

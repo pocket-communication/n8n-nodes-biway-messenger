@@ -1,5 +1,6 @@
 import type { INodeProperties } from 'n8n-workflow';
 
+import { N8N_PAGE_URL } from '../Links';
 import { templateLocator } from './ResourceLocators';
 
 const showFor = (operation: string[]) => ({ show: { resource: ['rcs'], operation } });
@@ -32,7 +33,7 @@ export const rcsOperations: INodeProperties[] = [
 export const rcsFields: INodeProperties[] = [
 	{
 		displayName:
-			'RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-way RCS settings</a> (a declaration fee applies). RCS is currently available on French mobile operators only.',
+			`RCS needs an RCS agent declared by your company and launched by the mobile operators. Declare it on <a href="https://app.bi-way.fr/rcs-registration/" target="_blank">the RCS declaration form</a> or in <a href="https://v3.bi-way.fr/settings/chatbot" target="_blank">your Bi-way RCS settings</a> (a declaration fee applies). RCS is currently available on French mobile operators only. Requirements: <a href="${N8N_PAGE_URL}" target="_blank">Bi-way page for n8n</a> (in French).`,
 		name: 'rcsNotice',
 		type: 'notice',
 		default: '',
