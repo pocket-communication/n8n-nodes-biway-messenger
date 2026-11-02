@@ -100,9 +100,11 @@ Nouveau bloc, juste après les six cartes de « Pourquoi passer par Bi-way ».
 
 Aujourd'hui, l'accroche propose « Créer un compte » alors que les prérequis disent « Contactez-nous ».
 
-### Option A : inscription, puis activation de l'API
+### Option A : inscription, API incluse
 
-Le visiteur s'inscrit seul et demande l'accès à l'API si son offre ne l'inclut pas.
+Le visiteur s'inscrit seul et crée sa clé d'API : les offres proposées à l'inscription donnent déjà accès à l'API (contrat
+et droits relevés le 2026-11-02). À éprouver avant de publier cette phrase, avec un compte neuf : inscription, clé, puis un
+SMS.
 
 **Bouton de l'accroche** : inchangé, « Créer un compte » → https://v3.bi-way.fr/signup/
 
@@ -112,14 +114,14 @@ Le visiteur s'inscrit seul et demande l'accès à l'API si son offre ne l'inclut
 
 **Prérequis, texte proposé**
 
-> Un compte Bi-way : [créez-le en ligne](https://v3.bi-way.fr/signup/). L'envoi depuis n8n demande une offre qui donne accès
-> à l'API : [contactez-nous](/contact) pour l'activer si la vôtre ne l'inclut pas.
+> Un compte Bi-way : [créez-le en ligne](https://v3.bi-way.fr/signup/). L'accès à l'API est inclus.
+> [Contactez-nous](/contact) en cas de doute.
 
 **À côté** : rien à changer. Le README et les messages du nœud renvoient déjà à l'inscription.
 
 ### Option B : contact direct
 
-Le visiteur demande son accès avant de créer quoi que ce soit.
+Le visiteur demande son accès avant de créer quoi que ce soit. La plateforme ne l'impose pas : c'est un choix commercial.
 
 **Bouton de l'accroche** : « Demander un accès » → /contact, à la place de « Créer un compte »
 
