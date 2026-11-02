@@ -110,7 +110,7 @@ Aujourd'hui, l'accroche propose « Créer un compte » alors que les prérequis 
 **Prérequis, texte proposé**
 
 > Un compte Bi-way : [créez-le en ligne](https://v3.bi-way.fr/signup/). L'accès à l'API est inclus. L'offre gratuite ouvre le
-> SMS, avec 20 crédits offerts ; pour le RCS, choisissez l'offre Pro. L'e-mail se met en place à part.
+> SMS ; pour le RCS, choisissez l'offre Pro. L'e-mail se met en place à part.
 > [Contactez-nous](/contact) pour faire évoluer un compte existant ou en cas de doute.
 
 ---

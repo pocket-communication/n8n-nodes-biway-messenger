@@ -52,8 +52,8 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 ## Ce qu'il vous faut
 
 1. **Un compte Bi-way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'accès à l'API est
-   inclus. L'offre gratuite ouvre le SMS, avec 20 crédits offerts ; pour le RCS, choisissez l'offre
-   Pro (point 3). L'e-mail se met en place à part (point 4).
+   inclus. L'offre gratuite ouvre le SMS ; pour le RCS, choisissez l'offre Pro (point 3). L'e-mail
+   se met en place à part (point 4).
 2. **Une clé d'API** : dans Bi-way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
    Notez le jeton et le secret : le secret ne s'affiche qu'une fois. Vous pouvez révoquer une clé à
    tout moment.
