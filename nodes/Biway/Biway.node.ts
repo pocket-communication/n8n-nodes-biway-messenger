@@ -42,6 +42,7 @@ import {
 	searchScenarios,
 	searchTemplates,
 } from './methods/listSearch';
+import { N8N_PAGE_URL } from './Links';
 import { getChannels, getContactGroups, getImportFormats, getSenders } from './methods/loadOptions';
 import {
 	buildRcsButtons,
@@ -289,6 +290,33 @@ async function messageContent(
 
 // ── Message ──────────────────────────────────────────────────────────────────────────────────────
 
+/** Executions whose RCS agent was already read: one reading per execution. */
+const rcsAgentRead = new WeakSet<IExecuteFunctions>();
+
+/**
+ * Bi-Way accepts an RCS message even when the RCS agent is not launched: the message then follows
+ * its fallback. This stays a hint and never fails: such a send is legitimate with a fallback SMS,
+ * and the message has already been accepted when the reading happens.
+ */
+async function hintRcsAgentNotLaunched(this: IExecuteFunctions, channel: string): Promise<void> {
+	if (!isRcsChannel(channel) || rcsAgentRead.has(this)) {
+		return;
+	}
+	rcsAgentRead.add(this);
+	try {
+		const response = await biwayApiCall.call(this, 'COLLECTION', '/chatbot/channel-operator');
+		if (!response.errorCode && (response.body as IDataObject | null)?.launched === false) {
+			this.addExecutionHints({
+				message: `Bi-way accepted this RCS message, but your RCS agent is not launched yet: it will not reach the phone as RCS. It goes out as the fallback SMS if there is one, otherwise it is not delivered. Check your RCS agent with RCS Agent › Get Status. Requirements on the Bi-way page for n8n (in French): ${N8N_PAGE_URL}`,
+				type: 'warning',
+				location: 'outputPane',
+			});
+		}
+	} catch {
+		this.logger.warn('Bi-way: the state of the RCS agent could not be read');
+	}
+}
+
 const sendMessage: Handler = async function (i) {
 	const channel = this.getNodeParameter('channel', i) as string;
 	const body: IDataObject = {
@@ -298,9 +326,11 @@ const sendMessage: Handler = async function (i) {
 		originated: ORIGINATED,
 		...(await messageContent.call(this, i, channel)),
 	};
-	return normalizeResponse(
+	const response = normalizeResponse(
 		await biwayApiRequest.call(this, 'POST', '/messenger/submit', body, undefined, i),
 	);
+	await hintRcsAgentNotLaunched.call(this, channel);
+	return response;
 };
 
 function splitAddresses(value: unknown): string[] {
@@ -397,9 +427,11 @@ const broadcastMessage: Handler = async function (i) {
 		}
 	}
 
-	return normalizeResponse(
+	const response = normalizeResponse(
 		await biwayApiRequest.call(this, 'POST', '/messenger/broadcast', body, undefined, i),
 	);
+	await hintRcsAgentNotLaunched.call(this, channel);
+	return response;
 };
 
 /**
@@ -779,18 +811,18 @@ function rcsNextStep(
 		return 'Your RCS agent is launched on at least one operator: you can send RCS messages.';
 	}
 	if (!declared) {
-		return `Declare your RCS agent: ${RCS_DECLARATION_URL}`;
+		return `Declare your RCS agent (${RCS_DECLARATION_URL}) and send by SMS in the meantime.`;
 	}
 	if (declarationState === 'rejected') {
-		return `Your RCS declaration was rejected. Contact Bi-way support (${SUPPORT_EMAIL}).`;
+		return `Your RCS declaration was rejected. Contact Bi-way support (${SUPPORT_EMAIL}) and send by SMS in the meantime.`;
 	}
 	if (!declarationComplete) {
-		return `Complete your RCS declaration in your Bi-way RCS settings: ${RCS_SETTINGS_URL}`;
+		return `Complete your RCS declaration in your Bi-way RCS settings (${RCS_SETTINGS_URL}) and send by SMS in the meantime.`;
 	}
 	if (declarationState === 'done') {
-		return 'Your RCS agent is created and awaits the approval of the mobile operators.';
+		return 'Your RCS agent is created and awaits the approval of the mobile operators. Send by SMS in the meantime.';
 	}
-	return 'Bi-way is processing your RCS declaration.';
+	return 'Bi-way is processing your RCS declaration. Send by SMS in the meantime.';
 }
 
 const getRcsStatus: Handler = async function (i) {
@@ -990,19 +1022,19 @@ const startScenario: Handler = async function (i) {
 				'Set its first template in Bi-way, or create it again with RCS Scenario › Create.',
 		});
 	}
+	const channel = (this.getNodeParameter('channel', i, 'rcs') as string) || 'rcs';
 	const body: IDataObject = {
-		channel: (this.getNodeParameter('channel', i, 'rcs') as string) || 'rcs',
+		channel,
 		receiver: (this.getNodeParameter('receiver', i) as string).trim(),
 		template_id: templateId,
 		operation: 'notification',
 		originated: ORIGINATED,
 	};
-	return {
-		scenarioId: id,
-		...normalizeResponse(
-			await biwayApiRequest.call(this, 'POST', '/messenger/submit', body, undefined, i),
-		),
-	};
+	const response = normalizeResponse(
+		await biwayApiRequest.call(this, 'POST', '/messenger/submit', body, undefined, i),
+	);
+	await hintRcsAgentNotLaunched.call(this, channel);
+	return { scenarioId: id, ...response };
 };
 
 // ── Entry ────────────────────────────────────────────────────────────────────────────────────────

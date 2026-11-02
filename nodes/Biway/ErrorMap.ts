@@ -3,6 +3,8 @@
  * and a hint telling the user how to fix the problem.
  */
 
+import { N8N_PAGE_URL } from './Links';
+
 const SIGNUP_URL = 'https://v3.bi-way.fr/signup';
 const API_KEYS_URL = 'https://v3.bi-way.fr/settings/security';
 const RCS_DECLARATION_URL = 'https://app.bi-way.fr/rcs-registration/';
@@ -18,6 +20,8 @@ export interface BiwayErrorDescription {
 type ErrorBuilder = (detail: string, serverMessage: string) => BiwayErrorDescription;
 
 const NODE_BUG = `This should not happen with this node. Please report it to ${SUPPORT_EMAIL}.`;
+
+const RCS_NEXT_STEPS = `Check your RCS agent with RCS Agent › Get Status, send by SMS in the meantime, or read the requirements on the Bi-way page for n8n (in French): ${N8N_PAGE_URL}`;
 
 const fixed =
 	(message: string, description: string): ErrorBuilder =>
@@ -84,14 +88,32 @@ const ERRORS: Record<string, ErrorBuilder> = {
 		'The send date is not valid',
 		'The date must be in the future. Bi-way schedules messages in the Europe/Paris time zone, to the minute.',
 	),
-	message_not_created_for_channel: (channel, serverMessage) => ({
-		message: `Bi-way refused the message for ${channel || 'this channel'}`,
-		description: /missing property receivers/i.test(serverMessage)
-			? 'None of the recipients can receive it on this channel: the contacts need a phone number (an email address on an email channel), and unsubscribed or duplicate recipients are skipped.'
-			: /rcs/i.test(channel)
-				? `Your RCS agent must be declared and launched: check it with RCS Agent › Get Status, or declare it at ${RCS_DECLARATION_URL}. Bi-way answered (in French): ${serverMessage}`
-				: `Bi-way answered (in French): ${serverMessage}`,
-	}),
+	// Bi-Way has no code of its own for an account without an RCS agent: only the message tells it.
+	message_not_created_for_channel: (channel, serverMessage) => {
+		const isRcs = /rcs/i.test(channel);
+		const noReceivers = /missing property receivers/i.test(serverMessage);
+		if (isRcs && /rbm_cloud_pub_sub/i.test(serverMessage)) {
+			return {
+				message: 'Your Bi-way account has no RCS agent',
+				description: `RCS needs an RCS agent declared by your company and launched by the mobile operators. ${RCS_NEXT_STEPS}`,
+			};
+		}
+		// Without an RCS agent, Bi-Way can also drop every recipient: the two causes look the same.
+		if (isRcs && noReceivers) {
+			return {
+				message: `Bi-way refused the message for ${channel}`,
+				description: `Either your account has no RCS agent, or none of the recipients can receive it: the contacts need a phone number, and unsubscribed or duplicate recipients are skipped. ${RCS_NEXT_STEPS}`,
+			};
+		}
+		return {
+			message: `Bi-way refused the message for ${channel || 'this channel'}`,
+			description: noReceivers
+				? 'None of the recipients can receive it on this channel: the contacts need a phone number (an email address on an email channel), and unsubscribed or duplicate recipients are skipped.'
+				: isRcs
+					? `${RCS_NEXT_STEPS}. Bi-way answered (in French): ${serverMessage}`
+					: `Bi-way answered (in French): ${serverMessage}`,
+		};
+	},
 	asset_not_found: fixed(
 		'One of the attachments was not found',
 		'Check the asset IDs: they must belong to your Bi-way gallery (see Asset › Upload).',
@@ -116,7 +138,7 @@ const ERRORS: Record<string, ErrorBuilder> = {
 	),
 	chat_service_not_allowed: fixed(
 		'Your Bi-way plan does not include RCS',
-		`Upgrade your plan (${SIGNUP_URL}) or contact Bi-way support (${SUPPORT_EMAIL}).`,
+		`Contact Bi-way (${SUPPORT_EMAIL}) to change your plan, and send by SMS in the meantime. Requirements on the Bi-way page for n8n (in French): ${N8N_PAGE_URL}`,
 	),
 	chatbot_not_owned: fixed(
 		'This RCS agent belongs to another Bi-way account',
