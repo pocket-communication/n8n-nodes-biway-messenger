@@ -94,13 +94,16 @@ L'interface de n8n est en anglais ; voici les opérations sous leur nom dans n8n
 - **Contact** : créer un contact (reconnu par la colonne de votre choix, le téléphone par défaut,
   pour éviter les doublons),
   créer un groupe, importer un fichier Excel (ou un autre format d'import de votre compte).
+- **Entry** : relire une fiche de votre compte (une réservation, un contact…), par exemple celle
+  d'une demande reçue sur un de vos liens de partage.
 - **RCS Agent** : créer une réponse automatique à un mot-clé, connaître l'état de votre service de
   chat RCS chez chaque opérateur.
 - **RCS Scenario** : créer, consulter, activer, désactiver, supprimer et démarrer des scénarios de
   conversation RCS guidés par boutons.
 - **Bi-way Trigger** : démarrer un workflow sur un accusé de réception ou de lecture, un
   message reçu ou un bouton touché, la fin d'un import de contacts, un changement d'état de votre
-  service de chat RCS.
+  service de chat RCS, une demande reçue sur un de vos liens de partage (réservation, annulation,
+  formulaire envoyé…).
 
 Relancer un workflow ne crée pas de doublon : modèles, groupes, contacts et réponses automatiques
 existants sont réutilisés par défaut.

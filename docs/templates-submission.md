@@ -35,7 +35,7 @@ creator and accepts batches of four.
 The form comes last because it has three nodes, and n8n asks more of short workflows: "a trigger connected to a single
 action" needs "more context or reusable logic". If it is refused, nothing else depends on it.
 
-Weezevent ticket holders stays on GitHub, see [the end of this document](#not-submitted-weezevent-ticket-holders).
+Weezevent ticket holders stays on GitHub for now, see [the end of this document](#not-submitted-yet-weezevent-ticket-holders).
 
 ## Prerequisites of every template
 
@@ -154,16 +154,22 @@ Weezevent ticket holders stays on GitHub, see [the end of this document](#not-su
 > Limits: RCS only reaches French mobile operators. The phone number must be in international format: the form does not
 > check it, and Bi-way refuses another format. Someone who sends the form again gets the welcome message again.
 
-## Not submitted: Weezevent ticket holders
+## Not submitted yet: Weezevent ticket holders
 
-[`examples/weezevent-ticket-holders.json`](../examples/weezevent-ticket-holders.json) stays on GitHub:
+[`examples/weezevent-ticket-holders.json`](../examples/weezevent-ticket-holders.json) stays on GitHub until three
+things are done:
 
-- **It cannot be tested as n8n asks.** The Weezevent API is reserved to its partners, and n8n wants the exact JSON run
-  from start to finish, with the result checked in the destination service.
-- **Its secrets sit in node parameters.** The API key, username and password of Weezevent are placeholders in HTTP Request
-  nodes, and n8n wants credentials there, never keys or passwords in parameters.
+- **A run with a real Weezevent API key.** Weezevent grants API keys to its registered partners and asks to be
+  contacted for one. n8n wants the exact JSON run from start to finish, with the result checked in the destination
+  service: ask for a key for an organizer account, and run the workflow on a free test event.
+- **Credentials instead of parameters.** The API key, username and password of Weezevent are placeholders in HTTP
+  Request nodes, and n8n wants credentials there, never keys or passwords in parameters.
+- **The v3 API.** The example calls `/participant/list` and `/participant/:id/answers`, which the
+  [Weezevent API portal](https://docapi.weezevent.com/) says should not be used anymore. The v3
+  `/v3/evenement/:id/participants` returns the form answers in the same call, and its `last_update` keeps the
+  participants registered after the date: a participant changed later no longer gets the message twice.
 
-To submit it later: use a partner account, move these values to n8n credentials, then run the same tests as the others.
+Then run the same tests as the others and submit it last.
 
 ## Checks
 

@@ -208,4 +208,10 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
 - [x] Example workflows up to n8n's template rules (`docs/templates-submission.md`); review link for
       everyone who answers (Google forbids asking only happy customers); medical rule: the reminder
       confirms, never present online booking or rebooking by the patient
-- [ ] README and version 0.2.1
+- [x] README and version 0.3.0 (2026-11-03): verified, install from the nodes panel, RCS agent
+      declaration, sign-up with API access, operations checked against the compiled node. Minor
+      version: new fields (`warnings`, `fallback_reason`) and Add Chat Link on by default
+- [ ] Tag `0.3.0` pushed by the maintainer after `main` (GitHub and gogs) and a green CI; then the
+      official scanner, and the GitHub Releases for 0.2.0 and 0.3.0
+- [ ] Weezevent example on the v3 API (`/v3/evenement/:id/participants?loadFormAnswers=1`), keys in
+      n8n credentials, run with a real Weezevent API key before submitting it as a template

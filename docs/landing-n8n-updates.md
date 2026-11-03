@@ -12,7 +12,7 @@ supprimé une fois la page à jour.
 | 4. Démonstration RCS | Dès maintenant |
 | 5. Parcours d'accès | Après l'essai avec un compte neuf : inscription, clé, puis un SMS |
 | 6. Graphie du nœud | Quand n8n affichera le nœud « Bi-way », sinon la page et l'écran diffèrent |
-| 7. Liens vers la documentation | Après le tag 0.2.1 |
+| 7. Liens vers la documentation | Après le tag 0.3.0 |
 | 8. Demandes d'avis | Dès maintenant |
 
 Ne changent pas : les autres cas d'usage, les frais de déclaration RCS, le public visé, le programme partenaire.
@@ -138,12 +138,12 @@ qu'il s'affiche, pour qu'on le reconnaisse à l'écran.
 ## 7. Liens vers la documentation
 
 Hors de la liste initiale, mais ces liens visent la version 0.1.2 : le visiteur y lit encore l'ancienne graphie et « bientôt
-sur n8n Cloud ». À changer après le tag 0.2.1.
+sur n8n Cloud ». À changer après le tag 0.3.0.
 
 | Lien | Adresse actuelle | Adresse proposée |
 |---|---|---|
-| Bouton « Documentation technique » | `.../tree/0.1.2#readme` | `.../tree/0.2.1#readme` |
-| « voir les exemples » | `.../tree/0.1.2/examples` | `.../tree/0.2.1/examples` |
+| Bouton « Documentation technique » | `.../tree/0.1.2#readme` | `.../tree/0.3.0#readme` |
+| « voir les exemples » | `.../tree/0.1.2/examples` | `.../tree/0.3.0/examples` |
 
 Début commun des adresses : `https://github.com/pocket-communication/n8n-nodes-biway-messenger`.
 

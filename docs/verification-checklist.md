@@ -99,8 +99,9 @@ Secrets:
 
 Releasing 0.1.0: `package.json` already says `0.1.0`, so the tag is placed by hand on `main` once the
 phases are merged (`git tag 0.1.0 && git push origin 0.1.0`). `npm run release` on a workstation would
-bump the version first. For the next versions, `npm run release` on `main` bumps the version, updates
-the changelog, tags and pushes; the push of the tag publishes.
+bump the version first. The next versions go the same way: a commit on `main` sets the version and
+the CHANGELOG section, then the tag is placed by hand and pushed; the push of the tag publishes.
+`npm run release` would bump the version once more and rewrite `CHANGELOG.md` with auto-changelog.
 
 After publication:
 

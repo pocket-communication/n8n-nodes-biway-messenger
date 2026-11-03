@@ -13,7 +13,9 @@ RCS.
 RCS is the successor of SMS in the phone's messaging app: messages come from your brand's verified
 profile, the **RCS agent**, and can show images, cards and buttons. `n8n-nodes-biway-messenger` is the
 n8n community package of [Bi-way](https://www.bi-way.fr/), the messaging platform of Pocket
-Communication.
+Communication. Its nodes are [verified by n8n](https://n8n.io/integrations/bi-way/): install them from
+the nodes panel, on n8n Cloud or self-hosted. In French, see the
+[Bi-way page for n8n](https://www.bi-way.fr/n8n/).
 
 > **RCS is currently available on French mobile operators only** (French phone numbers). For other
 > numbers, and for phones that cannot receive RCS, Bi-way can send an SMS instead, or let your
@@ -26,6 +28,7 @@ Communication.
 - [Send your first message](#send-your-first-message)
 - [Channels](#channels)
 - [Requirements](#requirements)
+- [Declare your RCS agent](#declare-your-rcs-agent)
 - [Operations](#operations)
 - [Bi-way Trigger](#bi-way-trigger)
 - [RCS with your own fallback](#rcs-with-your-own-fallback)
@@ -52,8 +55,10 @@ Communication.
 
 ## Get an API key
 
-1. Create your Bi-way account: [v3.bi-way.fr/signup](https://v3.bi-way.fr/signup). For plans and
-   prices, [contact Bi-way](https://www.bi-way.fr/contact/).
+1. Create your Bi-way account: [v3.bi-way.fr/signup](https://v3.bi-way.fr/signup). API access is
+   included. The free plan sends SMS, with prepaid credits; RCS needs the Pro plan and an RCS agent
+   (see [Declare your RCS agent](#declare-your-rcs-agent)); email is set up separately. To change the
+   plan of an existing account, [contact Bi-way](https://www.bi-way.fr/contact/).
 2. In the Bi-way app, open **Settings › Security › API keys**
    ([v3.bi-way.fr/settings/security](https://v3.bi-way.fr/settings/security)).
 3. Click **Create a key**, give it a name (for example `n8n`), and copy the **token** and the
@@ -65,12 +70,17 @@ own.
 
 ## Installation
 
-- **Self-hosted n8n**: as an owner or admin, open **Settings › Community Nodes › Install**, enter
-  `n8n-nodes-biway-messenger` and confirm. See the n8n
-  [installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for the manual
-  installation (queue mode, Docker images built in advance).
-- **n8n Cloud**: only community nodes verified by n8n can be installed there. This package will be
-  available once n8n has verified it.
+The Bi-way nodes are verified by n8n, so they install from the editor, on n8n Cloud and self-hosted:
+
+1. As the owner or an admin of the instance, open the nodes panel (**+**) and search for **Bi-way**.
+2. Open the node with the verified badge and click **Install node**.
+
+One installation serves the whole instance: every member can then use the nodes.
+
+A self-hosted instance that does not show verified nodes can install the package from **Settings ›
+Community Nodes › Install**: enter `n8n-nodes-biway-messenger` and confirm. See the n8n
+[installation guide](https://docs.n8n.io/integrations/community-nodes/installation/) for the manual
+installation (queue mode, Docker images built in advance).
 
 ## Credentials
 
@@ -96,7 +106,8 @@ The **Channel** list shows the channels enabled on your Bi-way account, under th
 them:
 
 - **RCS**: rich messages (cards, carousels, buttons) to French mobile phones, sent by your RCS agent,
-  with a fallback SMS for the phones that cannot receive RCS.
+  with a fallback SMS for the phones that cannot receive RCS. Listed once your RCS agent is created
+  (see [Declare your RCS agent](#declare-your-rcs-agent)).
 - **SMS**: text only, from the short or long number set up on your account. Whether customers can
   reply depends on that number: ask Bi-way which of your channels receive replies.
 - **Email**: text with attachments, cards and carousels, through the `email` channel (Mailjet) or
@@ -109,13 +120,38 @@ carry: an SMS channel only takes a text.
 
 | What you use | Needs |
 |---|---|
-| Message › Send, Message › Broadcast | A Bi-way plan with API access. Channels that need a sender use the default sender of your account unless you pick one. |
-| RCS: channel, cards, carousels, buttons, keyword replies, scenarios | Recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators. Declare it on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/); a declaration fee applies. The node's **RCS Agent › Get Status** tells you where it stands. |
+| Message › Send, Message › Broadcast | A Bi-way account (sign-up includes API access) and enough credits: Bi-way refuses a sending that the credits of a prepaid account do not cover. Channels that need a sender use the default sender of your account unless you pick one. |
+| RCS: channel, cards, carousels, buttons, keyword replies, scenarios | A plan with RCS, recipients on French mobile operators, and an RCS agent declared by your company and launched by the operators: see [Declare your RCS agent](#declare-your-rcs-agent). |
 | Email channels | The email option of your account, set up by Bi-way: Mailjet for `email`, SMTP for `email_smtp`. |
 | Template, Asset, Contact and Entry operations | The matching permissions on your Bi-way user profile. |
 | Bi-way Trigger | An n8n instance reachable from the internet over HTTPS. |
 
 When something is missing, the node stops with a message that says what to do.
+
+## Declare your RCS agent
+
+RCS messages come from your RCS agent: the name, logo and description of your brand, verified by
+Google and approved by each French mobile operator. Bi-way handles the procedure:
+
+1. Declare the agent on the [RCS declaration form](https://app.bi-way.fr/rcs-registration/), or from
+   the RCS settings of the Bi-way app ([v3.bi-way.fr/settings/chatbot](https://v3.bi-way.fr/settings/chatbot)).
+   A declaration fee applies.
+2. Bi-way processes the declaration and creates the agent. The **RCS** channel then appears in the
+   **Channel** list of the node.
+3. Each operator approves and launches the agent. Send by SMS in the meantime.
+
+**RCS Agent › Get Status** returns the state of the declaration, the state of the agent at each
+operator, `launched` and the `nextStep` to take. The **RCS Agent State Changed** event of the Bi-way
+Trigger starts a workflow when an operator changes the state of your agent.
+
+Until the agent is launched:
+
+- **No agent yet**: Bi-way refuses RCS messages, and the node says that your account has no RCS agent.
+- **Agent launched by no operator**: Bi-way accepts the message. The node shows a warning and its output
+  carries `warnings`; the message goes out as the fallback SMS if there is one, otherwise it is not
+  delivered and nothing is debited. Status reports carry `fallback_reason: "agent_not_launched"`.
+- **Agent launched by some operators only**: the recipients of the other operators get the fallback
+  SMS if there is one; the `fallback_reason` of their status reports tells why.
 
 ## Operations
 
@@ -279,10 +315,11 @@ RCS agent, switch their Bi-way nodes to an SMS channel (Content Text instead of 
 | [Order notifications](examples/order-notifications.json) | Sends an RCS card with a tracking button when a WooCommerce order is completed, with a fallback SMS. |
 | [Inbound reply to team inbox](examples/inbound-to-team-inbox.json) | Routes customer replies to the right team by keyword. |
 | [Form to welcome message](examples/form-welcome-message.json) | Creates or updates the contact from a form and sends a welcome message. |
-| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, saves them as contacts and sends them an RCS message, or an email when the registration form does not ask for their phone number. Needs access to the Weezevent API, which Weezevent grants to its partners. |
+| [Weezevent ticket holders](examples/weezevent-ticket-holders.json) | Fetches the new participants of a Weezevent event, saves them as contacts and sends them an RCS message, or an email when the registration form does not ask for their phone number. Needs a Weezevent API key: Weezevent grants them to its partners, ask them for one. |
 
 ## Compatibility
 
+- Verified by n8n: installable from the nodes panel on n8n Cloud and self-hosted.
 - Tested with n8n 2.45.4, self-hosted. On n8n 1, "publish" and "unpublish" read "activate" and
   "deactivate".
 - n8n nodes API version 1, no runtime dependency.
@@ -290,6 +327,7 @@ RCS agent, switch their Bi-way nodes to an SMS channel (Content Text instead of 
 
 ## API documentation and support
 
+- [Bi-way page for n8n](https://www.bi-way.fr/n8n/), in French: requirements, installation, use cases.
 - [Bi-way API documentation](https://services.bi-way.fr/openapi/), for the requests behind each
   operation and the advanced **Extra (JSON)** and **Filters (JSON)** options.
 - [RCS declaration form](https://app.bi-way.fr/rcs-registration/)
@@ -297,8 +335,6 @@ RCS agent, switch their Bi-way nodes to an SMS channel (Content Text instead of 
 - Issues and questions about this package:
   [GitHub issues](https://github.com/pocket-communication/n8n-nodes-biway-messenger/issues)
 - Bi-way support: [tech@pocketcommunication.com](mailto:tech@pocketcommunication.com)
-
-A French presentation for bi-way.fr is in [docs/integration-n8n-fr.md](docs/integration-n8n-fr.md).
 
 ## License
 

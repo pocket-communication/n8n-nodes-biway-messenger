@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 ### Added
 
@@ -18,7 +18,6 @@
 - **Fallback SMS written in the node**: **Add Chat Link** is now on by default, like the fallback SMS of
   the account. With the STOP mention, 114 characters are left for the text: a longer text now stops with
   an error telling what to do, so check your workflows that use *Send This SMS*.
-
 - **RCS without an RCS agent**: the error now says that the account has no RCS agent, with what to do:
   check it with RCS Agent › Get Status, send by SMS in the meantime, or read the requirements.
 - **RCS Agent › Get Status**: `nextStep` suggests sending by SMS while the RCS agent is not launched.
@@ -26,6 +25,13 @@
   appears once your RCS agent is created.
 - **RCS not in your plan**: the error leads to Bi-way instead of the sign-up page, which would create
   a second account.
+- **Brand**: the nodes, notices, messages and documentation now write **Bi-way**. Existing workflows
+  are not affected: node types, parameter names and values stay the same. The credential keeps the
+  name **Bi-Way API**, as n8n requires title case for credential names.
+- **Image of a card**: the option *From the Bi-Way Gallery* is now *From the Gallery*.
+- **Links**: the npm page and the notices of Message › Send and of the RCS Agent operations lead to
+  the [Bi-way page for n8n](https://www.bi-way.fr/n8n/), in French. The documentation links of the
+  nodes and of the credential still lead to the README, in English.
 
 ### Fixed
 
@@ -35,14 +41,6 @@
 - **Fallback SMS written in the node**: a text that fit in 160 characters but not once the STOP mention
   and the chat link were added was accepted, then the SMS was not sent. The node now refuses it, with
   the room left for the text.
-
-- **Brand**: the nodes, notices, messages and documentation now write **Bi-way**. Existing workflows
-  are not affected: node types, parameter names and values stay the same. The credential keeps the
-  name **Bi-Way API**, as n8n requires title case for credential names.
-- **Image of a card**: the option *From the Bi-Way Gallery* is now *From the Gallery*.
-- **Links**: the npm page and the notices of Message › Send and of the RCS Agent operations lead to
-  the [Bi-way page for n8n](https://www.bi-way.fr/n8n/), in French. The documentation links of the
-  nodes and of the credential still lead to the README, in English.
 
 ### Examples
 
@@ -58,9 +56,12 @@
 
 ### Documentation
 
-- **Templates**: `docs/templates-submission.md` prepares the submission to the n8n template library.
+- **README**: the nodes are verified by n8n and install from the nodes panel, on n8n Cloud and
+  self-hosted; a new section explains how to declare your RCS agent and what happens until it is
+  launched; sign-up includes API access; links to the Bi-way page for n8n.
 - **README**: events of the Bi-way Trigger are not sent again if your n8n cannot be reached; the `data`
   of a share request is not a reference, read its `entry` with **Entry › Get**.
+- **Templates**: `docs/templates-submission.md` prepares the submission to the n8n template library.
 
 ## 0.2.0
 
