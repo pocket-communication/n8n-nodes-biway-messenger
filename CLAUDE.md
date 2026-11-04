@@ -109,11 +109,12 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
 - [x] E-commerce order notifications (card, tracking button, SMS fallback)
 - [x] Inbound reply to team inbox
 - [x] Form to welcome message (contact create or update)
-- [x] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API (partner
-      access, `POST /auth/access_token`, `GET /participant/list` with `last_update`; no documented
-      webhook), contact in a group, RCS message, or email when no phone number. A participant only has name and email
-      (`owner`); a phone number exists only if the organizer adds a question to the registration
-      form, read from `GET /participant/{id}/answers` (`answers[]` of `label` / `value`)
+- [x] Weezevent ticket holders: Schedule Trigger + HTTP Request on the Weezevent API v3 (partner
+      access, no documented webhook): `GET /v3/evenement/:id/participants?loadFormAnswers=1` with
+      `last_update` (registrations after the date, in UTC: one-hour overlap, and the participants
+      already handled are remembered). API key and persistent access token (`POST /auth/access_token`,
+      once) in a Custom Auth credential. A phone number exists only if the registration form asks for
+      it (`form`); contact in the group chosen in the node, RCS card, or email when no phone number
 - [x] `examples/README.md` with audience (canvas screenshots: TODO, taken in phase 4)
 - [x] Every example checked against the node definitions of n8n 2.45.4 (known type and version,
       no dropped parameter, no parameter issue)
@@ -213,5 +214,9 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
       version: new fields (`warnings`, `fallback_reason`) and Add Chat Link on by default
 - [ ] Tag `0.3.0` pushed by the maintainer after `main` (GitHub and gogs) and a green CI; then the
       official scanner, and the GitHub Releases for 0.2.0 and 0.3.0
-- [ ] Weezevent example on the v3 API (`/v3/evenement/:id/participants?loadFormAnswers=1`), keys in
-      n8n credentials, run with a real Weezevent API key before submitting it as a template
+- [x] Weezevent example on the v3 API (`/v3/evenement/:id/participants?loadFormAnswers=1`), API key
+      and access token in a Custom Auth credential (2026-11-04)
+- [x] Weezevent API checked on a test event (2026-11-04): `last_update` in UTC, Mobile phone field
+      in `form.portable`
+- [x] Weezevent example run with the RCS card and the email really sent (2026-11-04); to submit after
+      the other templates

@@ -31,11 +31,11 @@ creator and accepts batches of four.
 3. Order notifications
 4. Inbound reply to team inbox
 5. Form to welcome message
+6. Weezevent ticket holders
 
-The form comes last because it has three nodes, and n8n asks more of short workflows: "a trigger connected to a single
-action" needs "more context or reusable logic". If it is refused, nothing else depends on it.
-
-Weezevent ticket holders stays on GitHub for now, see [the end of this document](#not-submitted-yet-weezevent-ticket-holders).
+The form comes late because it has three nodes, and n8n asks more of short workflows: "a trigger connected to a single
+action" needs "more context or reusable logic". If it is refused, nothing else depends on it. Weezevent comes last: its
+API is reserved to Weezevent partners, so a reviewer may not be able to run it.
 
 ## Prerequisites of every template
 
@@ -154,22 +154,41 @@ Weezevent ticket holders stays on GitHub for now, see [the end of this document]
 > Limits: RCS only reaches French mobile operators. The phone number must be in international format: the form does not
 > check it, and Bi-way refuses another format. Someone who sends the form again gets the welcome message again.
 
-## Not submitted yet: Weezevent ticket holders
+### 6. Weezevent ticket holders
 
-[`examples/weezevent-ticket-holders.json`](../examples/weezevent-ticket-holders.json) stays on GitHub until three
-things are done:
+- **File**: [`examples/weezevent-ticket-holders.json`](../examples/weezevent-ticket-holders.json), 9 nodes
+- **Title**: Send Weezevent ticket holders their practical information by RCS or email with Bi-way
+- **Short description**: Every 15 minutes, save the new participants of a Weezevent event as Bi-way contacts and send
+  them an RCS card, or the same card by email when they gave no mobile number.
+- **Categories (proposal)**: Marketing
+- **Also needed**: a Weezevent API key, which Weezevent grants to its partners, and an access token obtained once with
+  it, in a Custom Auth credential; the ID of the event; the **Mobile phone** field in its registration form for RCS; an
+  email channel on the Bi-way account for the others.
+- **Screenshot**: [`examples/images/weezevent-ticket-holders.png`](../examples/images/weezevent-ticket-holders.png)
 
-- **A run with a real Weezevent API key.** Weezevent grants API keys to its registered partners and asks to be
-  contacted for one. n8n wants the exact JSON run from start to finish, with the result checked in the destination
-  service: ask for a key for an organizer account, and run the workflow on a free test event.
-- **Credentials instead of parameters.** The API key, username and password of Weezevent are placeholders in HTTP
-  Request nodes, and n8n wants credentials there, never keys or passwords in parameters.
-- **The v3 API.** The example calls `/participant/list` and `/participant/:id/answers`, which the
-  [Weezevent API portal](https://docapi.weezevent.com/) says should not be used anymore. The v3
-  `/v3/evenement/:id/participants` returns the form answers in the same call, and its `last_update` keeps the
-  participants registered after the date: a participant changed later no longer gets the message twice.
+**Long description**
 
-Then run the same tests as the others and submit it last.
+> Send ticket holders their practical information without exporting lists. Every 15 minutes, this workflow asks
+> Weezevent for the participants registered since its last run, with their answers to the registration form, and saves
+> each one as a Bi-way contact, in the contact group of your choice. Participants who gave a mobile number get an RCS
+> card with a link to your practical information and a map of the venue; the others get the same card by email.
+>
+> Limits: the Weezevent API is reserved to Weezevent partners. Only new registrations are fetched, up to 500 per run, and
+> the memory of the last run only works in published runs. RCS only reaches French mobile operators.
+
+**Tested**
+
+- **Credentials instead of parameters.** The login, password and API key serve once, to get a persistent access
+  token. The API key and that token go in a Custom Auth credential, so the workflow never logs in, as Weezevent asks.
+- **The v3 API.** `/v3/evenement/:id/participants?loadFormAnswers=1` returns the form answers in the same call, and
+  `last_update` keeps the participants registered after the date. The workflow fetches with a one-hour overlap and
+  remembers the participants already handled, so none gets the message twice.
+- **Checked on a test event (2026-11-04).** Weezevent stores and compares `last_update` in UTC, so the workflow
+  writes it in UTC. Weezevent's own **Mobile phone** field comes in `form` as `portable`, written `+33 6 12 34 56 78`;
+  a participant registered without it has no `portable` key.
+- **Run with real sends (2026-11-04).** The JSON as shipped, against the test event and a Bi-way test account: the
+  RCS card reached a phone on SFR, and the email arrived through the account's SMTP channel. Bi-way refuses an email
+  address with a `+` or a top-level domain longer than four letters (`.paris`): use another address to test.
 
 ## Checks
 
@@ -211,5 +230,6 @@ the version named in the notes is published: they say "Tested with 0.3.0 on n8n 
 - [ ] Review request: real sheet and SMTP, each rating on your own number, the review link opens
 - [ ] Order notifications: a test order in a WooCommerce shop, the card received, the tracking link opens
 - [ ] Inbound reply to team inbox: a real message per keyword, each email received
+- [x] Weezevent ticket holders: done on 2026-11-04, see [above](#6-weezevent-ticket-holders)
 - [ ] Form to welcome message: the form sent twice, one contact in Bi-way, two welcome messages
 - [ ] Import each JSON once more on n8n Cloud

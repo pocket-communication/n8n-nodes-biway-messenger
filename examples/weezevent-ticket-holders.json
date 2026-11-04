@@ -3,7 +3,7 @@
 	"nodes": [
 		{
 			"parameters": {
-				"content": "### How it works\nHelps event organizers who sell on Weezevent send practical information without exporting lists. Every 15 minutes, the workflow fetches the participants changed since the last run, saves them as Bi-way contacts, and sends them an RCS card when the registration form asks for a phone number, or an email otherwise.\n\n**Limits:** The Weezevent API is reserved to its partners. The memory of the last run only works in published runs, not in manual tests. A participant changed again gets the message again. RCS only reaches French mobile operators, and the email needs the email option of your account.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Replace `YOUR_WEEZEVENT_API_KEY`, `YOUR_WEEZEVENT_USERNAME`, `YOUR_WEEZEVENT_PASSWORD` and `YOUR_EVENT_ID`. Better: keep them in n8n credentials or variables.\n4. Check the RCS agent with the Bi-way node: RCS Agent › Get Status.\n5. Adapt the card and the email: `YOUR EVENT`, `YOUR VENUE`, coordinates and practical information link. Publish the workflow.\n\n### Customization\nChange the frequency in **Every 15 minutes**, and the labels **Find the phone number** looks for if your form names the phone field differently. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
+				"content": "### How it works\nHelps event organizers who sell on Weezevent send practical information without exporting lists. Every 15 minutes, the workflow fetches the new participants with their form answers, saves them as Bi-way contacts, and sends them an RCS card when the registration form asks for a phone number, or an email otherwise.\n\n**Limits:** Weezevent grants API keys to its partners: ask them for one. Only new registrations are fetched, up to 500 per run. The memory of the last run only works in published runs, not in manual tests. RCS only reaches French mobile operators, and the email needs an email channel on your account, chosen in **Send the email**.\n\n### Setup\n1. Install the verified **Bi-way** community node (`n8n-nodes-biway-messenger`, [instructions](https://github.com/pocket-communication/n8n-nodes-biway-messenger#installation)). Tested with 0.3.0 on n8n 2.45.4.\n2. Create a **Bi-Way API** credential with an API key from Bi-way › Settings › Security.\n3. Get a Weezevent access token once, with your login, password and API key ([how](https://docapi.weezevent.com/#/legacy/v3?id=post-authaccess_token)). It stays valid: the workflow never logs in. In **Get new participants**, create a **Custom Auth** credential: `{\"qs\": {\"api_key\": \"…\", \"access_token\": \"…\"}}`, and replace `YOUR_EVENT_ID`.\n4. Check the RCS agent with the Bi-way node: RCS Agent › Get Status.\n5. Adapt the card and the email: `YOUR EVENT`, `YOUR VENUE`, coordinates and practical information link. Publish the workflow.\n\n### Customization\nChange the frequency in **Every 15 minutes**, the field names **Find the phone number** looks for if your form names the phone field differently, and the contact group of the event in **Save the participant**. Add your poster to the cards, from your Bi-way gallery or a URL. A fallback SMS written in the node holds 114 characters with the STOP mention and chat link; turn them off in **Fallback SMS Options** for up to 160.",
 				"height": 590,
 				"width": 620
 			},
@@ -18,9 +18,9 @@
 		},
 		{
 			"parameters": {
-				"content": "## Fetch new participants\nAsks Weezevent for the participants changed since the time of its last answer.",
+				"content": "## Fetch new participants\nAsks Weezevent for the participants registered since the last run, with their form answers, and skips those already handled.",
 				"height": 296,
-				"width": 1076,
+				"width": 856,
 				"color": 7
 			},
 			"id": "21957414-54df-5429-8834-f71966cb68a3",
@@ -34,9 +34,9 @@
 		},
 		{
 			"parameters": {
-				"content": "## Save the contact\nA phone number only exists if your registration form asks for it. Contacts are recognized by email address.",
+				"content": "## Save the contact\nThe phone number comes from the form, if it asks for one. Contacts are matched by email.",
 				"height": 296,
-				"width": 636,
+				"width": 416,
 				"color": 7
 			},
 			"id": "98d42abe-188d-5e66-ae80-95caf49f2ef9",
@@ -44,7 +44,7 @@
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				1050,
+				830,
 				-130
 			]
 		},
@@ -60,7 +60,7 @@
 			"type": "n8n-nodes-base.stickyNote",
 			"typeVersion": 1,
 			"position": [
-				1710,
+				1270,
 				-250
 			]
 		},
@@ -86,7 +86,7 @@
 		},
 		{
 			"parameters": {
-				"jsCode": "// Participants changed since the last run (the day before on the first run).\nconst memory = $getWorkflowStaticData('global');\nconst since = memory.since || $now.minus({ days: 1 }).setZone('Europe/Paris').toFormat('yyyy-MM-dd HH:mm:ss');\nreturn [{ json: { since } }];"
+				"jsCode": "// Registrations since the last run, in UTC as Weezevent compares them, with a one-hour overlap;\n// the next node skips the participants already handled. The day before on the first run.\nconst memory = $getWorkflowStaticData('global');\nconst now = $now.toUTC();\nconst from = memory.lastRun ? DateTime.fromMillis(memory.lastRun).toUTC().minus({ hours: 1 }) : now.minus({ days: 1 });\nreturn [{ json: { since: from.toFormat('yyyy-MM-dd HH:mm:ss'), sinceMillis: from.toMillis(), runStart: now.toMillis() } }];"
 			},
 			"id": "ac8780e9-7c8b-4153-a3f4-8267f1a1d00f",
 			"name": "Since last check",
@@ -99,30 +99,33 @@
 		},
 		{
 			"parameters": {
-				"method": "POST",
-				"url": "https://api.weezevent.com/auth/access_token",
-				"sendBody": true,
-				"contentType": "form-urlencoded",
-				"bodyParameters": {
+				"url": "https://api.weezevent.com/v3/evenement/YOUR_EVENT_ID/participants",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpCustomAuth",
+				"sendQuery": true,
+				"queryParameters": {
 					"parameters": [
 						{
-							"name": "username",
-							"value": "YOUR_WEEZEVENT_USERNAME"
+							"name": "loadFormAnswers",
+							"value": "1"
 						},
 						{
-							"name": "password",
-							"value": "YOUR_WEEZEVENT_PASSWORD"
-						},
-						{
-							"name": "api_key",
-							"value": "YOUR_WEEZEVENT_API_KEY"
+							"name": "last_update",
+							"value": "={{ $json.since }}"
 						}
 					]
 				},
-				"options": {}
+				"options": {
+					"response": {
+						"response": {
+							"fullResponse": true,
+							"responseFormat": "json"
+						}
+					}
+				}
 			},
-			"id": "9f3095e6-a78a-4ee8-a94f-5fa0a7ee6fb0",
-			"name": "Get a Weezevent token",
+			"id": "2414cae5-b317-4ce4-a812-66870a07e667",
+			"name": "Get new participants",
 			"type": "n8n-nodes-base.httpRequest",
 			"typeVersion": 4.2,
 			"position": [
@@ -132,34 +135,12 @@
 		},
 		{
 			"parameters": {
-				"url": "https://api.weezevent.com/participant/list",
-				"sendQuery": true,
-				"queryParameters": {
-					"parameters": [
-						{
-							"name": "api_key",
-							"value": "YOUR_WEEZEVENT_API_KEY"
-						},
-						{
-							"name": "access_token",
-							"value": "={{ $json.accessToken }}"
-						},
-						{
-							"name": "id_event[]",
-							"value": "YOUR_EVENT_ID"
-						},
-						{
-							"name": "last_update",
-							"value": "={{ $('Since last check').item.json.since }}"
-						}
-					]
-				},
-				"options": {}
+				"jsCode": "// Remember this run, then output the participants not handled yet. A participant is forgotten\n// a day after the start of the fetched period: no answer can return it any more.\nconst memory = $getWorkflowStaticData('global');\nconst { runStart, sinceMillis } = $('Since last check').first().json;\nconst participants = $input.first().json.body || [];\nconst seen = memory.seen || {};\nfor (const [id, at] of Object.entries(seen)) if (at < sinceMillis - 24 * 3600 * 1000) delete seen[id];\nconst fresh = participants.filter((participant) => !seen[participant.id_participant]);\nfor (const participant of fresh) seen[participant.id_participant] = runStart;\nmemory.seen = seen;\nmemory.lastRun = runStart;\nreturn fresh.map((participant) => ({ json: participant }));"
 			},
-			"id": "2414cae5-b317-4ce4-a812-66870a07e667",
-			"name": "Get new participants",
-			"type": "n8n-nodes-base.httpRequest",
-			"typeVersion": 4.2,
+			"id": "c5d4e7bc-8405-4ec7-a8b5-da47b76a6b3c",
+			"name": "One item per participant",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
 			"position": [
 				660,
 				0
@@ -167,55 +148,15 @@
 		},
 		{
 			"parameters": {
-				"jsCode": "// Remember the time of this answer for the next run, then output the participants.\nconst answer = $input.first().json;\nconst memory = $getWorkflowStaticData('global');\nif (answer.server_time) memory.since = answer.server_time;\nconst token = $('Get a Weezevent token').first().json.accessToken;\nreturn (answer.participants || []).map((participant) => ({ json: { ...participant, accessToken: token } }));"
-			},
-			"id": "c5d4e7bc-8405-4ec7-a8b5-da47b76a6b3c",
-			"name": "One item per participant",
-			"type": "n8n-nodes-base.code",
-			"typeVersion": 2,
-			"position": [
-				880,
-				0
-			]
-		},
-		{
-			"parameters": {
-				"url": "=https://api.weezevent.com/participant/{{ $json.id_participant }}/answers",
-				"sendQuery": true,
-				"queryParameters": {
-					"parameters": [
-						{
-							"name": "api_key",
-							"value": "YOUR_WEEZEVENT_API_KEY"
-						},
-						{
-							"name": "access_token",
-							"value": "={{ $json.accessToken }}"
-						}
-					]
-				},
-				"options": {}
-			},
-			"id": "250a08a6-7b53-4b66-a8d7-c8eecca00629",
-			"name": "Get the form answers",
-			"type": "n8n-nodes-base.httpRequest",
-			"typeVersion": 4.2,
-			"position": [
-				1100,
-				0
-			]
-		},
-		{
-			"parameters": {
 				"mode": "runOnceForEachItem",
-				"jsCode": "// The phone number, if the registration form asks for it, in international format.\nconst participant = $('One item per participant').item.json;\nconst owner = participant.owner || {};\nconst answer = ($json.answers || []).find((a) => /t[ée]l[ée]phone|portable|mobile|phone/i.test(a.label || ''));\nlet phone = String((answer && answer.value) || '').replace(/[\\s.-]/g, '');\nif (/^0[1-9]\\d{8}$/.test(phone)) phone = '+33' + phone.slice(1);\nreturn {\n\tjson: {\n\t\tfirstName: owner.first_name || '',\n\t\tlastName: owner.last_name || '',\n\t\temail: owner.email || '',\n\t\tphone,\n\t},\n};"
+				"jsCode": "// The phone number, if the registration form asks for it, in international format.\nconst form = $json.form || {};\nconst field = Object.keys(form).find((name) => /t[ée]l[ée]phone|portable|mobile|phone/i.test(name));\nlet phone = String((field && form[field]) || '').replace(/[\\s.()-]/g, '');\nif (/^00\\d+$/.test(phone)) phone = '+' + phone.slice(2);\nif (/^\\+330\\d{9}$/.test(phone)) phone = '+33' + phone.slice(4);\nif (/^0[1-9]\\d{8}$/.test(phone)) phone = '+33' + phone.slice(1);\nreturn {\n\tjson: {\n\t\tfirstName: $json.prenom || '',\n\t\tlastName: $json.nom || '',\n\t\temail: $json.email || '',\n\t\tphone,\n\t},\n};"
 			},
 			"id": "408390b1-fa8b-4b91-a8e9-dd46582f2d5f",
 			"name": "Find the phone number",
 			"type": "n8n-nodes-base.code",
 			"typeVersion": 2,
 			"position": [
-				1320,
+				880,
 				0
 			]
 		},
@@ -273,14 +214,20 @@
 				},
 				"ifExists": "update",
 				"matchOn": "email",
-				"options": {}
+				"options": {
+					"groupId": {
+						"__rl": true,
+						"value": "",
+						"mode": "list"
+					}
+				}
 			},
 			"id": "db3c3713-260b-4a0d-a75f-eceac1019aaa",
 			"name": "Save the participant",
 			"type": "n8n-nodes-biway-messenger.biway",
 			"typeVersion": 1,
 			"position": [
-				1540,
+				1100,
 				0
 			]
 		},
@@ -314,7 +261,7 @@
 			"type": "n8n-nodes-base.if",
 			"typeVersion": 2.2,
 			"position": [
-				1760,
+				1320,
 				0
 			]
 		},
@@ -354,7 +301,7 @@
 			"type": "n8n-nodes-biway-messenger.biway",
 			"typeVersion": 1,
 			"position": [
-				2000,
+				1560,
 				-120
 			],
 			"onError": "continueRegularOutput"
@@ -394,7 +341,7 @@
 			"type": "n8n-nodes-biway-messenger.biway",
 			"typeVersion": 1,
 			"position": [
-				2000,
+				1560,
 				120
 			],
 			"onError": "continueRegularOutput"
@@ -413,17 +360,6 @@
 			]
 		},
 		"Since last check": {
-			"main": [
-				[
-					{
-						"node": "Get a Weezevent token",
-						"type": "main",
-						"index": 0
-					}
-				]
-			]
-		},
-		"Get a Weezevent token": {
 			"main": [
 				[
 					{
@@ -446,17 +382,6 @@
 			]
 		},
 		"One item per participant": {
-			"main": [
-				[
-					{
-						"node": "Get the form answers",
-						"type": "main",
-						"index": 0
-					}
-				]
-			]
-		},
-		"Get the form answers": {
 			"main": [
 				[
 					{

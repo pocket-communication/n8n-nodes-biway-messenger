@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **Examples › Weezevent ticket holders**: Weezevent API v3, with the participants and their form
+  answers in one call. The API key and a persistent access token go in an n8n Custom Auth credential,
+  instead of the login, password and key in parameters. The participants already handled are
+  remembered, so none gets the message twice, and the contact group of the event is chosen in
+  **Save the participant**.
+
 ## 0.3.0
 
 ### Added

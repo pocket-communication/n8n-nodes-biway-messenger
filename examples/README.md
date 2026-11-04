@@ -19,7 +19,7 @@ are then left out.
 
 Placeholders: `YOUR_SHEET_ID`, `team@example.com` and the other `@example.com` addresses,
 `https://g.page/r/YOUR_PLACE_ID/review`, `https://tracking.example.com/`, `https://www.example.com`,
-`YOUR_WEEZEVENT_*`, `YOUR_EVENT_ID`, `YOUR EVENT` and `YOUR VENUE`.
+`YOUR_EVENT_ID`, `YOUR EVENT` and `YOUR VENUE`.
 
 ## The workflows
 
@@ -66,4 +66,4 @@ The workflows as they open in the n8n editor.
 
 ### Weezevent ticket holders
 
-![Weezevent ticket holders: the Weezevent API calls, the contact saved in Bi-way, then an RCS card or an email](images/weezevent-ticket-holders.png)
+![Weezevent ticket holders: the Weezevent API call, the contact saved in Bi-way, then an RCS card or an email](images/weezevent-ticket-holders.png)

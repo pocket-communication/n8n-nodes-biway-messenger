@@ -54,12 +54,12 @@ Des workflows d'exemple prêts à importer accompagnent le paquet
 1. **Un compte Bi-way** : [créez-le en ligne](https://v3.bi-way.fr/signup). L'accès à l'API est
    inclus. L'offre gratuite ouvre le SMS, avec 20 crédits offerts ; pour le RCS, choisissez l'offre
    Pro (point 3). L'e-mail se met en place à part (point 4).
-2. **Une clé d'API** : dans Bi-way, **Paramètres › Sécurité › Clés d'API**, bouton **Créer une clé**.
+2. **Une clé d'API** : dans Bi-way, **Réglages › Sécurité › Clés d'API**, bouton **Créer une clé**.
    Notez le jeton et le secret : le secret ne s'affiche qu'une fois. Vous pouvez révoquer une clé à
    tout moment.
 3. **Pour le RCS**, un service de chat RCS déclaré par votre entreprise et lancé par les opérateurs :
    déclarez-le sur le [formulaire de déclaration RCS](https://app.bi-way.fr/rcs-registration/) ou dans
-   les paramètres de votre service de chat dans Bi-way (des frais de déclaration s'appliquent). Le RCS
+   les réglages de votre service de chat dans Bi-way (des frais de déclaration s'appliquent). Le RCS
    n'est disponible aujourd'hui que vers les numéros des opérateurs mobiles français.
 4. **Pour l'e-mail**, l'option e-mail de votre compte, mise en place par Bi-way : Mailjet (canal
    `email`) ou SMTP (canal `email_smtp`).
