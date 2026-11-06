@@ -228,7 +228,10 @@ the version named in the notes is published: they say "Tested with 0.3.0 on n8n 
 
 - [ ] Appointment reminder: real sheet and SMTP, real RCS or SMS on your own number, each button, the sheet updated
 - [ ] Review request: real sheet and SMTP, each rating on your own number, the review link opens
-- [ ] Order notifications: a test order in a WooCommerce shop, the card received, the tracking link opens
+- [x] Order notifications: done on 2026-11-04, the JSON as shipped on n8n 2.45.4 with a local WooCommerce 11.2.1 shop
+      (WordPress 7.1.4) and a Bi-way test account. The trigger registered its webhook in the shop; an order created
+      as Processing was filtered out, then completed: the card reached a phone. The button carries the placeholder
+      tracking link
 - [ ] Inbound reply to team inbox: a real message per keyword, each email received
 - [x] Weezevent ticket holders: done on 2026-11-04, see [above](#6-weezevent-ticket-holders)
 - [ ] Form to welcome message: the form sent twice, one contact in Bi-way, two welcome messages
