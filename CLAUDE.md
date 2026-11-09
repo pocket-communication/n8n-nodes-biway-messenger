@@ -186,9 +186,9 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
 - [x] Tag `0.2.0` pushed by hand by the maintainer (`npm run release` would bump past the version
       already in `package.json` and rewrite `CHANGELOG.md` with auto-changelog), published with
       provenance; official scanner passes (2026-11-02)
-- [ ] GitHub Release for 0.2.0 with the CHANGELOG section as release notes (maintainer; none exist so
-      far)
-- [ ] 0.2.0 propagated by n8n to its verified list (0.1.2 on 2026-11-02, right after publishing)
+- [x] GitHub Release for 0.2.0 with the CHANGELOG section as release notes (maintainer, 2026-11-04)
+- [x] 0.2.0 propagated by n8n to its verified list (0.1.2 on 2026-11-02, right after publishing); 0.3.0
+      live on 2026-11-05
 - [ ] Add the share links to the Creator Portal description once 0.2.0 is propagated
 - [x] Published 2026-10-31: page presenting the integration on www.bi-way.fr (WordPress block editor and Spectra, like the
       feature pages /messages/, /partages/, /synchronisation/), built from `docs/integration-n8n-fr.md`;
@@ -212,8 +212,9 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
 - [x] README and version 0.3.0 (2026-11-03): verified, install from the nodes panel, RCS agent
       declaration, sign-up with API access, operations checked against the compiled node. Minor
       version: new fields (`warnings`, `fallback_reason`) and Add Chat Link on by default
-- [ ] Tag `0.3.0` pushed by the maintainer after `main` (GitHub and gogs) and a green CI; then the
-      official scanner, and the GitHub Releases for 0.2.0 and 0.3.0
+- [x] Tag `0.3.0` pushed by the maintainer after `main` (GitHub and gogs) and a green CI, GitHub
+      Releases for 0.2.0 and 0.3.0 (2026-11-04); approved and published by n8n on 2026-11-05. The
+      official scanner was not run here on 0.3.0
 - [x] Weezevent example on the v3 API (`/v3/evenement/:id/participants?loadFormAnswers=1`), API key
       and access token in a Custom Auth credential (2026-11-04)
 - [x] Weezevent API checked on a test event (2026-11-04): `last_update` in UTC, Mobile phone field
