@@ -221,18 +221,28 @@ Triggers, Google Sheets and email nodes are pinned. Nothing leaves the machine.
 | Inbound reply to team inbox | Billing keyword, delivery keyword, anything else, button tap |
 | Form to welcome message | New contact; known contact, updated |
 
-### Still to do with real accounts
+### Checked with real accounts
 
-n8n asks to check the final result in the destination service. Do this for each template before submitting it, and after
-the version named in the notes is published: they say "Tested with 0.3.0 on n8n 2.45.4", which only becomes true then.
+n8n asks to check the final result in the destination service, for each template before submitting it. The version
+named in the notes, 0.3.0, is published since 2026-11-04.
 
-- [ ] Appointment reminder: real sheet and SMTP, real RCS or SMS on your own number, each button, the sheet updated
-- [ ] Review request: real sheet and SMTP, each rating on your own number, the review link opens
+- [x] Appointment reminder: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0, the JSON as shipped, a real Google Sheet,
+      SMTP and RCS on the maintainer's phone. Confirm, Cancel and Call me tapped: `Status` set to Confirmed, then
+      Cancelled, an answer sent each time, both team emails sent. `Date` must really be plain text: a date typed in a
+      default column is converted, and no row matches
+- [x] Review request: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0, same setup. 5 and 1 tapped, 4 typed: the review
+      link on both branches, the apology and the team email for 1. Tapping the review button also reaches the trigger,
+      as `n8n_open_url_1`: rated 0 and skipped
 - [x] Order notifications: done on 2026-11-04, the JSON as shipped on n8n 2.45.4 with a local WooCommerce 11.2.1 shop
       (WordPress 7.1.4) and a Bi-way test account. The trigger registered its webhook in the shop; an order created
       as Processing was filtered out, then completed: the card reached a phone. The button carries the placeholder
       tracking link
-- [ ] Inbound reply to team inbox: a real message per keyword, each email received
+- [x] Inbound reply to team inbox: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0: a billing, a delivery and another
+      message, each routed and its email received. The button tap was not run on Cloud
 - [x] Weezevent ticket holders: done on 2026-11-04, see [above](#6-weezevent-ticket-holders)
-- [ ] Form to welcome message: the form sent twice, one contact in Bi-way, two welcome messages
-- [ ] Import each JSON once more on n8n Cloud
+- [x] Form to welcome message: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0: the form sent twice, one contact in
+      Bi-way, two welcome messages received, the button link opens. The number was already a contact, so both runs
+      updated it: the creation was not run on Cloud
+- [x] Imported once more on n8n Cloud 3.1.0 (2026-11-09): the four templates above, as on `main`, with only the
+      credentials, sheet, addresses and links set. Order notifications and Weezevent were not run on Cloud: their notes
+      name n8n 2.45.4 only

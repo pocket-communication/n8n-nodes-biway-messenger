@@ -320,8 +320,8 @@ RCS agent, switch their Bi-way nodes to an SMS channel (Content Text instead of 
 ## Compatibility
 
 - Verified by n8n: installable from the nodes panel on n8n Cloud and self-hosted.
-- Tested with n8n 2.45.4, self-hosted. On n8n 1, "publish" and "unpublish" read "activate" and
-  "deactivate".
+- Tested with n8n 2.45.4, self-hosted, and n8n Cloud 3.1.0. On n8n 1, "publish" and "unpublish"
+  read "activate" and "deactivate".
 - n8n nodes API version 1, no runtime dependency.
 - RCS reaches phones on French mobile operators only; SMS reach the destinations of your Bi-way plan.
 
