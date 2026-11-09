@@ -222,5 +222,5 @@ for n8n's template library), `review-request.json`, `order-notifications.json`, 
 - [x] Weezevent example run with the RCS card and the email really sent (2026-11-04); to submit after
       the other templates
 - [x] n8n Cloud 3.1.0 (2026-11-09): 0.3.0 installed from the nodes panel, credential test, RCS card and
-      Bi-way Trigger through the Cloud webhook; the reminder, review, inbound and welcome templates
-      passed as shipped (`docs/templates-submission.md`)
+      Bi-way Trigger through the Cloud webhook; all six templates passed as shipped
+      (`docs/templates-submission.md`). The WooCommerce credential needed Include Credentials in Query

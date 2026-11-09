@@ -236,13 +236,19 @@ named in the notes, 0.3.0, is published since 2026-11-04.
 - [x] Order notifications: done on 2026-11-04, the JSON as shipped on n8n 2.45.4 with a local WooCommerce 11.2.1 shop
       (WordPress 7.1.4) and a Bi-way test account. The trigger registered its webhook in the shop; an order created
       as Processing was filtered out, then completed: the card reached a phone. The button carries the placeholder
-      tracking link
+      tracking link. Again on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0, the same shop reached through a temporary
+      tunnel: webhook created on publishing and removed on unpublishing, a pending order filtered out, then completed:
+      the card reached the phone. The WooCommerce credential only passed its test with **Include Credentials in
+      Query** on: without it, n8n Cloud got Unauthorized while the same keys in Basic authentication were accepted
+      from elsewhere
 - [x] Inbound reply to team inbox: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0: a billing, a delivery and another
       message, each routed and its email received. The button tap was not run on Cloud
-- [x] Weezevent ticket holders: done on 2026-11-04, see [above](#6-weezevent-ticket-holders)
+- [x] Weezevent ticket holders: done on 2026-11-04, see [above](#6-weezevent-ticket-holders). Again on 2026-11-09 on
+      n8n Cloud 3.1.0 with 0.3.0, published: two new participants on the test event, the RCS card and the email
+      received; the next run fetched them again through the one-hour overlap and sent nothing. On Cloud, "every 15
+      minutes" ran at :02 and :17, not on the quarter hours
 - [x] Form to welcome message: done on 2026-11-09 on n8n Cloud 3.1.0 with 0.3.0: the form sent twice, one contact in
       Bi-way, two welcome messages received, the button link opens. The number was already a contact, so both runs
       updated it: the creation was not run on Cloud
-- [x] Imported once more on n8n Cloud 3.1.0 (2026-11-09): the four templates above, as on `main`, with only the
-      credentials, sheet, addresses and links set. Order notifications and Weezevent were not run on Cloud: their notes
-      name n8n 2.45.4 only
+- [x] Imported once more on n8n Cloud 3.1.0 (2026-11-09): the six templates, as on `main`, with only the credentials,
+      sheet, addresses, event ID and links set
