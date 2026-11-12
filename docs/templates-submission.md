@@ -203,6 +203,7 @@ Checked by script on the six files, then in the editor on the screenshots.
 | Who it helps, the result, the limits | Yes, in the note and repeated above |
 | From four nodes: white notes over the nodes, short `##` title, under 50 words | Yes. The form has three nodes and none |
 | Community node: package, tested version, installation link | Yes |
+| Community node: an image of the workflow | Yes, at the end of the overview note: `examples/images/*-nodes.png` (the nodes without that note), loaded from GitHub with `#full-width`. The submission form only takes the JSON |
 | Descriptive node names | Yes |
 | Credentials, personal addresses, sheet IDs, webhook URLs, pinned data | None. `webhookId` values stay: random, they point to nothing |
 | Useful error handling | One refused number does not stop a daily send (`onError` on the sends looping over a sheet); limits stated in the note |
